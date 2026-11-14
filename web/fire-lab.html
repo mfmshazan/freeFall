@@ -224,6 +224,10 @@
     .readouts div { background: #071323e6; padding: 8px 12px; }
     .readouts span { display: block; font-size: 9px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase; color: var(--muted); }
     .readouts b { font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .readouts b em { font-style: normal; font-size: 8px; font-weight: 800; letter-spacing: .8px; text-transform: uppercase; margin-left: 5px; padding: 1px 4px; vertical-align: middle; }
+    .basis-measured { background: #1f6f43; color: #d7ffe9; }
+    .basis-estimate { background: #7a5a12; color: #ffe9b8; }
+    .basis-none { color: #ff9b9b; }
     .status {
       padding: 8px 12px;
       background: #071323e6;
@@ -999,6 +1003,54 @@
        ILLUSTRATIVE FLAME LIFE CYCLE
        Rules of thumb only — each tied to a cited observation where possible.
        ========================================================= */
+    /* =========================================================
+       REAL SPREAD DATA (cited) + grounded estimate
+       Sources: backend/data/mined_evidence.json (LUCI SIBAL, FLEX / PSI-69)
+       and BASS-II Summary Report NASA/TM-20210011385 (PMMA film & rod).
+       Solids report flame spread in mm/s; the droplet reports a d^2 burning
+       rate in mm^2/s. A value is tagged "measured" only when the sandbox sits
+       on a tested point; otherwise it is a clearly-flagged estimate.
+       ========================================================= */
+    const SPREAD = {
+      sheet: { unit: "mm/s", o2min: 16, anchors: [
+        { g: 1,    o2: 21, flow: 0, v: 1.5,  src: "LUCI SIBAL fabric, 1 g (base)" },
+        { g: 0.17, o2: 20, flow: 0, v: 0.92, src: "LUCI SIBAL fabric, lunar g (base)" },
+        { g: 0,    o2: 21, flow: 5, v: 2.2,  src: "BASS-II PMMA film, microgravity" }
+      ] },
+      rod: { unit: "mm/s", o2min: 16.8, anchors: [
+        { g: 0, o2: 19, flow: 1, v: 0.044, src: "BASS-II PMMA rod, microgravity" }
+      ] },
+      droplet: { unit: "mm²/s", o2min: 15, anchors: [
+        { g: 0, o2: 21, flow: 0, v: 0.61, src: "FLEX heptane droplet (PSI-69), d² rate" }
+      ] },
+      candle: { unit: "", o2min: 16, anchors: [] }  // a candle flame is stationary
+    };
+
+    function estimateSpread(fuel, g, o2, flow) {
+      const cfg = SPREAD[fuel];
+      if (!cfg || !cfg.anchors.length)
+        return { text: "—", basis: "na", title: "A candle flame is stationary — it does not spread." };
+      if (o2 < cfg.o2min)
+        return { text: "no spread", basis: "none",
+                 title: `Below about ${cfg.o2min}% O₂ this fuel does not sustain a spreading flame (NASA flammability limit).` };
+      // nearest tested anchor, by gravity first, then oxygen/airflow
+      let a = cfg.anchors[0], best = Infinity;
+      for (const c of cfg.anchors) {
+        const d = Math.abs(c.g - g) * 3 + Math.abs(c.o2 - o2) * 0.1 + Math.abs((c.flow || 0) - flow) * 0.05;
+        if (d < best) { best = d; a = c; }
+      }
+      const measured = Math.abs(a.g - g) < 0.05 && Math.abs(a.o2 - o2) <= 2 && Math.abs((a.flow || 0) - flow) <= 3;
+      if (measured)
+        return { text: `${a.v} ${cfg.unit}`, basis: "measured", title: `Measured value — ${a.src}.` };
+      // gentle, honest scaling away from the anchor (buoyancy with gravity, rate with O₂); kept mild
+      const buoy = x => 0.6 + 0.4 * Math.max(0, Math.min(1, x));
+      const gFac = Math.min(1.7, Math.max(0.5, buoy(g) / buoy(a.g)));
+      const o2Fac = Math.min(1.6, Math.max(0.5, o2 / a.o2));
+      const v = a.v * gFac * o2Fac;
+      return { text: `${v.toFixed(v < 0.1 ? 3 : 2)} ${cfg.unit}`, basis: "estimate",
+               title: `Estimate (not this exact setting). Anchored to ${a.src}, scaled by gravity and oxygen. Approximate — not a tested value.` };
+    }
+
     function sustain(p, dt) {
       p.age += dt;
       const lowG = p.g < 0.03;
@@ -1062,6 +1114,7 @@
             <div><span>Oxygen</span><b class="r-o2"></b></div>
             <div><span>Airflow</span><b class="r-flow"></b></div>
             <div><span>Fuel</span><b class="r-fuel"></b></div>
+            <div title="Flame spread rate from NASA data where tested, otherwise a flagged estimate"><span>Spread rate</span><b class="r-spread"></b></div>
           </div>
           <div class="status" role="status"></div>
         </div>`;
@@ -1108,6 +1161,11 @@
         pe.el.querySelector(".r-o2").textContent = `${shared.o2}%`;
         pe.el.querySelector(".r-flow").textContent = `${shared.flow} cm/s`;
         pe.el.querySelector(".r-fuel").textContent = FUELS[shared.fuel].name;
+        const sp = estimateSpread(shared.fuel, p.g, shared.o2, shared.flow);
+        const spB = pe.el.querySelector(".r-spread");
+        const basisLabel = sp.basis === "measured" ? "measured" : sp.basis === "estimate" ? "est." : "";
+        spB.innerHTML = basisLabel ? `${sp.text}<em class="basis-${sp.basis}">${basisLabel}</em>` : `<span class="basis-${sp.basis}">${sp.text}</span>`;
+        spB.closest("div").title = sp.title;
         pe.el.querySelector(".gvec i").style.setProperty("--len", `${8 + p.g * 80}px`);
         pe.el.querySelector(".gvec").style.opacity = p.g < 0.005 ? .25 : 1;
         pe.el.querySelector(".gv").textContent = gLabel(p.g);
