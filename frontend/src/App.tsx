@@ -9,10 +9,14 @@ import PlaybookPanel from './components/PlaybookPanel'
 import SpinoffBanner from './components/SpinoffBanner'
 import SaffireReplay from './replay/SaffireReplay'
 import Bass2Experiment from './replay/Bass2Experiment'
+import Explore from './replay/Explore'
+import { ViewLabel } from './shared/evidence'
+
+type View = 'explore' | 'predictor' | 'replay' | 'bass2'
 
 export default function App() {
   const [inputs, setInputs] = useState<CabinInputs>(PRESETS[0].values)
-  const [view, setView] = useState<'predictor' | 'replay' | 'bass2'>('predictor')
+  const [view, setView] = useState<View>('explore')
   const result = useFlamePrediction(inputs)
   const { prediction: p, uncertainty: u } = result
 
@@ -30,8 +34,12 @@ export default function App() {
         </div>
         <div className="flex items-center gap-3">
           <div className="flex rounded-md border border-space-600 overflow-hidden text-xs">
+            <button onClick={() => setView('explore')}
+              className={`px-3 py-1.5 ${view === 'explore' ? 'bg-emerald-500/20 text-emerald-200' : 'text-slate-400 hover:text-slate-200'}`}>
+              Explore <span className="opacity-60">(guided)</span>
+            </button>
             <button onClick={() => setView('predictor')}
-              className={`px-3 py-1.5 ${view === 'predictor' ? 'bg-sky-500/20 text-sky-200' : 'text-slate-400 hover:text-slate-200'}`}>
+              className={`px-3 py-1.5 border-l border-space-600 ${view === 'predictor' ? 'bg-sky-500/20 text-sky-200' : 'text-slate-400 hover:text-slate-200'}`}>
               Predictor <span className="opacity-60">(model)</span>
             </button>
             <button onClick={() => setView('replay')}
@@ -55,7 +63,9 @@ export default function App() {
         </div>
       </header>
 
-      {view === 'replay' ? (
+      {view === 'explore' ? (
+        <Explore />
+      ) : view === 'replay' ? (
         <SaffireReplay />
       ) : view === 'bass2' ? (
         <Bass2Experiment />
@@ -73,10 +83,14 @@ export default function App() {
           {/* flame twin + trust gauge */}
           <div className="grid grid-cols-5 gap-3">
             <div className="col-span-3 rounded-lg border border-space-600 bg-space-850 p-2">
-              <div className="text-[11px] text-slate-500 px-1 pb-1">Parametric Flame Digital Twin</div>
+              <div className="flex items-center justify-between px-1 pb-1">
+                <span className="text-[11px] text-slate-500">Parametric Flame Digital Twin</span>
+                <ViewLabel kind="illustrative" />
+              </div>
               <FlameCanvas prediction={p} uncertainty={u} gravity_g={inputs.gravity_g} airflow_cm_s={inputs.airflow_cm_s} />
             </div>
-            <div className="col-span-2">
+            <div className="col-span-2 flex flex-col gap-1">
+              <ViewLabel kind="derived" className="self-end" />
               <TrustGauge u={u} />
             </div>
           </div>
