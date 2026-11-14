@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import type { Prediction, Uncertainty } from '../types'
+import { useReducedMotion } from '../shared/evidence'
 
 // ---------------------------------------------------------------------------
 // FlameCanvas — a calibrated parametric "digital twin" of a microgravity flame.
@@ -49,15 +50,27 @@ export default function FlameCanvas({ prediction, uncertainty, gravity_g, airflo
   const trustRef = useRef(uncertainty.trust_status)
   const envRef = useRef({ gravity_g, airflow_cm_s })
 
-  // update targets without touching the running loop
+  const reduced = useReducedMotion()
+
+  // update targets without touching the running loop. When reduced-motion is on,
+  // snap straight to the target and draw one static frame (no animation at all).
   useEffect(() => {
     targetRef.current = toFrame(prediction, uncertainty)
     regimeRef.current = prediction.visual_regime
     trustRef.current = uncertainty.trust_status
     envRef.current = { gravity_g, airflow_cm_s }
-  }, [prediction, uncertainty, gravity_g, airflow_cm_s])
+    if (reduced) {
+      const canvas = canvasRef.current
+      const ctx = canvas?.getContext('2d')
+      if (canvas && ctx) {
+        curRef.current = { ...targetRef.current }
+        draw(ctx, canvas, curRef.current, regimeRef.current, trustRef.current, envRef.current, 0, 0)
+      }
+    }
+  }, [prediction, uncertainty, gravity_g, airflow_cm_s, reduced])
 
   useEffect(() => {
+    if (reduced) return // no requestAnimationFrame loop under reduced-motion
     const canvas = canvasRef.current!
     const ctx = canvas.getContext('2d')!
     let raf = 0
@@ -88,7 +101,7 @@ export default function FlameCanvas({ prediction, uncertainty, gravity_g, airflo
     }
     raf = requestAnimationFrame(render)
     return () => cancelAnimationFrame(raf)
-  }, [])
+  }, [reduced])
 
   return (
     <canvas
