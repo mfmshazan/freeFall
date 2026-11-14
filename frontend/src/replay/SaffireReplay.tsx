@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import TimeSeriesChart, { type Series } from './TimeSeriesChart'
+import { ViewLabel } from '../shared/evidence'
 
 // ---------------------------------------------------------------------------
 // Saffire-I Experiment Replay — REAL NASA data only.
@@ -117,20 +118,19 @@ export default function SaffireReplay() {
           <span className="text-sm font-semibold text-slate-100">{cond.investigation}</span>
           <span className="ml-2 text-[11px] font-mono text-slate-500">{cond.psi_id} · {cond.date_utc} · DOI {cond.doi}</span>
         </div>
-        <span className="text-[10px] font-semibold px-2 py-1 rounded bg-emerald-500/20 text-emerald-300 tracking-wide">
-          REAL NASA DATA — NOT A MODEL
-        </span>
+        <ViewLabel kind="recorded" />
       </div>
 
       {/* LEFT: real images */}
-      <div className="col-span-7 rounded-lg border border-space-600 bg-space-850 p-3">
+      <div className="col-span-12 md:col-span-7 rounded-lg border border-space-600 bg-space-850 p-3">
         <div className="flex items-center justify-between mb-1">
           <span className="text-[11px] text-slate-500">Flight camera {cond.camera.id} — actual burn footage</span>
           <span className="text-[11px] font-mono text-sky-300">t = {t.toFixed(1)} s</span>
         </div>
         <div className="relative bg-black rounded flex items-center justify-center" style={{ aspectRatio: '480/345' }}>
           {curFrame ? (
-            <img src={`${BASE}/${curFrame.src}`} alt={`S1C1 frame at ${curFrame.t}s`} className="w-full h-full object-contain rounded" />
+            <img src={`${BASE}/${curFrame.src}`} alt={`S1C1 frame at ${curFrame.t}s`} className="w-full h-full object-contain rounded"
+              onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }} />
           ) : (
             <div className="text-center text-slate-500 text-xs px-6">
               <div className="text-amber-400 mb-1">No S1C1 frame at t = {t.toFixed(0)} s</div>
@@ -166,7 +166,7 @@ export default function SaffireReplay() {
       </div>
 
       {/* RIGHT: recorded conditions */}
-      <div className="col-span-5 rounded-lg border border-space-600 bg-space-850 p-3">
+      <div className="col-span-12 md:col-span-5 rounded-lg border border-space-600 bg-space-850 p-3">
         <h3 className="text-xs font-semibold tracking-widest text-slate-500 uppercase mb-2">Recorded Conditions</h3>
         <dl className="grid grid-cols-2 gap-y-1.5 text-xs">
           <dt className="text-slate-500">Material</dt><dd className="text-slate-200 text-right">{cond.sample.material}</dd>
