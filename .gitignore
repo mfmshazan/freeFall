@@ -1,0 +1,18 @@
+# node
+frontend/node_modules/
+frontend/dist/
+frontend/tsconfig.tsbuildinfo
+# python
+backend/.venv/
+backend/__pycache__/
+**/__pycache__/
+*.pyc
+# screenshots / scratch
+.shots/
+# large raw PSI/Saffire data drops (kept out of git AND the frontend bundle;
+# processed copies live in backend/data/raw + frontend/public/reference + frontend/public/replay)
+data_raw/
+# editor
+.vscode/
+.idea/
+.DS_Store
