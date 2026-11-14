@@ -549,6 +549,9 @@
       <span class="crumb">Flame lab / <strong id="crumbWorld">Moon</strong></span>
     </div>
     <div class="actions">
+      <a class="btn" href="evidence.html"><span class="txt">Evidence</span></a>
+      <a class="btn" href="replay.html"><span class="txt">NASA Replays</span></a>
+      <a class="btn" href="safety.html"><span class="txt">Safety</span></a>
       <a class="btn" id="backLink" href="simulator.html">
         <span aria-hidden="true">←</span><span class="txt">Solar system</span>
       </a>
@@ -580,6 +583,7 @@
         </div>
         <label class="sr-only" for="worldSelect" hidden>Destination</label>
         <select class="select" id="worldSelect" aria-label="Change destination"></select>
+        <span class="badge" id="modelSourceBadge" style="position:static;margin-left:4px;">○ connecting…</span>
         <div class="spacer"></div>
         <button class="btn toggle-btn" id="compareBtn" type="button" aria-pressed="false">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="8" height="16"/><rect x="13" y="4" width="8" height="16"/></svg>
@@ -600,6 +604,30 @@
           <p id="explainText"></p>
         </div>
       </div>
+
+      <div class="explain" id="modelTrustBox" style="margin-top:12px;">
+        <span class="evidence" id="trustBadge">Trust —</span>
+        <div>
+          <span class="section-label">GP Surrogate Model &amp; Uncertainty</span>
+          <h3 id="trustTitle">Waiting for model prediction…</h3>
+          <p id="trustText"></p>
+          <p id="spinoffText" style="margin-top:6px;font-size:12px;color:var(--muted-ink);"></p>
+        </div>
+      </div>
+
+      <div class="explain" id="psiRankBox" style="margin-top:12px;grid-template-columns:1fr;">
+        <div>
+          <span class="section-label">Ranked PSI Evidence (from model ranker)</span>
+          <div id="psiRankList" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:8px;"></div>
+        </div>
+      </div>
+
+      <div class="explain" id="playbookBox" style="margin-top:12px;grid-template-columns:1fr;">
+        <div>
+          <span class="section-label">Triggered Engineering Playbook</span>
+          <div id="playbookList" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-top:8px;"></div>
+        </div>
+      </div>
     </section>
 
     <aside class="controls" aria-label="Flame sandbox controls">
@@ -608,14 +636,26 @@
       <p>Move the sliders and watch the illustration respond.</p>
 
       <div class="ctrl">
-        <div class="ctrl-head"><span class="label-xs">Gravity</span><output id="gOut">0.17 g</output></div>
-        <input type="range" id="gRange" min="0" max="1" step="0.01" value="0.17" aria-label="Gravity in g">
-        <div class="ticks" id="gTicks">
-          <button type="button" data-g="0">Orbit<br>0 g</button>
-          <button type="button" data-g="0.17">Moon<br>0.17 g</button>
-          <button type="button" data-g="0.38">Mars<br>0.38 g</button>
-          <button type="button" data-g="1">Earth<br>1 g</button>
+        <div class="ctrl-head">
+          <span class="label-xs">Distance from surface</span>
+          <output id="altOut">200 km · Free orbit</output>
         </div>
+        <div class="ctrl-head" style="margin-top:-4px;margin-bottom:8px;">
+          <span class="label-xs" style="color:var(--orange);">Cabin gravity</span>
+          <output id="gOut" style="color:var(--orange);">≈0 g (0.00 m/s²)</output>
+        </div>
+        <input type="range" id="gRange" min="0" max="1" step="0.002" value="1" aria-label="Distance from surface from 0 km surface to maximum orbit">
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:-4px;margin-bottom:8px;">
+          <span id="sliderMinLbl">Surface (0 km)</span>
+          <span id="sliderMaxLbl">Max orbit</span>
+        </div>
+        <div class="ticks" id="gTicks">
+          <button type="button" data-mode="free_orbit" id="btnFreeOrbit">Free Orbit<br><span id="lblFreeOrbit">0 g</span></button>
+          <button type="button" data-mode="surface" id="btnSurface">Surface<br><span id="lblSurface">0.38 g</span></button>
+          <button type="button" data-mode="low_alt" id="btnLowAlt">Low Alt<br><span id="lblLowAlt">0.32 g</span></button>
+          <button type="button" data-mode="max_orbit" id="btnMaxOrbit">Max Orbit<br><span id="lblMaxOrbit">0 g</span></button>
+        </div>
+        <p class="hint-txt" id="gHint" style="margin-top:8px;">In free-fall orbit, spacecraft centrifugal motion balances gravity so cabin gravity is ≈0 g. Drag the distance slider from Surface (0 km) to Max Orbit to see gravity scale by g(h) = g₀·(R/(R+h))².</p>
       </div>
 
       <div class="ctrl">
@@ -628,6 +668,21 @@
         <div class="ctrl-head"><span class="label-xs">Airflow</span><output id="flowOut">0 cm/s</output></div>
         <input type="range" id="flowRange" min="0" max="30" step="1" value="0" aria-label="Airflow speed in centimetres per second">
         <p class="hint-txt">Cabin ventilation pushes air left → right across the flame.</p>
+      </div>
+
+      <div class="ctrl">
+        <div class="ctrl-head"><span class="label-xs">Cabin pressure</span><output id="pressOut">14.7 psi</output></div>
+        <input type="range" id="pressRange" min="3" max="15" step="0.1" value="14.7" aria-label="Cabin pressure in psi">
+        <p class="hint-txt">ISS is 14.7 psi; exploration habitats drop to 8.2 psi.</p>
+      </div>
+
+      <div class="ctrl">
+        <div class="ctrl-head"><span class="label-xs">Diluent gas</span></div>
+        <div class="seg" id="dilSeg" style="grid-template-columns:repeat(3,1fr);">
+          <button type="button" data-dil="N2" aria-pressed="true">N₂<small>Air</small></button>
+          <button type="button" data-dil="CO2">CO₂<small>Inert</small></button>
+          <button type="button" data-dil="He">He<small>Helium</small></button>
+        </div>
       </div>
 
       <div class="ctrl">
@@ -693,21 +748,53 @@
     <p>Fire science beyond Earth — what happened, under which conditions, and what the evidence can explain.</p>
   </footer>
 
+  <script type="module" src="/src/flameatlas/predictBridge.ts"></script>
   <script>
     /* =========================================================
        DATA
        ========================================================= */
     const WORLDS = {
-      mercury: { name: "Mercury", g: 0, type: "Orbital spacecraft", dot: "linear-gradient(135deg,#c7b6a1,#72695d)" },
-      venus:   { name: "Venus", g: 0, type: "Orbital spacecraft", dot: "linear-gradient(135deg,#f5ce91,#a96832)" },
-      earth:   { name: "Earth", g: 1, type: "Surface laboratory", dot: "linear-gradient(135deg,#529ac2,#305e98)" },
-      moon:    { name: "Moon", g: .17, type: "Lunar habitat", dot: "linear-gradient(135deg,#e2e6df,#7e8b8c)" },
-      mars:    { name: "Mars", g: .38, type: "Mars habitat", dot: "linear-gradient(135deg,#e7a073,#a44e34)" },
-      jupiter: { name: "Jupiter", g: 0, type: "Orbital spacecraft", dot: "linear-gradient(135deg,#d9b99a,#a26b51)" },
-      saturn:  { name: "Saturn", g: 0, type: "Orbital spacecraft", dot: "linear-gradient(135deg,#e4d5a0,#ab956b)" },
-      uranus:  { name: "Uranus", g: 0, type: "Orbital spacecraft", dot: "linear-gradient(135deg,#bde8eb,#5aafb8)" },
-      neptune: { name: "Neptune", g: 0, type: "Orbital spacecraft", dot: "linear-gradient(135deg,#5895e6,#243b96)" }
+      mercury: { name: "Mercury", g: 0, gSurface: 0.38, gSurfaceMs2: 3.70, radiusKm: 2439.7, lowOrbitKm: 200,  maxOrbitKm: 112000,   surfaceLabel: "Surface",   type: "Orbital spacecraft", dot: "linear-gradient(135deg,#c7b6a1,#72695d)" },
+      venus:   { name: "Venus",   g: 0, gSurface: 0.90, gSurfaceMs2: 8.87, radiusKm: 6051.8, lowOrbitKm: 250,  maxOrbitKm: 616000,   surfaceLabel: "Surface",   type: "Orbital spacecraft", dot: "linear-gradient(135deg,#f5ce91,#a96832)" },
+      earth:   { name: "Earth",   g: 0, gSurface: 1.00, gSurfaceMs2: 9.81, radiusKm: 6371.0, lowOrbitKm: 400,  maxOrbitKm: 924000,   surfaceLabel: "Surface",   type: "Orbital spacecraft", dot: "linear-gradient(135deg,#529ac2,#305e98)" },
+      moon:    { name: "Moon",    g: 0, gSurface: 0.17, gSurfaceMs2: 1.62, radiusKm: 1737.4, lowOrbitKm: 100,  maxOrbitKm: 66100,    surfaceLabel: "Surface",   type: "Orbital spacecraft", dot: "linear-gradient(135deg,#e2e6df,#7e8b8c)" },
+      mars:    { name: "Mars",    g: 0, gSurface: 0.38, gSurfaceMs2: 3.71, radiusKm: 3389.5, lowOrbitKm: 250,  maxOrbitKm: 577000,   surfaceLabel: "Surface",   type: "Orbital spacecraft", dot: "linear-gradient(135deg,#e7a073,#a44e34)" },
+      jupiter: { name: "Jupiter", g: 0, gSurface: 2.53, gSurfaceMs2: 24.79, radiusKm: 69911, lowOrbitKm: 1000, maxOrbitKm: 48200000, surfaceLabel: "1-bar top", type: "Orbital spacecraft", dot: "linear-gradient(135deg,#d9b99a,#a26b51)" },
+      saturn:  { name: "Saturn",  g: 0, gSurface: 1.07, gSurfaceMs2: 10.44, radiusKm: 58232, lowOrbitKm: 1000, maxOrbitKm: 54500000, surfaceLabel: "1-bar top", type: "Orbital spacecraft", dot: "linear-gradient(135deg,#e4d5a0,#ab956b)" },
+      uranus:  { name: "Uranus",  g: 0, gSurface: 0.89, gSurfaceMs2: 8.69, radiusKm: 25362, lowOrbitKm: 1000, maxOrbitKm: 51800000, surfaceLabel: "1-bar top", type: "Orbital spacecraft", dot: "linear-gradient(135deg,#bde8eb,#5aafb8)" },
+      neptune: { name: "Neptune", g: 0, gSurface: 1.14, gSurfaceMs2: 11.15, radiusKm: 24622, lowOrbitKm: 1000, maxOrbitKm: 86600000, surfaceLabel: "1-bar top", type: "Orbital spacecraft", dot: "linear-gradient(135deg,#5895e6,#243b96)" }
     };
+
+    function gravityAtAlt(w, altKm) {
+      if (altKm <= 0) return w.gSurface;
+      if (altKm >= w.maxOrbitKm * 0.98) return 0;
+      const g = w.gSurface * Math.pow(w.radiusKm / (w.radiusKm + altKm), 2);
+      return g < 0.002 ? 0 : +g.toFixed(4);
+    }
+
+    function sliderToAltKm(w, s) {
+      const clamped = Math.max(0, Math.min(1, s));
+      if (clamped <= 0.002) return 0;
+      if (clamped >= 0.998) return w.maxOrbitKm;
+      const alphaMin = w.radiusKm / (w.radiusKm + w.maxOrbitKm);
+      const alpha = (1 - clamped) + clamped * alphaMin;
+      return Math.round(w.radiusKm * (1 / alpha - 1));
+    }
+
+    function altKmToSlider(w, altKm) {
+      if (altKm <= 0) return 0;
+      if (altKm >= w.maxOrbitKm) return 1;
+      const alphaMin = w.radiusKm / (w.radiusKm + w.maxOrbitKm);
+      const alpha = w.radiusKm / (w.radiusKm + altKm);
+      return Math.max(0, Math.min(1, (1 - alpha) / (1 - alphaMin)));
+    }
+
+    function formatKm(km) {
+      if (km <= 0) return "0 km";
+      if (km >= 1000000) return `${(km / 1000000).toFixed(1)}M km`;
+      if (km >= 10000) return `${Math.round(km / 1000).toLocaleString()}k km`;
+      return `${Math.round(km).toLocaleString()} km`;
+    }
     const FUELS = {
       candle:  { id: 0, name: "Candle",       soot: .85, size: 1.0 },
       droplet: { id: 1, name: "Fuel droplet", soot: .45, size: .85 },
@@ -842,7 +929,8 @@
 
       void main(){
         vec2 uv = (gl_FragCoord.xy - vec2(0.5 * uRes.x, 0.3 * uRes.y)) / uRes.y;
-        float buoy = sqrt(clamp(uG, 0.0, 1.0));
+        float buoy = sqrt(clamp(uG, 0.0, 2.6));
+        float buoyUnit = clamp(buoy, 0.0, 1.0);
         float o2 = clamp((uO2 - 0.15) / 0.25, 0.0, 1.6);
         float R = 0.1 * uSize * (0.72 + 0.55 * o2) * mix(0.45, 1.0, uAlive);
 
@@ -879,25 +967,25 @@
         // ---------- Flame ----------
         float t = uTime;
         vec2 q = uv;
-        float standoff = uFuel > 0.5 && uFuel < 1.5 ? 0.0 : R * mix(0.55, 0.15, buoy);
+        float standoff = uFuel > 0.5 && uFuel < 1.5 ? 0.0 : R * mix(0.55, 0.15, buoyUnit);
         q.y -= standoff + R * buoy * 0.95;                  // buoyancy lifts the flame centre
         float flow = uFlow;
-        q.x -= flow * (1.0 - 0.6 * buoy) * R * 1.3;          // pushed downstream
-        q.x /= 1.0 + flow * (1.0 - buoy) * 1.4 * step(0.0, q.x);   // stretched downstream when buoyancy is weak
-        q.x -= flow * buoy * max(q.y + R, 0.0) * 0.75;       // leans with the flow when buoyant
+        q.x -= flow * (1.0 - 0.6 * buoyUnit) * R * 1.3;          // pushed downstream
+        q.x /= 1.0 + flow * (1.0 - buoyUnit) * 1.4 * step(0.0, q.x);   // stretched downstream when buoyancy is weak
+        q.x -= flow * buoyUnit * max(q.y + R, 0.0) * 0.75;       // leans with the flow when buoyant
 
         float H = R * (1.0 + 2.5 * buoy);
-        float W = R * (1.0 - 0.38 * buoy);
+        float W = R * (1.0 - 0.38 * min(buoy, 1.25));
         float up = max(q.y, 0.0);
         float taper = 1.0 + buoy * 2.3 * pow(clamp(up / H, 0.0, 1.5), 1.3);
-        vec2 e = vec2(q.x * taper / W, q.y / (q.y > 0.0 ? H : R * mix(1.0, 0.75, buoy)));
+        vec2 e = vec2(q.x * taper / W, q.y / (q.y > 0.0 ? H : R * mix(1.0, 0.75, buoyUnit)));
 
         float speed = 0.35 + 2.8 * buoy + flow * 1.6;
-        float amp = 0.03 + 0.32 * buoy * smoothstep(-0.2, 1.0, q.y / H) + 0.08 * flow;
+        float amp = 0.32 * buoy * smoothstep(-0.2, 1.0, q.y / H) + 0.08 * flow;
         float n  = fbm(vec2(q.x * 9.0 / uSize, q.y * 7.0 / uSize - t * speed)) - 0.5;
         float n2 = fbm(vec2(q.x * 22.0, q.y * 17.0 - t * speed * 1.8)) - 0.5;
         float pulse = 1.0 + uOsc * 0.2 * sin(t * 6.2832);   // ~1 Hz pre-extinction oscillation
-        float breath = 1.0 + (1.0 - buoy) * 0.025 * sin(t * 1.3);
+        float breath = 1.0;
         float d = length(e) / (pulse * breath) + n * amp + n2 * amp * 0.35;
 
         // ---------- Colour: soot glow (yellow) + chemiluminescence (blue) ----------
@@ -970,8 +1058,8 @@
           gl.uniform1f(u.uG, s.g);
           gl.uniform1f(u.uO2, s.o2 / 100);
           gl.uniform1f(u.uFlow, s.flow / 30);
-          gl.uniform1f(u.uSoot, f.soot);
-          gl.uniform1f(u.uSize, f.size);
+          gl.uniform1f(u.uSoot, s.modelSoot != null ? s.modelSoot : f.soot);
+          gl.uniform1f(u.uSize, s.modelSize != null ? s.modelSize : f.size);
           gl.uniform1f(u.uAlive, s.alive);
           gl.uniform1f(u.uOsc, s.osc);
           gl.uniform1f(u.uBoost, s.boost);
@@ -986,18 +1074,61 @@
        ========================================================= */
     const params = new URLSearchParams(location.search);
     let worldId = WORLDS[params.get("world")] ? params.get("world") : "moon";
-    const shared = { o2: 21, flow: 0, fuel: "candle" };
+    const shared = { o2: 21, flow: 0, fuel: "candle", pressure: 14.7, diluent: "N2" };
     let assumedNote = null;
     let paused = false;
     let simTime = 0;
 
-    // Each pane has its own gravity and flame life cycle; O2, airflow and fuel are shared.
-    function makePane(key, world) {
-      return { key, world, g: WORLDS[world].g, alive: 1, target: 1, osc: 0, boost: 0, age: 0, burnout: 0, reason: "" };
+    // Each pane has its own gravity, altitude, mode and flame life cycle; O2, airflow, pressure, diluent and fuel are shared.
+    function makePane(key, world, initialMode = "free_orbit") {
+      const w = WORLDS[world];
+      const isSurface = initialMode === "surface";
+      const altKm = isSurface ? 0 : w.lowOrbitKm;
+      const g = isSurface ? w.gSurface : 0;
+      return {
+        key,
+        world,
+        mode: initialMode,
+        altKm,
+        g,
+        alive: 1,
+        target: 1,
+        osc: 0,
+        boost: 0,
+        age: 0,
+        burnout: 0,
+        reason: "",
+        model: null,
+        modelSoot: null,
+        modelSize: null
+      };
     }
-    const panes = [makePane("A", worldId)];
+    const panes = [makePane("A", worldId, "free_orbit")];
     let compareOn = false;
     let compareWorld = worldId === "earth" ? "moon" : "earth";
+
+    function applyGravityMode(p, mode, customAltKm = null) {
+      const w = WORLDS[p.world];
+      p.mode = mode;
+      if (mode === "free_orbit") {
+        p.altKm = w.lowOrbitKm;
+        p.g = 0;
+      } else if (mode === "surface") {
+        p.altKm = 0;
+        p.g = w.gSurface;
+      } else if (mode === "low_alt") {
+        p.altKm = w.lowOrbitKm;
+        p.g = gravityAtAlt(w, w.lowOrbitKm);
+      } else if (mode === "max_orbit") {
+        p.altKm = w.maxOrbitKm;
+        p.g = 0;
+      } else if (mode === "altitude") {
+        p.altKm = Math.max(0, Math.min(w.maxOrbitKm, customAltKm ?? p.altKm));
+        p.g = gravityAtAlt(w, p.altKm);
+        if (p.altKm <= 0) p.mode = "surface";
+        else if (p.altKm >= w.maxOrbitKm * 0.995) { p.altKm = w.maxOrbitKm; p.g = 0; p.mode = "max_orbit"; }
+      }
+    }
 
     /* =========================================================
        ILLUSTRATIVE FLAME LIFE CYCLE
@@ -1110,11 +1241,15 @@
         </div>
         <div class="pane-bottom">
           <div class="readouts">
-            <div><span>Gravity</span><b class="r-g"></b></div>
+            <div title="Effective cabin gravity"><span>Gravity</span><b class="r-g"></b></div>
+            <div title="Distance above planet surface / 1-bar level"><span>Altitude</span><b class="r-alt"></b></div>
             <div><span>Oxygen</span><b class="r-o2"></b></div>
             <div><span>Airflow</span><b class="r-flow"></b></div>
             <div><span>Fuel</span><b class="r-fuel"></b></div>
-            <div title="Flame spread rate from NASA data where tested, otherwise a flagged estimate"><span>Spread rate</span><b class="r-spread"></b></div>
+            <div title="Model spread rate prediction (±1σ uncertainty)"><span>Spread rate</span><b class="r-spread"></b></div>
+            <div title="Model flame length × width (±1σ)"><span>Dimensions</span><b class="r-dims">—</b></div>
+            <div title="Model radiometric heat flux proxy"><span>Heat flux</span><b class="r-flux">—</b></div>
+            <div title="GP surrogate confidence score"><span>Model trust</span><b class="r-trust">—</b></div>
           </div>
           <div class="status" role="status"></div>
         </div>`;
@@ -1134,10 +1269,13 @@
 
     function syncPanes() {
       const want = compareOn ? 2 : 1;
-      while (panes.length < want) panes.push(makePane("B", compareWorld));
+      while (panes.length < want) panes.push(makePane("B", compareWorld, "surface"));
       while (panes.length > want) panes.pop();
       panes[0].world = worldId;
-      if (panes[1]) { panes[1].world = compareWorld; panes[1].g = WORLDS[compareWorld].g; }
+      if (panes[1]) {
+        panes[1].world = compareWorld;
+        applyGravityMode(panes[1], "surface");
+      }
       Object.keys(paneEls).forEach(k => {
         if (!panes.find(p => p.key === k)) { paneEls[k].el.remove(); delete paneEls[k]; }
       });
@@ -1150,30 +1288,88 @@
       return g < 0.005 ? "≈0 g" : `${(+g.toFixed(2))} g`;
     }
 
+    function describePaneLocation(p) {
+      const w = WORLDS[p.world];
+      if (p.mode === "free_orbit") {
+        return {
+          kicker: `Free-fall orbit · ${formatKm(p.altKm)}`,
+          title: `Orbit around ${w.name} (${gLabel(p.g)})`,
+          chipSub: `Free-fall orbit (${formatKm(p.altKm)}) · ${gLabel(p.g)}`
+        };
+      }
+      if (p.mode === "surface" || p.altKm <= 0) {
+        return {
+          kicker: `${w.surfaceLabel} level · 0 km`,
+          title: `${w.name} ${w.surfaceLabel.toLowerCase()} (${gLabel(p.g)})`,
+          chipSub: `${w.surfaceLabel} (0 km) · ${gLabel(p.g)}`
+        };
+      }
+      if (p.mode === "max_orbit" || p.altKm >= w.maxOrbitKm * 0.995) {
+        return {
+          kicker: `Maximum orbit · ${formatKm(w.maxOrbitKm)}`,
+          title: `${w.name} max orbit (${gLabel(p.g)})`,
+          chipSub: `Max orbit (${formatKm(w.maxOrbitKm)}) · ${gLabel(p.g)}`
+        };
+      }
+      if (p.mode === "low_alt") {
+        return {
+          kicker: `Low-orbit altitude · ${formatKm(p.altKm)}`,
+          title: `${w.name} at ${formatKm(p.altKm)} (${gLabel(p.g)})`,
+          chipSub: `Altitude ${formatKm(p.altKm)} · ${gLabel(p.g)}`
+        };
+      }
+      return {
+        kicker: `Distance from surface · ${formatKm(p.altKm)}`,
+        title: `${w.name} at ${formatKm(p.altKm)} (${gLabel(p.g)})`,
+        chipSub: `Altitude ${formatKm(p.altKm)} · ${gLabel(p.g)}`
+      };
+    }
+
     function renderPaneLabels() {
       panes.forEach((p, i) => {
         const pe = paneEls[p.key];
         const w = WORLDS[p.world];
-        const custom = Math.abs(p.g - w.g) > 0.005;
-        pe.el.querySelector(".pane-key").textContent = compareOn ? `${p.key} · ${w.type}` : w.type;
-        pe.el.querySelector(".pane-name").textContent = custom ? `Custom gravity` : (w.g === 0 && p.world !== "moon" ? `Orbit around ${w.name}` : w.name);
+        const loc = describePaneLocation(p);
+        pe.el.querySelector(".pane-key").textContent = compareOn ? `${p.key} · ${loc.kicker}` : loc.kicker;
+        pe.el.querySelector(".pane-name").textContent = loc.title;
+        if (i === 0) {
+          document.getElementById("worldType").textContent = loc.chipSub;
+        }
         pe.el.querySelector(".r-g").textContent = gLabel(p.g);
+        const altEl = pe.el.querySelector(".r-alt");
+        if (altEl) {
+          altEl.textContent = p.mode === "free_orbit" ? `${formatKm(p.altKm)} (orbit)` : formatKm(p.altKm);
+        }
         pe.el.querySelector(".r-o2").textContent = `${shared.o2}%`;
         pe.el.querySelector(".r-flow").textContent = `${shared.flow} cm/s`;
         pe.el.querySelector(".r-fuel").textContent = FUELS[shared.fuel].name;
-        const sp = estimateSpread(shared.fuel, p.g, shared.o2, shared.flow);
         const spB = pe.el.querySelector(".r-spread");
-        const basisLabel = sp.basis === "measured" ? "measured" : sp.basis === "estimate" ? "est." : "";
-        spB.innerHTML = basisLabel ? `${sp.text}<em class="basis-${sp.basis}">${basisLabel}</em>` : `<span class="basis-${sp.basis}">${sp.text}</span>`;
-        spB.closest("div").title = sp.title;
-        pe.el.querySelector(".gvec i").style.setProperty("--len", `${8 + p.g * 80}px`);
+        const dimsB = pe.el.querySelector(".r-dims");
+        const fluxB = pe.el.querySelector(".r-flux");
+        const trustB = pe.el.querySelector(".r-trust");
+        if (p.model) {
+          const mp = p.model.prediction;
+          const mu = p.model.uncertainty;
+          const srcTag = p.model.source === "backend" ? "GP model" : "local physics";
+          spB.innerHTML = `${mp.spread_rate_mm_s.toFixed(2)} ± ${mu.std_spread_rate.toFixed(2)} mm/s <em class="basis-estimate">${srcTag}</em>`;
+          dimsB.textContent = `${mp.flame_length_mm.toFixed(1)} × ${mp.flame_width_mm.toFixed(1)} mm (L/D ${mp.aspect_ratio_LD.toFixed(2)})`;
+          fluxB.textContent = `${mp.radiometric_flux_kw_m2.toFixed(2)} kW/m²`;
+          trustB.textContent = `${mu.trust_score}% (${mu.safety_margin_multiplier}×)`;
+          trustB.style.color = mu.trust_status === "HIGH_CONFIDENCE" ? "#8fd9a8" : mu.trust_status === "CAUTION_EXTRAPOLATING" ? "#ffc58f" : "#ff8a8a";
+        } else {
+          const sp = estimateSpread(shared.fuel, p.g, shared.o2, shared.flow);
+          const basisLabel = sp.basis === "measured" ? "measured" : sp.basis === "estimate" ? "est." : "";
+          spB.innerHTML = basisLabel ? `${sp.text}<em class="basis-${sp.basis}">${basisLabel}</em>` : `<span class="basis-${sp.basis}">${sp.text}</span>`;
+          spB.closest("div").title = sp.title;
+        }
+        pe.el.querySelector(".gvec i").style.setProperty("--len", `${8 + Math.min(1.6, p.g) * 65}px`);
         pe.el.querySelector(".gvec").style.opacity = p.g < 0.005 ? .25 : 1;
         pe.el.querySelector(".gv").textContent = gLabel(p.g);
         const fo = Math.min(1, shared.flow / 12);
         pe.el.style.setProperty("--flow-o", fo.toFixed(2));
         pe.el.style.setProperty("--flow-s", `${Math.max(0.5, 3 - shared.flow / 10)}s`);
         pe.el.setAttribute("aria-label",
-          `Illustrative flame, ${gLabel(p.g)}, ${shared.o2}% oxygen, airflow ${shared.flow} cm/s, ${FUELS[shared.fuel].name}`);
+          `Illustrative flame, ${gLabel(p.g)}, altitude ${formatKm(p.altKm)}, ${shared.o2}% oxygen, airflow ${shared.flow} cm/s, ${FUELS[shared.fuel].name}`);
       });
     }
 
@@ -1226,41 +1422,219 @@
     const gRange = document.getElementById("gRange");
     const o2Range = document.getElementById("o2Range");
     const flowRange = document.getElementById("flowRange");
+    const pressRange = document.getElementById("pressRange");
     function fillRange(r) {
       r.style.setProperty("--p", `${(r.value - r.min) / (r.max - r.min) * 100}%`);
     }
 
+    let predictTimer = null;
+    let predictAbort = null;
+    function schedulePrediction() {
+      if (predictTimer) clearTimeout(predictTimer);
+      predictTimer = setTimeout(runPrediction, 120);
+    }
+
+    async function runPrediction() {
+      if (!window.FlameAtlasPredict) return;
+      if (predictAbort) predictAbort.abort();
+      predictAbort = new AbortController();
+      const signal = predictAbort.signal;
+      try {
+        const results = await Promise.all(panes.map(p =>
+          window.FlameAtlasPredict.predictFlame({
+            gravity_g: p.g,
+            o2_percent: shared.o2,
+            pressure_psi: shared.pressure,
+            airflow_cm_s: shared.flow,
+            diluent: shared.diluent,
+            fuel: shared.fuel,
+            world: p.world,
+            altitude_km: p.altKm,
+            gravity_mode: p.mode,
+          }, signal)
+        ));
+        if (signal.aborted) return;
+        results.forEach((res, idx) => {
+          const p = panes[idx];
+          if (!p) return;
+          p.model = res;
+          p.modelSoot = res.prediction.soot_fraction;
+          const diag = Math.sqrt(res.prediction.flame_length_mm * res.prediction.flame_width_mm);
+          p.modelSize = Math.max(0.55, Math.min(1.6, diag / 28));
+        });
+        renderPaneLabels();
+        renderModelPanels(results[0]);
+      } catch (err) {
+        if (err && err.name !== "AbortError") console.error(err);
+      }
+    }
+
+    function renderModelPanels(res) {
+      if (!res) return;
+      const badge = document.getElementById("modelSourceBadge");
+      if (badge) {
+        badge.textContent = res.source === "backend" ? "● GP backend (/api/predict)" : "○ local physics fallback";
+        badge.style.color = res.source === "backend" ? "#8fd9a8" : "#ffc58f";
+        badge.style.borderColor = res.source === "backend" ? "rgba(143,217,168,0.4)" : "rgba(255,197,143,0.4)";
+      }
+      const u = res.uncertainty;
+      const tBadge = document.getElementById("trustBadge");
+      const tTitle = document.getElementById("trustTitle");
+      const tText = document.getElementById("trustText");
+      const sText = document.getElementById("spinoffText");
+      if (tBadge && tTitle && tText) {
+        const statusLabel = u.trust_status === "HIGH_CONFIDENCE" ? "High confidence"
+          : u.trust_status === "CAUTION_EXTRAPOLATING" ? "Caution: extrapolating"
+          : "Unverified regime";
+        tBadge.textContent = `${statusLabel} · ${u.trust_score}/100`;
+        tBadge.className = "evidence" + (u.trust_status === "HIGH_CONFIDENCE" ? " observed" : "");
+        tBadge.style.color = u.trust_status === "HIGH_CONFIDENCE" ? "#8fd9a8" : u.trust_status === "CAUTION_EXTRAPOLATING" ? "#a2541f" : "#a61b1b";
+        tBadge.style.borderColor = u.trust_status === "HIGH_CONFIDENCE" ? "var(--ink)" : u.trust_status === "CAUTION_EXTRAPOLATING" ? "#a2541f" : "#a61b1b";
+        tTitle.textContent = `Safety margin ${u.safety_margin_multiplier}× · Regime: ${res.prediction.visual_regime.replace(/_/g, " ")}`;
+        tText.textContent = u.plain_english_explanation;
+        if (sText) sText.textContent = res.earth_spinoff ? `Earth spinoff: ${res.earth_spinoff}` : "";
+      }
+
+      const psiList = document.getElementById("psiRankList");
+      if (psiList && Array.isArray(res.ranked_investigations)) {
+        psiList.replaceChildren();
+        res.ranked_investigations.slice(0, 4).forEach(inv => {
+          const card = document.createElement("div");
+          card.style.cssText = "border:1px solid #c3ccd3;border-radius:8px;padding:10px 12px;background:#ffffff;color:var(--ink);";
+          const prov = (inv.provenance || inv.data_source) === "real_psi" ? "NASA PSI condition" : "Seed reference";
+          const title = inv.investigation_name || inv.title || inv.experiment_id;
+          const summary = inv.summary || inv.key_finding || "";
+          const metaParts = [
+            inv.hardware_rack,
+            inv.material_real || inv.material,
+            Array.isArray(inv.parameter_diffs) && inv.parameter_diffs.length ? inv.parameter_diffs.slice(0, 2).join(", ") : null
+          ].filter(Boolean);
+          card.innerHTML = `
+            <div style="display:flex;justify-content:space-between;gap:8px;font-size:11px;color:var(--muted-ink);">
+              <strong style="color:var(--ink);">${inv.experiment_id}</strong>
+              <span>${inv.similarity}% match · ${prov}</span>
+            </div>
+            <div style="font-size:13px;font-weight:600;color:var(--ink);margin-top:4px;">${title}</div>
+            <div style="font-size:12px;color:#2b3f53;margin-top:4px;line-height:1.45;">${summary}</div>
+            ${metaParts.length ? `<div style="font-size:11px;color:#a2541f;font-weight:600;margin-top:6px;">${metaParts.join(" · ")}</div>` : ""}`;
+          psiList.appendChild(card);
+        });
+      }
+
+      const pbList = document.getElementById("playbookList");
+      if (pbList && Array.isArray(res.engineering_playbook)) {
+        pbList.replaceChildren();
+        res.engineering_playbook.forEach(item => {
+          const card = document.createElement("div");
+          card.style.cssText = `border:1px solid ${item.triggered ? "rgba(252,133,89,0.75)" : "#c3ccd3"};border-radius:8px;padding:10px 12px;background:${item.triggered ? "rgba(252,133,89,0.12)" : "#ffffff"};color:var(--ink);`;
+          card.innerHTML = `
+            <div style="font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:${item.triggered ? "#a2541f" : "var(--muted-ink)"};font-weight:700;">${item.category}${item.triggered ? " · Triggered" : ""}</div>
+            <div style="font-size:13px;font-weight:600;color:var(--ink);margin-top:4px;">${item.headline}</div>
+            <div style="font-size:12px;color:#2b3f53;margin-top:4px;line-height:1.45;">${item.detail}</div>`;
+          pbList.appendChild(card);
+        });
+      }
+    }
+
+    window.addEventListener("flameatlas:bridge-ready", schedulePrediction);
+
     function renderControls() {
-      gRange.value = panes[0].g;
+      const p0 = panes[0];
+      const w = WORLDS[p0.world];
+      const lowAltG = gravityAtAlt(w, w.lowOrbitKm);
+
+      gRange.value = altKmToSlider(w, p0.altKm);
       o2Range.value = shared.o2;
       flowRange.value = shared.flow;
-      [gRange, o2Range, flowRange].forEach(fillRange);
-      document.getElementById("gOut").textContent = gLabel(panes[0].g);
+      pressRange.value = shared.pressure;
+      [gRange, o2Range, flowRange, pressRange].forEach(fillRange);
+
+      const ms2 = (p0.g * 9.81).toFixed(2);
+      document.getElementById("gOut").textContent = `${gLabel(p0.g)} (${ms2} m/s²)`;
+      const altOutEl = document.getElementById("altOut");
+      if (altOutEl) {
+        if (p0.mode === "free_orbit") {
+          altOutEl.textContent = `${formatKm(p0.altKm)} · Free orbit`;
+        } else if (p0.mode === "surface" || p0.altKm <= 0) {
+          altOutEl.textContent = `0 km · ${w.surfaceLabel}`;
+        } else if (p0.mode === "max_orbit" || p0.altKm >= w.maxOrbitKm * 0.995) {
+          altOutEl.textContent = `${formatKm(w.maxOrbitKm)} · Max orbit`;
+        } else {
+          altOutEl.textContent = `${formatKm(p0.altKm)} above ${w.surfaceLabel.toLowerCase()}`;
+        }
+      }
+
+      const minLbl = document.getElementById("sliderMinLbl");
+      const maxLbl = document.getElementById("sliderMaxLbl");
+      if (minLbl) minLbl.textContent = `${w.surfaceLabel} (0 km · ${gLabel(w.gSurface)})`;
+      if (maxLbl) maxLbl.textContent = `Max orbit (${formatKm(w.maxOrbitKm)} · 0 g)`;
+
+      const btnSurface = document.getElementById("btnSurface");
+      if (btnSurface) {
+        btnSurface.innerHTML = `${w.surfaceLabel}<br><span id="lblSurface">${gLabel(w.gSurface)}</span>`;
+      }
+      const lblLowAlt = document.getElementById("lblLowAlt");
+      if (lblLowAlt) lblLowAlt.textContent = `${formatKm(w.lowOrbitKm)} · ${gLabel(lowAltG)}`;
+      const lblMaxOrbit = document.getElementById("lblMaxOrbit");
+      if (lblMaxOrbit) lblMaxOrbit.textContent = `${formatKm(w.maxOrbitKm)} · 0 g`;
+      const lblFreeOrbit = document.getElementById("lblFreeOrbit");
+      if (lblFreeOrbit) lblFreeOrbit.textContent = `${formatKm(w.lowOrbitKm)} · 0 g`;
+
+      const gHint = document.getElementById("gHint");
+      if (gHint) {
+        if (p0.mode === "free_orbit") {
+          gHint.textContent = `Free-fall orbit at ${formatKm(w.lowOrbitKm)} around ${w.name}: local gravity is ${gLabel(lowAltG)}, but orbital free-fall cancels it so cabin gravity is ≈0 g. Click "${w.surfaceLabel}" or drag the slider to test surface-to-max-orbit gravity.`;
+        } else if (p0.mode === "surface" || p0.altKm <= 0) {
+          gHint.textContent = `${w.name} ${w.surfaceLabel.toLowerCase()} (0 km): full gravity of ${gLabel(w.gSurface)} (${w.gSurfaceMs2.toFixed(2)} m/s²). Drag the slider right to increase distance toward maximum orbit (${formatKm(w.maxOrbitKm)}).`;
+        } else if (p0.mode === "max_orbit" || p0.altKm >= w.maxOrbitKm * 0.995) {
+          gHint.textContent = `Maximum orbit (${formatKm(w.maxOrbitKm)} Hill sphere limit of ${w.name}): gravitational pull drops to ≈0 g.`;
+        } else {
+          gHint.textContent = `At ${formatKm(p0.altKm)} above ${w.name} (R = ${Math.round(w.radiusKm).toLocaleString()} km), inverse-square gravity g(h) = g₀·(R/(R+h))² gives ${gLabel(p0.g)} (${ms2} m/s²).`;
+        }
+      }
+
       document.getElementById("o2Out").textContent = `${shared.o2}%`;
       document.getElementById("flowOut").textContent = `${shared.flow} cm/s`;
+      document.getElementById("pressOut").textContent = `${shared.pressure.toFixed(1)} psi`;
       document.querySelectorAll("#gTicks button").forEach(b =>
-        b.setAttribute("aria-pressed", String(Math.abs(+b.dataset.g - panes[0].g) < 0.005)));
+        b.setAttribute("aria-pressed", String(b.dataset.mode === p0.mode)));
       document.querySelectorAll("#fuelSeg button").forEach(b =>
         b.setAttribute("aria-pressed", String(b.dataset.fuel === shared.fuel)));
+      document.querySelectorAll("#dilSeg button").forEach(b =>
+        b.setAttribute("aria-pressed", String(b.dataset.dil === shared.diluent)));
       const note = document.getElementById("presetNote");
       note.hidden = !assumedNote;
       if (assumedNote) note.textContent = assumedNote;
       renderPaneLabels();
       explain();
+      schedulePrediction();
     }
 
     function edited() { assumedNote = null; }
 
-    gRange.addEventListener("input", () => { panes[0].g = +gRange.value; edited(); renderControls(); });
+    gRange.addEventListener("input", () => {
+      const w = WORLDS[panes[0].world];
+      const altKm = sliderToAltKm(w, +gRange.value);
+      applyGravityMode(panes[0], "altitude", altKm);
+      edited();
+      renderControls();
+    });
     o2Range.addEventListener("input", () => { shared.o2 = +o2Range.value; edited(); renderControls(); });
     flowRange.addEventListener("input", () => {
       shared.flow = +flowRange.value;
       panes.forEach(p => { if (shared.flow >= 1) p.burnout = 0; });
       edited(); renderControls();
     });
+    pressRange.addEventListener("input", () => { shared.pressure = +pressRange.value; edited(); renderControls(); });
+    document.getElementById("dilSeg").addEventListener("click", e => {
+      const b = e.target.closest("button"); if (!b) return;
+      shared.diluent = b.dataset.dil; edited(); renderControls();
+    });
     document.getElementById("gTicks").addEventListener("click", e => {
       const b = e.target.closest("button"); if (!b) return;
-      panes[0].g = +b.dataset.g; edited(); renderControls();
+      applyGravityMode(panes[0], b.dataset.mode);
+      edited();
+      renderControls();
     });
     document.getElementById("fuelSeg").addEventListener("click", e => {
       const b = e.target.closest("button"); if (!b) return;
@@ -1273,8 +1647,8 @@
       playBtn.textContent = paused ? "Play" : "Pause";
     });
     document.getElementById("resetBtn").addEventListener("click", () => {
-      panes[0].g = WORLDS[worldId].g;
-      Object.assign(shared, { o2: 21, flow: 0, fuel: "candle" });
+      applyGravityMode(panes[0], "free_orbit");
+      Object.assign(shared, { o2: 21, flow: 0, fuel: "candle", pressure: 14.7, diluent: "N2" });
       edited(); ignite(); renderControls();
     });
 
@@ -1284,19 +1658,18 @@
     const ORDER = ["earth", "moon", "mars", "mercury", "venus", "jupiter", "saturn", "uranus", "neptune"];
     ORDER.forEach(id => {
       const w = WORLDS[id];
-      const label = `${w.name} — ${w.type} (${gLabel(w.g)})`;
+      const label = `${w.name} — Orbit (≈0 g) ↔ ${w.surfaceLabel} (${gLabel(w.gSurface)})`;
       worldSelect.add(new Option(label, id));
-      compareSelect.add(new Option(`Compare with: ${label}`, id));
+      compareSelect.add(new Option(`Compare with: ${w.name} ${w.surfaceLabel} (${gLabel(w.gSurface)})`, id));
     });
 
     function setWorld(id, { fromUrl = false } = {}) {
       worldId = id;
       const w = WORLDS[id];
       panes[0].world = id;
-      panes[0].g = w.g;
+      applyGravityMode(panes[0], "free_orbit");
       worldSelect.value = id;
       document.getElementById("worldName").textContent = w.name;
-      document.getElementById("worldType").textContent = `${w.type} · ${gLabel(w.g)}`;
       document.getElementById("worldDot").style.background = w.dot;
       document.getElementById("crumbWorld").textContent = w.name;
       document.getElementById("backLink").href = `simulator.html?world=${id}`;
@@ -1393,7 +1766,7 @@
       const load = el("button", "primary", "Load into sandbox");
       load.type = "button";
       load.addEventListener("click", () => {
-        panes[0].g = x.preset.g;
+        applyGravityMode(panes[0], x.preset.g === 0 ? "free_orbit" : "surface");
         Object.assign(shared, { o2: x.preset.o2, flow: x.preset.flow, fuel: x.preset.fuel });
         assumedNote = x.assumed.length
           ? `Loaded ${x.title.split(" (")[0]}. Not from the source: ${x.assumed.join("; ")}.`

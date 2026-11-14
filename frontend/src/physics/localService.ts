@@ -99,11 +99,13 @@ export function predictLocalService(i: CabinInputs): PredictResponse {
 
   // --- uncertainty: grows with distance to nearest real datapoint ---
   const { OPI } = drivers(i)
-  // epistemic penalty for unverified regimes PSI never covered (partial g + high O2)
+  // epistemic penalty for unverified regimes PSI never covered (partial g / hyper g + high O2)
   const partialGravity = i.gravity_g > 0.02 && i.gravity_g < 0.95
+  const hyperGravity = i.gravity_g > 1.05
+  const nonStandardG = partialGravity || hyperGravity
   const highO2 = i.o2_percent >= 30
-  const unverified = partialGravity // NO microgravity-vs-partial data exists
-  const extrapPenalty = (partialGravity ? 0.6 : 0) + (highO2 ? 0.2 : 0)
+  const unverified = nonStandardG // NO microgravity-vs-partial/hyper data exists
+  const extrapPenalty = (nonStandardG ? 0.6 : 0) + (highO2 ? 0.2 : 0)
 
   const sigmaBase = 0.08 + 0.9 * nearest + extrapPenalty
   const std_length_mm = prediction.flame_length_mm * Math.min(0.8, sigmaBase)
@@ -115,7 +117,7 @@ export function predictLocalService(i: CabinInputs): PredictResponse {
 
   let trust_status: TrustStatus
   if (unverified && highO2) trust_status = 'UNVERIFIED_REGIME_DO_NOT_TRUST'
-  else if (trust_score < 55 || partialGravity) trust_status = 'CAUTION_EXTRAPOLATING'
+  else if (trust_score < 55 || nonStandardG) trust_status = 'CAUTION_EXTRAPOLATING'
   else trust_status = 'HIGH_CONFIDENCE'
 
   const safety_margin_multiplier =
@@ -125,6 +127,7 @@ export function predictLocalService(i: CabinInputs): PredictResponse {
     trust_status,
     ranked[0],
     partialGravity,
+    hyperGravity,
     highO2,
     nearest,
   )
@@ -153,18 +156,22 @@ function buildExplanation(
   status: TrustStatus,
   top: RankedInvestigation,
   partialG: boolean,
+  hyperG: boolean,
   highO2: boolean,
   nearest: number,
 ): string {
   if (status === 'UNVERIFIED_REGIME_DO_NOT_TRUST') {
-    return `No spaceflight data exists for partial gravity above 30% O₂. PSI has 0g results (closest: ${top.experiment_id}, ${top.similarity}% match) and ion-wind partial-gravity proxies from E-FIELD, but nothing validates this exact regime. The model is extrapolating — require a physical test or apply a heavy margin.`
+    const lbl = hyperG ? 'hypergravity (>1g)' : 'partial gravity'
+    return `No spaceflight data exists for ${lbl} above 30% O₂. PSI has 0g results (closest: ${top.experiment_id}, ${top.similarity}% match) and ion-wind partial-gravity proxies from E-FIELD, but nothing validates this exact regime. The model is extrapolating — require a physical test or apply a heavy margin.`
   }
   if (status === 'CAUTION_EXTRAPOLATING') {
     const reason = partialG
       ? 'you are in partial gravity, which PSI never directly tested (only 0g and 1g exist)'
-      : highO2
-        ? 'elevated oxygen pushes beyond the densest part of the dataset'
-        : `the nearest PSI run is only a ${top.similarity}% match`
+      : hyperG
+        ? 'you are in hypergravity (>1g), beyond the 0g–1g NASA PSI dataset'
+        : highO2
+          ? 'elevated oxygen pushes beyond the densest part of the dataset'
+          : `the nearest PSI run is only a ${top.similarity}% match`
     return `Moderate confidence: ${reason}. Closest evidence is ${top.experiment_id} (${top.similarity}% match). Treat the prediction as a bounded estimate, not ground truth.`
   }
   return `High confidence: your cabin settings sit close to real NASA data (${top.experiment_id}, ${top.similarity}% match, distance ${nearest.toFixed(2)}). The prediction is interpolated within tested conditions.`

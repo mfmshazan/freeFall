@@ -22,6 +22,22 @@ export type TrustStatus =
   | 'CAUTION_EXTRAPOLATING'
   | 'UNVERIFIED_REGIME_DO_NOT_TRUST'
 
+export type GravityMode = 'free_orbit' | 'surface' | 'low_alt' | 'max_orbit' | 'altitude' | 'custom'
+
+export interface PlanetTelemetry {
+  world: string | null
+  name?: string
+  surface_label?: string
+  gravity_mode: GravityMode
+  altitude_km: number
+  effective_gravity_g: number
+  local_field_g: number
+  g_surface: number
+  radius_km?: number
+  low_orbit_km?: number
+  max_orbit_km: number | null
+}
+
 export interface CabinInputs {
   gravity_g: number
   o2_percent: number
@@ -29,6 +45,9 @@ export interface CabinInputs {
   airflow_cm_s: number
   diluent: Diluent
   fuel_material: FuelMaterial
+  world?: string
+  altitude_km?: number
+  gravity_mode?: GravityMode
 }
 
 export interface Prediction {
@@ -84,5 +103,6 @@ export interface PredictResponse {
   ranked_investigations: RankedInvestigation[]
   engineering_playbook: PlaybookAction[]
   earth_spinoff: string
+  planet_telemetry?: PlanetTelemetry | null
   source: 'backend' | 'local-fallback'
 }

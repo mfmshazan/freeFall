@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Experiment Library | FlameAtlas</title>
+  <title>Safety Playbook | FlameAtlas</title>
   <style>
     :root {
       --navy: #071323;
@@ -87,6 +87,8 @@
     .nav-button { border: 1px solid white; padding: 13px 18px; }
 
     .panel { padding: 150px 8% 110px; position: relative; }
+    .panel.sub { padding-top: 150px; }
+    .white { background: var(--cream); color: var(--ink); }
     .dark { background: var(--navy); color: white; }
     .container { max-width: 1200px; margin: auto; }
     .section-label {
@@ -103,12 +105,23 @@
       line-height: .95;
       margin: 22px 0 18px;
     }
+    h2 {
+      font-size: clamp(32px, 5vw, 56px);
+      font-weight: 400;
+      letter-spacing: -0.045em;
+      line-height: 1.08;
+      max-width: 950px;
+      margin: 10px 0 24px;
+    }
     .description {
       font-size: 19px;
       line-height: 1.8;
       max-width: 750px;
-      color: #b9cad8;
+      color: var(--muted);
     }
+    .dark .description { color: #b9cad8; }
+    hr { border: none; border-top: 1px solid #b9c2cd; margin: 42px 0; }
+
     .stub-note {
       display: inline-block;
       margin-top: 26px;
@@ -121,33 +134,18 @@
       text-transform: uppercase;
     }
 
-    .cards {
+    .safety-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(3, 1fr);
       gap: 20px;
       margin-top: 55px;
     }
-    .card {
-      border: 1px solid #ffffff35;
-      padding: 30px;
-      min-height: 170px;
-      display: flex;
-      flex-direction: column;
-    }
-    .card h3 { font-size: 25px; font-weight: 500; margin: 10px 0 8px; }
-    .card p { line-height: 1.7; color: #b9cad8; margin: 0; }
-    .card a {
-      margin-top: auto;
-      padding-top: 22px;
-      font-weight: 800;
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: var(--orange);
-    }
+    .safety-card { border-top: 1px solid #b9c2cd; padding-top: 24px; }
+    .safety-card h3 { font-size: 28px; font-weight: 500; margin: 0 0 10px; }
+    .safety-card p { line-height: 1.7; color: var(--muted); margin: 0; }
     .text-link {
       display: inline-block;
-      margin-top: 44px;
+      margin-top: 40px;
       border-bottom: 1px solid currentColor;
       padding-bottom: 14px;
       font-weight: 800;
@@ -174,7 +172,7 @@
       .nav-button { display: none; }
       .panel { padding: 120px 24px 80px; }
       .moon { width: 95vw; }
-      .cards { grid-template-columns: 1fr; }
+      .safety-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 480px) {
       .logo { font-size: 17px; }
@@ -197,59 +195,57 @@
     <a href="index.html#home" class="logo">FLAMEATLAS<span>.</span></a>
     <nav aria-label="Main navigation">
       <a href="index.html#explore">Explore</a>
-      <a href="evidence.html" aria-current="page">Evidence</a>
-      <a href="safety.html">Safety</a>
+      <a href="evidence.html">Evidence</a>
+      <a href="replay.html">Replays</a>
+      <a href="safety.html" aria-current="page">Safety</a>
       <a href="index.html#about">About</a>
       <a href="simulator.html" class="nav-button">Launch Simulator</a>
     </nav>
   </header>
 
   <main>
-    <section class="panel dark" id="top">
+    <section class="panel white" id="top">
       <div class="container reveal">
-        <span class="section-label">02 / Experiment Library</span>
-        <h1 class="page">What NASA actually observed.</h1>
+        <span class="section-label">03 / Safety Playbook</span>
+        <h1 class="page">Build safer missions.</h1>
         <p class="description">
-          The full, interactive experiment library lives in the flame lab, where
-          every value is tagged as reported, described-in-report, or unknown, and
-          you can load an experiment's conditions into the sandbox or compare two
-          side by side.
+          Fire safety beyond Earth rests on three questions: how do we keep a
+          fire from starting, how do we notice it early, and how do we put it
+          out. Each answer should trace back to validated engineering data, not
+          assumption.
         </p>
-        <span class="stub-note">Overview page &middot; live library is in the flame lab</span>
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:18px;">
+          <label for="safetyPreset" style="font-size:12px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#10253c;">Scenario:</label>
+          <select id="safetyPreset" style="padding:8px 12px;border:1px solid rgba(16,37,60,0.25);background:#fff;color:#071323;font-size:13px;">
+            <option value="iss">ISS Baseline (0 g · 21% O₂ · 14.7 psi · 15 cm/s)</option>
+            <option value="lunar">Artemis Lunar Habitat (0.17 g · 34% O₂ · 8.2 psi · 10 cm/s)</option>
+            <option value="mars">Mars Habitat (0.38 g · 21% O₂ · 10.2 psi · 12 cm/s)</option>
+            <option value="earth">Earth 1 g Lab (1 g · 21% O₂ · 14.7 psi · 0 cm/s)</option>
+          </select>
+          <span class="stub-note" id="safetySource" style="margin-top:0;">Connecting to model…</span>
+        </div>
 
-        <div class="cards">
-          <article class="card">
-            <span class="section-label">Candle flames</span>
-            <h3>Candle Flames in Microgravity (CFM)</h3>
-            <p>Shuttle and Mir candle flames &mdash; yellow to blue within seconds,
-               dim and round in still air.</p>
-            <a href="fire-lab.html#experiments">Open in flame lab &rarr;</a>
+        <div class="safety-grid" id="safetyCards">
+          <article class="safety-card" data-cat="PREVENTION">
+            <h3>Prevent</h3>
+            <p>Explore material choices and identify the conditions &mdash;
+               oxygen, pressure, airflow &mdash; that still need dedicated fire
+               testing before they can be trusted.</p>
           </article>
-          <article class="card">
-            <span class="section-label">Droplets</span>
-            <h3>Flame Extinguishment Experiment (FLEX)</h3>
-            <p>ISS liquid-fuel droplet flames &mdash; near-perfect spheres, 1 Hz
-               oscillation, and invisible cool flames.</p>
-            <a href="fire-lab.html#experiments">Open in flame lab &rarr;</a>
+          <article class="safety-card" data-cat="DETECTION">
+            <h3>Detect</h3>
+            <p>Understand smoke transport in microgravity, sensor placement,
+               ventilation, and how lunar dust can interfere with detection.</p>
           </article>
-          <article class="card">
-            <span class="section-label">Solids</span>
-            <h3>Burning and Suppression of Solids (BASS, BASS-II)</h3>
-            <p>Fan-driven flow over solid samples &mdash; shape, spread and
-               pulsation versus airflow speed.</p>
-            <a href="fire-lab.html#experiments">Open in flame lab &rarr;</a>
-          </article>
-          <article class="card">
-            <span class="section-label">Large scale</span>
-            <h3>Spacecraft Fire Experiment (Saffire)</h3>
-            <p>The largest fires burned in space, aboard uncrewed Cygnus ships
-               after leaving the ISS.</p>
-            <a href="fire-lab.html#experiments">Open in flame lab &rarr;</a>
+          <article class="safety-card" data-cat="SUPPRESSION">
+            <h3>Respond</h3>
+            <p>Review the research and trade-offs behind different suppression
+               methods &mdash; from cutting ventilation to inert-gas flooding.</p>
           </article>
         </div>
 
         <a class="text-link" href="fire-lab.html#experiments">
-          Open the full experiment library &rarr;
+          See the experiment evidence &rarr;
         </a>
       </div>
     </section>
@@ -257,11 +253,40 @@
 
   <footer>
     <a class="logo" href="index.html#home">FLAMEATLAS<span style="color:var(--orange)">.</span></a>
-    <p>Fire science beyond Earth &mdash; what happened, under which conditions, and what the evidence can explain.</p>
+    <p>Explore the unknown. Understand the science.</p>
     <small>FlameAtlas &mdash; prototype for the NASA Space Apps Challenge</small>
   </footer>
 
+  <script type="module" src="/src/flameatlas/predictBridge.ts"></script>
   <script>
+    const SCENARIOS = {
+      iss:   { gravity_g: 0,    o2_percent: 21, pressure_psi: 14.7, airflow_cm_s: 15, diluent: "N2", fuel_material: "PMMA_Acrylic" },
+      lunar: { gravity_g: 0.17, o2_percent: 34, pressure_psi: 8.2,  airflow_cm_s: 10, diluent: "N2", fuel_material: "PMMA_Acrylic" },
+      mars:  { gravity_g: 0.38, o2_percent: 21, pressure_psi: 10.2, airflow_cm_s: 12, diluent: "N2", fuel_material: "Cotton_Fabric" },
+      earth: { gravity_g: 1.0,  o2_percent: 21, pressure_psi: 14.7, airflow_cm_s: 0,  diluent: "N2", fuel_material: "PMMA_Acrylic" },
+    };
+    async function loadPlaybook() {
+      if (!window.FlameAtlasPredict) return;
+      const sel = document.getElementById("safetyPreset");
+      const srcEl = document.getElementById("safetySource");
+      const res = await window.FlameAtlasPredict.predictFlame(SCENARIOS[sel.value] || SCENARIOS.iss);
+      if (srcEl) {
+        srcEl.textContent = `${res.source === "backend" ? "GP backend (/api/predict)" : "Local physics fallback"} · Trust ${res.uncertainty.trust_score}% (${res.uncertainty.trust_status.replace(/_/g, " ")})`;
+      }
+      if (Array.isArray(res.engineering_playbook)) {
+        res.engineering_playbook.forEach(item => {
+          const card = document.querySelector(`.safety-card[data-cat="${item.category}"]`);
+          if (!card) return;
+          card.querySelector("h3").textContent = `${item.category[0] + item.category.slice(1).toLowerCase()} — ${item.headline}`;
+          card.querySelector("p").textContent = item.detail;
+          card.style.borderColor = item.triggered ? "#ff6a2b" : "";
+        });
+      }
+    }
+    document.getElementById("safetyPreset")?.addEventListener("change", loadPlaybook);
+    window.addEventListener("flameatlas:bridge-ready", loadPlaybook);
+    loadPlaybook();
+
     const navbar = document.getElementById("navbar");
     function updateNavigation() {
       navbar.classList.toggle("scrolled", window.scrollY > 55);

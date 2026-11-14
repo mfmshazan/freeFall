@@ -50,7 +50,8 @@ export function predictLocal(i: CabinInputs): Prediction {
   const { X, Pr, OPI, g, U } = drivers(i)
 
   // --- extinction / flammability (§6) ---
-  const MOC_eff = f.MOC + 2.5 * (1 - g) + 0.2 * Math.max(0, U - 18)
+  const g_deficit = Math.max(0, 1 - g)
+  const MOC_eff = f.MOC + 2.5 * g_deficit + 0.2 * Math.max(0, U - 18)
   const is_flammable = i.o2_percent >= MOC_eff && OPI >= 0.45
 
   // --- spread / burn rate (§2) ---
@@ -67,7 +68,7 @@ export function predictLocal(i: CabinInputs): Prediction {
   const L_ref = f.L0_mm * Math.pow(OPI, 0.5)
   let flame_length_mm = L_ref * Math.sqrt(aspect_ratio_LD)
   let flame_width_mm = L_ref / Math.sqrt(aspect_ratio_LD)
-  const standoff_distance_mm = clamp(2.5 * (1 / OPI) * (1 + 0.4 * (1 - g)), 0.3, 6.0)
+  const standoff_distance_mm = clamp(2.5 * (1 / OPI) * (1 + 0.4 * g_deficit), 0.3, 6.0)
 
   // --- soot & flux (§5) ---
   const soot_fraction = clamp(
@@ -79,7 +80,7 @@ export function predictLocal(i: CabinInputs): Prediction {
     0,
     1,
   )
-  const radiometric_flux_kw_m2 = clamp(3.0 * OPI * (0.4 + 0.6 * soot_fraction) + 1.5 * (1 - g), 0, 25)
+  const radiometric_flux_kw_m2 = clamp(3.0 * OPI * (0.4 + 0.6 * soot_fraction) + 1.5 * g_deficit, 0, 25)
 
   // --- regime (§5.3 + §6) ---
   let visual_regime: VisualRegime

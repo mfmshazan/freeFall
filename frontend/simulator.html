@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,8 +16,16 @@
       --line: #ffffff2e;
       --glass: rgba(7, 19, 35, .78);
     }
-    * { box-sizing: border-box; }
-    html, body { height: 100%; }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
     body {
       margin: 0;
       overflow: hidden;
@@ -24,14 +33,32 @@
       color: white;
       font-family: Inter, Arial, sans-serif;
     }
-    a { color: inherit; text-decoration: none; }
-    button, input { font: inherit; color: inherit; }
-    button { cursor: pointer; }
-    a:focus-visible, button:focus-visible, input:focus-visible {
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    input {
+      font: inherit;
+      color: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    a:focus-visible,
+    button:focus-visible,
+    input:focus-visible {
       outline: 2px solid var(--orange);
       outline-offset: 3px;
     }
-    [hidden] { display: none !important; }
+
+    [hidden] {
+      display: none !important;
+    }
 
     .label-xs {
       font-size: 11px;
@@ -39,6 +66,7 @@
       letter-spacing: 2px;
       text-transform: uppercase;
     }
+
     .section-label {
       color: var(--orange);
       font-size: 11px;
@@ -48,9 +76,20 @@
     }
 
     /* SCENE */
-    #stage { position: fixed; inset: 0; }
-    #stage canvas { display: block; }
-    .label-layer { position: absolute; inset: 0; pointer-events: none; }
+    #stage {
+      position: fixed;
+      inset: 0;
+    }
+
+    #stage canvas {
+      display: block;
+    }
+
+    .label-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
 
     /* 3D LABELS */
     .lbl {
@@ -67,7 +106,11 @@
       white-space: nowrap;
       transition: background .2s, color .2s, border-color .2s;
     }
-    .lbl:hover { border-color: #ffffff80; }
+
+    .lbl:hover {
+      border-color: #ffffff80;
+    }
+
     .lbl.active {
       background: var(--orange);
       border-color: var(--orange);
@@ -89,17 +132,37 @@
       z-index: 20;
       background: linear-gradient(#071323f2, #07132300);
     }
-    .brand { display: flex; align-items: center; gap: 18px; }
-    .logo { font-size: 22px; font-weight: 800; letter-spacing: 3px; }
-    .logo span { color: var(--orange); }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 3px;
+    }
+
+    .logo span {
+      color: var(--orange);
+    }
+
     .crumb {
       color: var(--muted);
       border-left: 1px solid var(--line);
       padding-left: 18px;
     }
-    .crumb strong { color: white; }
 
-    .search { position: relative; }
+    .crumb strong {
+      color: white;
+    }
+
+    .search {
+      position: relative;
+    }
+
     .search input {
       width: 100%;
       height: 46px;
@@ -109,7 +172,11 @@
       backdrop-filter: blur(8px);
       font-size: 14px;
     }
-    .search input::placeholder { color: #9fb2c4; }
+
+    .search input::placeholder {
+      color: #9fb2c4;
+    }
+
     .search svg {
       position: absolute;
       z-index: 1;
@@ -119,6 +186,7 @@
       transform: translateY(-50%);
       opacity: .7;
     }
+
     .search kbd {
       position: absolute;
       right: 12px;
@@ -129,6 +197,7 @@
       padding: 2px 7px;
       color: #9fb2c4;
     }
+
     .results {
       position: absolute;
       top: 52px;
@@ -142,6 +211,7 @@
       max-height: 340px;
       overflow: auto;
     }
+
     .results li {
       display: flex;
       align-items: center;
@@ -149,15 +219,28 @@
       padding: 10px 12px;
       cursor: pointer;
     }
-    .results li[aria-selected="true"], .results li:hover { background: #ffffff14; }
-    .results small { margin-left: auto; color: var(--muted); }
-    .results .empty { color: var(--muted); cursor: default; }
+
+    .results li[aria-selected="true"],
+    .results li:hover {
+      background: #ffffff14;
+    }
+
+    .results small {
+      margin-left: auto;
+      color: var(--muted);
+    }
+
+    .results .empty {
+      color: var(--muted);
+      cursor: default;
+    }
 
     .header-actions {
       display: flex;
       justify-content: flex-end;
       gap: 10px;
     }
+
     .btn {
       display: inline-flex;
       align-items: center;
@@ -173,8 +256,13 @@
       text-transform: uppercase;
       transition: background .2s, border-color .2s;
     }
-    .btn:hover { border-color: #ffffff90; }
-    .btn[aria-expanded="true"], .btn.solid {
+
+    .btn:hover {
+      border-color: #ffffff90;
+    }
+
+    .btn[aria-expanded="true"],
+    .btn.solid {
       background: var(--cream);
       color: var(--ink);
       border-color: var(--cream);
@@ -193,15 +281,29 @@
       background: #071323f5;
       border: 1px solid var(--line);
     }
+
     .drawer h2 {
       margin: 6px 0 18px;
       font-size: 26px;
       font-weight: 400;
       letter-spacing: -.03em;
     }
-    .group { border-top: 1px solid var(--line); padding: 16px 0; }
-    .group:last-child { padding-bottom: 0; }
-    .group > .label-xs { color: var(--muted); display: block; margin-bottom: 12px; }
+
+    .group {
+      border-top: 1px solid var(--line);
+      padding: 16px 0;
+    }
+
+    .group:last-child {
+      padding-bottom: 0;
+    }
+
+    .group>.label-xs {
+      color: var(--muted);
+      display: block;
+      margin-bottom: 12px;
+    }
+
     .toggle {
       display: flex;
       justify-content: space-between;
@@ -209,7 +311,12 @@
       padding: 8px 0;
       cursor: pointer;
     }
-    .toggle input { position: absolute; opacity: 0; }
+
+    .toggle input {
+      position: absolute;
+      opacity: 0;
+    }
+
     .switch {
       width: 40px;
       height: 22px;
@@ -217,6 +324,7 @@
       position: relative;
       transition: background .2s;
     }
+
     .switch::after {
       content: "";
       position: absolute;
@@ -227,20 +335,61 @@
       background: white;
       transition: transform .2s;
     }
-    .toggle input:checked + .switch { background: var(--orange); border-color: var(--orange); }
-    .toggle input:checked + .switch::after { transform: translateX(18px); background: var(--ink); }
-    .toggle input:focus-visible + .switch { outline: 2px solid var(--orange); outline-offset: 3px; }
-    .drawer .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .drawer .row .btn { justify-content: center; padding: 0 10px; font-size: 11px; height: 42px; }
-    .keys { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 8px 14px; font-size: 13px; color: var(--muted); }
+
+    .toggle input:checked+.switch {
+      background: var(--orange);
+      border-color: var(--orange);
+    }
+
+    .toggle input:checked+.switch::after {
+      transform: translateX(18px);
+      background: var(--ink);
+    }
+
+    .toggle input:focus-visible+.switch {
+      outline: 2px solid var(--orange);
+      outline-offset: 3px;
+    }
+
+    .drawer .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .drawer .row .btn {
+      justify-content: center;
+      padding: 0 10px;
+      font-size: 11px;
+      height: 42px;
+    }
+
+    .keys {
+      margin: 0;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 8px 14px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
     .keys dt kbd {
       font: 700 11px Inter, Arial, sans-serif;
       border: 1px solid var(--line);
       padding: 2px 7px;
       color: white;
     }
-    .keys dd { margin: 0; }
-    .note { font-size: 12px; line-height: 1.6; color: var(--muted); margin: 0; }
+
+    .keys dd {
+      margin: 0;
+    }
+
+    .note {
+      font-size: 12px;
+      line-height: 1.6;
+      color: var(--muted);
+      margin: 0;
+    }
 
     /* INFO PANEL */
     .info {
@@ -258,7 +407,11 @@
       transform: translateX(calc(-100% - 40px));
       transition: transform .45s cubic-bezier(.2, .8, .2, 1);
     }
-    .info.open { transform: none; }
+
+    .info.open {
+      transform: none;
+    }
+
     .info-close {
       position: absolute;
       top: 18px;
@@ -270,6 +423,7 @@
       font-size: 18px;
       line-height: 1;
     }
+
     .info h1 {
       font-size: 58px;
       font-weight: 300;
@@ -277,7 +431,12 @@
       line-height: 1;
       margin: 14px 0 8px;
     }
-    .kind { margin: 0; color: var(--muted); }
+
+    .kind {
+      margin: 0;
+      color: var(--muted);
+    }
+
     .scenario {
       margin: 24px 0;
       padding: 16px 18px;
@@ -286,9 +445,20 @@
       display: grid;
       gap: 4px;
     }
-    .scenario .label-xs { color: #506176; font-size: 10px; }
-    .scenario strong { font-size: 20px; }
-    .scenario .g { font-size: 14px; }
+
+    .scenario .label-xs {
+      color: #506176;
+      font-size: 10px;
+    }
+
+    .scenario strong {
+      font-size: 20px;
+    }
+
+    .scenario .g {
+      font-size: 14px;
+    }
+
     .stats {
       margin: 0;
       display: grid;
@@ -297,13 +467,47 @@
       background: var(--line);
       border: 1px solid var(--line);
     }
-    .stats div { background: #071323; padding: 14px; }
-    .stats dt { font-size: 10px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
-    .stats dd { margin: 6px 0 0; font-size: 15px; line-height: 1.4; }
-    .stats .wide { grid-column: 1 / -1; }
-    .fire-note { margin-top: 24px; }
-    .fire-note p { line-height: 1.7; color: #d6e1ea; font-size: 14px; margin: 10px 0 0; }
-    .info-actions { display: grid; gap: 10px; margin-top: 26px; }
+
+    .stats div {
+      background: #071323;
+      padding: 14px;
+    }
+
+    .stats dt {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .stats dd {
+      margin: 6px 0 0;
+      font-size: 15px;
+      line-height: 1.4;
+    }
+
+    .stats .wide {
+      grid-column: 1 / -1;
+    }
+
+    .fire-note {
+      margin-top: 24px;
+    }
+
+    .fire-note p {
+      line-height: 1.7;
+      color: #d6e1ea;
+      font-size: 14px;
+      margin: 10px 0 0;
+    }
+
+    .info-actions {
+      display: grid;
+      gap: 10px;
+      margin-top: 26px;
+    }
+
     .cta {
       display: flex;
       justify-content: space-between;
@@ -317,8 +521,17 @@
       text-transform: uppercase;
       transition: transform .2s, background .2s;
     }
-    .cta:hover { background: #ffa07d; transform: translateY(-2px); }
-    .cta[aria-disabled="true"] { opacity: .35; pointer-events: none; }
+
+    .cta:hover {
+      background: #ffa07d;
+      transform: translateY(-2px);
+    }
+
+    .cta[aria-disabled="true"] {
+      opacity: .35;
+      pointer-events: none;
+    }
+
     .ghost {
       padding: 16px;
       background: transparent;
@@ -328,7 +541,10 @@
       letter-spacing: 1px;
       text-transform: uppercase;
     }
-    .ghost:hover { border-color: #ffffff90; }
+
+    .ghost:hover {
+      border-color: #ffffff90;
+    }
 
     /* BOTTOM BAR */
     .bottom {
@@ -343,7 +559,11 @@
       gap: 16px;
       pointer-events: none;
     }
-    .bottom > * { pointer-events: auto; }
+
+    .bottom>* {
+      pointer-events: auto;
+    }
+
     .timebar {
       justify-self: start;
       display: flex;
@@ -352,9 +572,23 @@
       background: var(--glass);
       backdrop-filter: blur(8px);
     }
-    .timebar .date { padding: 10px 16px; min-width: 160px; }
-    .timebar .date .label-xs { color: var(--muted); font-size: 10px; display: block; }
-    .timebar .date strong { font-size: 15px; font-variant-numeric: tabular-nums; }
+
+    .timebar .date {
+      padding: 10px 16px;
+      min-width: 160px;
+    }
+
+    .timebar .date .label-xs {
+      color: var(--muted);
+      font-size: 10px;
+      display: block;
+    }
+
+    .timebar .date strong {
+      font-size: 15px;
+      font-variant-numeric: tabular-nums;
+    }
+
     .icon-btn {
       width: 52px;
       border: none;
@@ -363,7 +597,11 @@
       display: grid;
       place-items: center;
     }
-    .icon-btn:hover { background: #ffffff12; }
+
+    .icon-btn:hover {
+      background: #ffffff12;
+    }
+
     .speed {
       border: none;
       border-left: 1px solid var(--line);
@@ -374,7 +612,10 @@
       letter-spacing: .5px;
       min-width: 112px;
     }
-    .speed:hover { background: #ffffff12; }
+
+    .speed:hover {
+      background: #ffffff12;
+    }
 
     .dock {
       display: flex;
@@ -387,7 +628,11 @@
       max-width: calc(100vw - 56px);
       scrollbar-width: none;
     }
-    .dock::-webkit-scrollbar { display: none; }
+
+    .dock::-webkit-scrollbar {
+      display: none;
+    }
+
     .dock button {
       flex: none;
       display: flex;
@@ -400,14 +645,23 @@
       font-weight: 600;
       transition: background .2s;
     }
-    .dock button:hover { background: #ffffff14; }
-    .dock button[aria-pressed="true"] { background: var(--cream); color: var(--ink); }
+
+    .dock button:hover {
+      background: #ffffff14;
+    }
+
+    .dock button[aria-pressed="true"] {
+      background: var(--cream);
+      color: var(--ink);
+    }
+
     .dock .dot {
       width: 12px;
       height: 12px;
       border-radius: 50%;
       box-shadow: inset -3px -2px 4px #06142699;
     }
+
     .credit {
       justify-self: end;
       max-width: 260px;
@@ -418,12 +672,35 @@
     }
 
     /* SHIP LABEL + DOCK ITEM */
-    .lbl.ship-lbl { border-color: var(--orange); color: var(--orange); }
-    .lbl.ship-lbl.active { color: var(--ink); }
-    .dock .ship-btn { color: var(--orange); border-right: 1px solid var(--line); margin-right: 4px; }
-    .dock .ship-btn[aria-pressed="true"] { background: var(--orange); color: var(--ink); }
-    .dock.armed button:not(.ship-btn) { animation: pulse 1.4s ease-in-out infinite; }
-    @keyframes pulse { 50% { background: #fc855933; } }
+    .lbl.ship-lbl {
+      border-color: var(--orange);
+      color: var(--orange);
+    }
+
+    .lbl.ship-lbl.active {
+      color: var(--ink);
+    }
+
+    .dock .ship-btn {
+      color: var(--orange);
+      border-right: 1px solid var(--line);
+      margin-right: 4px;
+    }
+
+    .dock .ship-btn[aria-pressed="true"] {
+      background: var(--orange);
+      color: var(--ink);
+    }
+
+    .dock.armed button:not(.ship-btn) {
+      animation: pulse 1.4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      50% {
+        background: #fc855933;
+      }
+    }
 
     /* MISSION CARDS */
     .mission {
@@ -440,10 +717,21 @@
       transform: translate(-50%, 24px);
       opacity: 0;
       pointer-events: none;
-      transition: transform .45s cubic-bezier(.2,.8,.2,1), opacity .3s;
+      transition: transform .45s cubic-bezier(.2, .8, .2, 1), opacity .3s;
     }
-    .mission.show { transform: translate(-50%, 0); opacity: 1; pointer-events: auto; }
-    .mission .section-label { display: flex; align-items: center; gap: 10px; }
+
+    .mission.show {
+      transform: translate(-50%, 0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .mission .section-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
     .mission h2 {
       font-size: clamp(30px, 4vw, 44px);
       font-weight: 400;
@@ -451,18 +739,50 @@
       line-height: 1.05;
       margin: 12px 0 10px;
     }
-    .mission p { margin: 0; color: #506176; line-height: 1.6; }
+
+    .mission p {
+      margin: 0;
+      color: #506176;
+      line-height: 1.6;
+    }
+
     .facts {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       margin: 20px 0 22px;
       border: 1px solid #c9d2d8;
     }
-    .facts div { padding: 12px 14px; border-right: 1px solid #c9d2d8; }
-    .facts div:last-child { border-right: none; }
-    .facts span { display: block; font-size: 10px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: #506176; }
-    .facts strong { display: block; margin-top: 4px; font-size: 15px; }
-    .mission-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .facts div {
+      padding: 12px 14px;
+      border-right: 1px solid #c9d2d8;
+    }
+
+    .facts div:last-child {
+      border-right: none;
+    }
+
+    .facts span {
+      display: block;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #506176;
+    }
+
+    .facts strong {
+      display: block;
+      margin-top: 4px;
+      font-size: 15px;
+    }
+
+    .mission-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
     .go {
       flex: 1;
       display: flex;
@@ -479,9 +799,21 @@
       text-transform: uppercase;
       transition: background .2s, transform .2s;
     }
-    .go:hover { background: #24445e; transform: translateY(-2px); }
-    .go.hot { background: var(--orange); color: var(--ink); }
-    .go.hot:hover { background: #ffa07d; }
+
+    .go:hover {
+      background: #24445e;
+      transform: translateY(-2px);
+    }
+
+    .go.hot {
+      background: var(--orange);
+      color: var(--ink);
+    }
+
+    .go.hot:hover {
+      background: #ffa07d;
+    }
+
     .later {
       padding: 18px 20px;
       border: 1px solid var(--ink);
@@ -492,8 +824,16 @@
       letter-spacing: 1px;
       text-transform: uppercase;
     }
-    .later:hover { background: #e5ecee; }
-    .ship-icon { width: 18px; height: 18px; flex: none; }
+
+    .later:hover {
+      background: #e5ecee;
+    }
+
+    .ship-icon {
+      width: 18px;
+      height: 18px;
+      flex: none;
+    }
 
     /* FLIGHT HUD */
     .hud {
@@ -511,9 +851,25 @@
       border: 1px solid var(--line);
       border-left: 3px solid var(--orange);
     }
-    .hud.show { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
-    .hud-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-    .hud-top strong { font-size: 18px; font-weight: 500; }
+
+    .hud.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+      pointer-events: auto;
+    }
+
+    .hud-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .hud-top strong {
+      font-size: 18px;
+      font-weight: 500;
+    }
+
     .hud-top button {
       border: 1px solid var(--line);
       background: transparent;
@@ -523,9 +879,28 @@
       letter-spacing: 1px;
       text-transform: uppercase;
     }
-    .track { height: 3px; background: #ffffff1f; margin-top: 12px; }
-    .track i { display: block; height: 100%; width: 0; background: var(--orange); }
-    .hud-meta { display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+    .track {
+      height: 3px;
+      background: #ffffff1f;
+      margin-top: 12px;
+    }
+
+    .track i {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: var(--orange);
+    }
+
+    .hud-meta {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+    }
 
     /* WARP TRANSITION TO THE LAB */
     .warp {
@@ -540,14 +915,36 @@
       pointer-events: none;
       transition: opacity .7s;
     }
-    .warp.show { opacity: 1; pointer-events: auto; }
-    .warp h2 { font-size: clamp(40px, 6vw, 72px); font-weight: 300; letter-spacing: -0.05em; margin: 14px 0 0; }
+
+    .warp.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .warp h2 {
+      font-size: clamp(40px, 6vw, 72px);
+      font-weight: 300;
+      letter-spacing: -0.05em;
+      margin: 14px 0 0;
+    }
 
     @media (max-width: 1000px) {
-      .mission { bottom: 150px; padding: 22px; }
-      .facts { grid-template-columns: 1fr 1fr 1fr; }
-      .facts strong { font-size: 13px; }
-      .hud { top: 88px; }
+      .mission {
+        bottom: 150px;
+        padding: 22px;
+      }
+
+      .facts {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+
+      .facts strong {
+        font-size: 13px;
+      }
+
+      .hud {
+        top: 88px;
+      }
     }
 
     /* LOADER / FALLBACK */
@@ -561,10 +958,33 @@
       background: #030a15;
       transition: opacity .6s;
     }
-    .overlay.done { opacity: 0; pointer-events: none; }
-    .overlay h2 { font-size: 48px; font-weight: 300; letter-spacing: -0.05em; margin: 14px 0; }
-    .overlay p { color: var(--muted); max-width: 420px; line-height: 1.7; }
-    .bar { width: 220px; height: 2px; background: var(--line); margin: 22px auto 0; overflow: hidden; }
+
+    .overlay.done {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .overlay h2 {
+      font-size: 48px;
+      font-weight: 300;
+      letter-spacing: -0.05em;
+      margin: 14px 0;
+    }
+
+    .overlay p {
+      color: var(--muted);
+      max-width: 420px;
+      line-height: 1.7;
+    }
+
+    .bar {
+      width: 220px;
+      height: 2px;
+      background: var(--line);
+      margin: 22px auto 0;
+      overflow: hidden;
+    }
+
     .bar::after {
       content: "";
       display: block;
@@ -573,7 +993,16 @@
       background: var(--orange);
       animation: load 1.1s infinite ease-in-out;
     }
-    @keyframes load { from { transform: translateX(-100%); } to { transform: translateX(260%); } }
+
+    @keyframes load {
+      from {
+        transform: translateX(-100%);
+      }
+
+      to {
+        transform: translateX(260%);
+      }
+    }
 
     .hint {
       position: fixed;
@@ -588,17 +1017,54 @@
       color: var(--muted);
       transition: opacity .4s;
     }
-    .hint.gone { opacity: 0; pointer-events: none; }
+
+    .hint.gone {
+      opacity: 0;
+      pointer-events: none;
+    }
 
     @media (max-width: 1000px) {
-      header { grid-template-columns: auto 1fr auto; padding: 0 16px; gap: 12px; }
-      .crumb { display: none; }
-      .btn .txt { display: none; }
-      .btn { padding: 0 14px; }
-      .credit { display: none; }
-      .bottom { left: 12px; right: 12px; bottom: 12px; grid-template-columns: 1fr; justify-items: center; }
-      .timebar { justify-self: center; }
-      .drawer { right: 12px; left: 12px; width: auto; top: 88px; }
+      header {
+        grid-template-columns: auto 1fr auto;
+        padding: 0 16px;
+        gap: 12px;
+      }
+
+      .crumb {
+        display: none;
+      }
+
+      .btn .txt {
+        display: none;
+      }
+
+      .btn {
+        padding: 0 14px;
+      }
+
+      .credit {
+        display: none;
+      }
+
+      .bottom {
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+        grid-template-columns: 1fr;
+        justify-items: center;
+      }
+
+      .timebar {
+        justify-self: center;
+      }
+
+      .drawer {
+        right: 12px;
+        left: 12px;
+        width: auto;
+        top: 88px;
+      }
+
       .info {
         top: auto;
         left: 12px;
@@ -608,19 +1074,51 @@
         max-height: 40vh;
         transform: translateY(calc(100% + 170px));
       }
-      .info h1 { font-size: 42px; }
-      .hint { display: none; }
+
+      .info h1 {
+        font-size: 42px;
+      }
+
+      .hint {
+        display: none;
+      }
     }
+
     @media (max-width: 560px) {
-      .logo { font-size: 16px; letter-spacing: 2px; }
-      .search input { padding: 0 10px 0 36px; font-size: 13px; }
-      .search svg { left: 12px; }
-      .search kbd { display: none; }
-      .timebar .date { min-width: 0; }
+      .logo {
+        font-size: 16px;
+        letter-spacing: 2px;
+      }
+
+      .search input {
+        padding: 0 10px 0 36px;
+        font-size: 13px;
+      }
+
+      .search svg {
+        left: 12px;
+      }
+
+      .search kbd {
+        display: none;
+      }
+
+      .timebar .date {
+        min-width: 0;
+      }
     }
+
     @media (prefers-reduced-motion: reduce) {
-      .info, .overlay, .cta { transition: none; }
-      .bar::after { animation: none; }
+
+      .info,
+      .overlay,
+      .cta {
+        transition: none;
+      }
+
+      .bar::after {
+        animation: none;
+      }
     }
   </style>
 
@@ -635,7 +1133,8 @@
 </head>
 
 <body>
-  <div id="stage" aria-label="3D solar system. Drag to rotate, scroll to zoom, click a planet to fly to it." role="img"></div>
+  <div id="stage" aria-label="3D solar system. Drag to rotate, scroll to zoom, click a planet to fly to it." role="img">
+  </div>
 
   <header>
     <div class="brand">
@@ -644,27 +1143,34 @@
     </div>
 
     <div class="search" role="search">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-        <circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        aria-hidden="true">
+        <circle cx="11" cy="11" r="7" />
+        <path d="m20 20-4-4" />
       </svg>
-      <input id="search" type="search" autocomplete="off"
-             placeholder="Search bodies" aria-label="Search planets and the Moon"
-             role="combobox" aria-expanded="false" aria-controls="results" aria-autocomplete="list">
+      <input id="search" type="search" autocomplete="off" placeholder="Search bodies"
+        aria-label="Search planets and the Moon" role="combobox" aria-expanded="false" aria-controls="results"
+        aria-autocomplete="list">
       <kbd aria-hidden="true">/</kbd>
       <ul class="results" id="results" role="listbox" hidden></ul>
     </div>
 
     <div class="header-actions">
       <button class="btn" id="overviewBtn" type="button" aria-label="Overview of the solar system">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <circle cx="12" cy="12" r="3"/><ellipse cx="12" cy="12" rx="10" ry="4.5"/>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          aria-hidden="true">
+          <circle cx="12" cy="12" r="3" />
+          <ellipse cx="12" cy="12" rx="10" ry="4.5" />
         </svg>
         <span class="txt">Overview</span>
       </button>
       <button class="btn" id="controlsBtn" type="button" aria-expanded="false" aria-controls="drawer">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/>
-          <circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          aria-hidden="true">
+          <path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0" />
+          <circle cx="16" cy="6" r="2" />
+          <circle cx="10" cy="12" r="2" />
+          <circle cx="18" cy="18" r="2" />
         </svg>
         <span class="txt">Controls</span>
       </button>
@@ -699,11 +1205,16 @@
     <div class="group">
       <span class="label-xs">Shortcuts</span>
       <dl class="keys">
-        <dt><kbd>/</kbd></dt><dd>Search</dd>
-        <dt><kbd>Space</kbd></dt><dd>Pause / play time</dd>
-        <dt><kbd>1–9</kbd></dt><dd>Fly to a body in the dock</dd>
-        <dt><kbd>S</kbd></dt><dd>Select spaceship FA-1</dd>
-        <dt><kbd>Esc</kbd></dt><dd>Back to overview</dd>
+        <dt><kbd>/</kbd></dt>
+        <dd>Search</dd>
+        <dt><kbd>Space</kbd></dt>
+        <dd>Pause / play time</dd>
+        <dt><kbd>1–9</kbd></dt>
+        <dd>Fly to a body in the dock</dd>
+        <dt><kbd>S</kbd></dt>
+        <dd>Select spaceship FA-1</dd>
+        <dt><kbd>Esc</kbd></dt>
+        <dd>Back to overview</dd>
       </dl>
     </div>
 
@@ -730,12 +1241,30 @@
     </div>
 
     <dl class="stats">
-      <div><dt id="gLabel">Surface gravity</dt><dd id="infoGravity"></dd></div>
-      <div><dt>Rotation</dt><dd id="infoDay"></dd></div>
-      <div><dt id="yearLabel">Orbit period</dt><dd id="infoYear"></dd></div>
-      <div><dt id="distLabel">From the Sun now</dt><dd id="infoDist"></dd></div>
-      <div class="wide"><dt>Atmosphere</dt><dd id="infoAtmo"></dd></div>
-      <div class="wide"><dt>Temperature</dt><dd id="infoTemp"></dd></div>
+      <div>
+        <dt id="gLabel">Surface gravity</dt>
+        <dd id="infoGravity"></dd>
+      </div>
+      <div>
+        <dt>Rotation</dt>
+        <dd id="infoDay"></dd>
+      </div>
+      <div>
+        <dt id="yearLabel">Orbit period</dt>
+        <dd id="infoYear"></dd>
+      </div>
+      <div>
+        <dt id="distLabel">From the Sun now</dt>
+        <dd id="infoDist"></dd>
+      </div>
+      <div class="wide">
+        <dt>Atmosphere</dt>
+        <dd id="infoAtmo"></dd>
+      </div>
+      <div class="wide">
+        <dt>Temperature</dt>
+        <dd id="infoTemp"></dd>
+      </div>
     </dl>
 
     <div class="fire-note">
@@ -761,7 +1290,8 @@
       </div>
       <button class="icon-btn" id="pauseBtn" type="button" aria-label="Pause time">
         <svg id="pauseIcon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/>
+          <rect x="6" y="5" width="4" height="14" />
+          <rect x="14" y="5" width="4" height="14" />
         </svg>
       </button>
       <button class="speed" id="speedBtn" type="button" aria-label="Change simulation speed">1 week / s</button>
@@ -772,8 +1302,14 @@
   </div>
 
   <!-- MISSION BRIEFING -->
-  <section class="mission" id="briefing" role="dialog" aria-modal="false" aria-labelledby="briefTitle" aria-hidden="true">
-    <span class="section-label"><svg class="ship-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 2c3 2.5 4.5 6 4.5 10.5V17h-9v-4.5C7.5 8 9 4.5 12 2z"/><circle cx="12" cy="10" r="1.8"/><path d="M7.5 13 4 16.5V19l3.5-1.5M16.5 13l3.5 3.5V19l-3.5-1.5M10 17l-.5 3h5l-.5-3"/></svg> Mission briefing · FA-1</span>
+  <section class="mission" id="briefing" role="dialog" aria-modal="false" aria-labelledby="briefTitle"
+    aria-hidden="true">
+    <span class="section-label"><svg class="ship-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="1.8" aria-hidden="true">
+        <path d="M12 2c3 2.5 4.5 6 4.5 10.5V17h-9v-4.5C7.5 8 9 4.5 12 2z" />
+        <circle cx="12" cy="10" r="1.8" />
+        <path d="M7.5 13 4 16.5V19l3.5-1.5M16.5 13l3.5 3.5V19l-3.5-1.5M10 17l-.5 3h5l-.5-3" />
+      </svg> Mission briefing · FA-1</span>
     <h2 id="briefTitle">Let's check the fire on the Moon</h2>
     <p id="briefText"></p>
     <div class="facts">
@@ -782,7 +1318,8 @@
       <div><span>Next stop</span><strong>Flame lab</strong></div>
     </div>
     <div class="mission-actions">
-      <button class="go hot" id="launchBtn" type="button"><span>Launch FA-1</span><span aria-hidden="true">→</span></button>
+      <button class="go hot" id="launchBtn" type="button"><span>Launch FA-1</span><span
+          aria-hidden="true">→</span></button>
       <button class="later" id="briefCancel" type="button">Not now</button>
     </div>
   </section>
@@ -790,7 +1327,8 @@
   <!-- IN-FLIGHT HUD -->
   <div class="hud" id="hud" role="status" aria-live="polite">
     <div class="hud-top">
-      <div><span class="section-label">FA-1 · En route</span><br><strong id="hudTitle">Heading to the Moon</strong></div>
+      <div><span class="section-label">FA-1 · En route</span><br><strong id="hudTitle">Heading to the Moon</strong>
+      </div>
       <button type="button" id="skipBtn">Skip</button>
     </div>
     <div class="track"><i id="hudBar"></i></div>
@@ -798,8 +1336,14 @@
   </div>
 
   <!-- ARRIVAL -->
-  <section class="mission" id="arrival" role="dialog" aria-modal="false" aria-labelledby="arriveTitle" aria-hidden="true">
-    <span class="section-label"><svg class="ship-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 2c3 2.5 4.5 6 4.5 10.5V17h-9v-4.5C7.5 8 9 4.5 12 2z"/><circle cx="12" cy="10" r="1.8"/><path d="M7.5 13 4 16.5V19l3.5-1.5M16.5 13l3.5 3.5V19l-3.5-1.5M10 17l-.5 3h5l-.5-3"/></svg> FA-1 has arrived</span>
+  <section class="mission" id="arrival" role="dialog" aria-modal="false" aria-labelledby="arriveTitle"
+    aria-hidden="true">
+    <span class="section-label"><svg class="ship-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="1.8" aria-hidden="true">
+        <path d="M12 2c3 2.5 4.5 6 4.5 10.5V17h-9v-4.5C7.5 8 9 4.5 12 2z" />
+        <circle cx="12" cy="10" r="1.8" />
+        <path d="M7.5 13 4 16.5V19l3.5-1.5M16.5 13l3.5 3.5V19l-3.5-1.5M10 17l-.5 3h5l-.5-3" />
+      </svg> FA-1 has arrived</span>
     <h2 id="arriveTitle">Welcome to the Moon</h2>
     <p id="arriveText"></p>
     <div class="facts">
@@ -808,7 +1352,8 @@
       <div><span>Flame view</span><strong>Illustration + NASA data</strong></div>
     </div>
     <div class="mission-actions">
-      <button class="go hot" id="enterLab" type="button"><span>Check the flame</span><span aria-hidden="true">→</span></button>
+      <button class="go hot" id="enterLab" type="button"><span>Check the flame</span><span
+          aria-hidden="true">→</span></button>
       <button class="later" id="stayBtn" type="button">Stay in orbit</button>
     </div>
   </section>
@@ -842,9 +1387,9 @@
   </script>
 
   <script type="module">
-    import * as THREE from "three";
-    import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-    import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
+    import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.168.0/build/three.module.js";
+    import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.168.0/examples/jsm/controls/OrbitControls.js";
+    import { CSS2DRenderer, CSS2DObject } from "https://cdn.jsdelivr.net/npm/three@0.168.0/examples/jsm/renderers/CSS2DRenderer.js";
 
     /* =========================================================
        1. ORBITAL MATHS
@@ -858,14 +1403,14 @@
     const dateFromJd = jd => new Date((jd - 2440587.5) * 86400000);
 
     const ELEMENTS = {
-      mercury: { a:[0.38709927,0.00000037], e:[0.20563593,0.00001906], i:[7.00497902,-0.00594749], L:[252.2503235,149472.67411175], lp:[77.45779628,0.16047689], om:[48.33076593,-0.12534081] },
-      venus:   { a:[0.72333566,0.0000039],  e:[0.00677672,-0.00004107], i:[3.39467605,-0.0007889],  L:[181.9790995,58517.81538729],  lp:[131.60246718,0.00268329], om:[76.67984255,-0.27769418] },
-      earth:   { a:[1.00000261,0.00000562], e:[0.01671123,-0.00004392], i:[-0.00001531,-0.01294668], L:[100.46457166,35999.37244981], lp:[102.93768193,0.32327364], om:[0,0] },
-      mars:    { a:[1.52371034,0.00001847], e:[0.0933941,0.00007882],   i:[1.84969142,-0.00813131], L:[-4.55343205,19140.30268499],  lp:[-23.94362959,0.44441088], om:[49.55953891,-0.29257343] },
-      jupiter: { a:[5.202887,-0.00011607],  e:[0.04838624,-0.00013253], i:[1.30439695,-0.00183714], L:[34.39644051,3034.74612775],   lp:[14.72847983,0.21252668],  om:[100.47390909,0.20469106] },
-      saturn:  { a:[9.53667594,-0.0012506], e:[0.05386179,-0.00050991], i:[2.48599187,0.00193609],  L:[49.95424423,1222.49362201],   lp:[92.59887831,-0.41897216], om:[113.66242448,-0.28867794] },
-      uranus:  { a:[19.18916464,-0.00196176], e:[0.04725744,-0.00004397], i:[0.77263783,-0.00242939], L:[313.23810451,428.48202785], lp:[170.9542763,0.40805281], om:[74.01692503,0.04240589] },
-      neptune: { a:[30.06992276,0.00026291], e:[0.00859048,0.00005105], i:[1.77004347,0.00035372], L:[-55.12002969,218.45945325], lp:[44.96476227,-0.32241464], om:[131.78422574,-0.00508664] }
+      mercury: { a: [0.38709927, 0.00000037], e: [0.20563593, 0.00001906], i: [7.00497902, -0.00594749], L: [252.2503235, 149472.67411175], lp: [77.45779628, 0.16047689], om: [48.33076593, -0.12534081] },
+      venus: { a: [0.72333566, 0.0000039], e: [0.00677672, -0.00004107], i: [3.39467605, -0.0007889], L: [181.9790995, 58517.81538729], lp: [131.60246718, 0.00268329], om: [76.67984255, -0.27769418] },
+      earth: { a: [1.00000261, 0.00000562], e: [0.01671123, -0.00004392], i: [-0.00001531, -0.01294668], L: [100.46457166, 35999.37244981], lp: [102.93768193, 0.32327364], om: [0, 0] },
+      mars: { a: [1.52371034, 0.00001847], e: [0.0933941, 0.00007882], i: [1.84969142, -0.00813131], L: [-4.55343205, 19140.30268499], lp: [-23.94362959, 0.44441088], om: [49.55953891, -0.29257343] },
+      jupiter: { a: [5.202887, -0.00011607], e: [0.04838624, -0.00013253], i: [1.30439695, -0.00183714], L: [34.39644051, 3034.74612775], lp: [14.72847983, 0.21252668], om: [100.47390909, 0.20469106] },
+      saturn: { a: [9.53667594, -0.0012506], e: [0.05386179, -0.00050991], i: [2.48599187, 0.00193609], L: [49.95424423, 1222.49362201], lp: [92.59887831, -0.41897216], om: [113.66242448, -0.28867794] },
+      uranus: { a: [19.18916464, -0.00196176], e: [0.04725744, -0.00004397], i: [0.77263783, -0.00242939], L: [313.23810451, 428.48202785], lp: [170.9542763, 0.40805281], om: [74.01692503, 0.04240589] },
+      neptune: { a: [30.06992276, 0.00026291], e: [0.00859048, 0.00005105], i: [1.77004347, 0.00035372], L: [-55.12002969, 218.45945325], lp: [44.96476227, -0.32241464], om: [131.78422574, -0.00508664] }
     };
 
     function elementsAt(key, jd) {
@@ -884,7 +1429,7 @@
         E -= (E - e * Math.sin(E) - m) / (1 - e * Math.cos(E));
       }
       const nu = 2 * Math.atan2(Math.sqrt(1 + e) * Math.sin(E / 2),
-                                Math.sqrt(1 - e) * Math.cos(E / 2));
+        Math.sqrt(1 - e) * Math.cos(E / 2));
       const r = a * (1 - e * Math.cos(E));
       const u = w * DEG + nu, O = om * DEG, I = i * DEG;
       return {
@@ -907,8 +1452,8 @@
     }
 
     // Compressed distances: AU -> scene units, so all eight planets fit on screen.
-    const RINGS = [[0,0],[0.387,8],[0.723,12],[1,16],[1.524,22],
-                   [5.203,32],[9.537,43],[19.19,54],[30.07,64]];
+    const RINGS = [[0, 0], [0.387, 8], [0.723, 12], [1, 16], [1.524, 22],
+    [5.203, 32], [9.537, 43], [19.19, 54], [30.07, 64]];
     function ringRadius(au) {
       for (let k = 1; k < RINGS.length; k++) {
         if (au <= RINGS[k][0] || k === RINGS.length - 1) {
@@ -934,66 +1479,86 @@
     };
 
     const BODIES = [
-      { id: "sun", name: "Sun", kind: "G-type main-sequence star", radius: 3.2,
+      {
+        id: "sun", name: "Sun", kind: "G-type main-sequence star", radius: 3.2,
         dot: "radial-gradient(circle at 40% 38%,#fff6c9,#ffd36b 40%,#fc8559)",
         gravity: "274 m/s² (≈28 g)", day: "≈25 days at the equator", year: "—",
         atmo: "Hydrogen and helium plasma", temp: "≈5,500 °C at the visible surface",
         type: "Not a destination", cabin: "Choose a planet or the Moon to set a scenario",
-        note: "The Sun isn't a mission destination. Pick a planet or the Moon to see which gravity and cabin conditions a fire would face there." },
-      { id: "mercury", name: "Mercury", kind: "Terrestrial planet", radius: .45, obliquity: .03, rotation: 1407.6,
+        note: "The Sun isn't a mission destination. Pick a planet or the Moon to see which gravity and cabin conditions a fire would face there."
+      },
+      {
+        id: "mercury", name: "Mercury", kind: "Terrestrial planet", radius: .45, obliquity: .03, rotation: 1407.6,
         dot: "linear-gradient(135deg,#c7b6a1,#72695d)",
         tex: { style: "rocky", colors: ["#8c8174", "#a99d8f", "#6e655b"] },
         gravity: "3.7 m/s² (0.38 g)", day: "58.6 Earth days", year: "88 days",
-        atmo: "Almost none — a thin exosphere", temp: "−180 °C at night to 430 °C by day", ...ORBITAL },
-      { id: "venus", name: "Venus", kind: "Terrestrial planet", radius: .8, obliquity: 177.4, rotation: -5832.5,
+        atmo: "Almost none — a thin exosphere", temp: "−180 °C at night to 430 °C by day", ...ORBITAL
+      },
+      {
+        id: "venus", name: "Venus", kind: "Terrestrial planet", radius: .8, obliquity: 177.4, rotation: -5832.5,
         dot: "linear-gradient(135deg,#f5ce91,#a96832)",
         tex: { style: "bands", colors: ["#e8c48d", "#d9a865", "#f1d9a8", "#c99456"], soft: true },
         gravity: "8.87 m/s² (0.90 g)", day: "243 Earth days (retrograde)", year: "225 days",
-        atmo: "96.5% CO₂, about 92× Earth's surface pressure", temp: "≈465 °C", ...ORBITAL },
-      { id: "earth", name: "Earth", kind: "Terrestrial planet — home", radius: .85, obliquity: 23.44, rotation: 23.93,
+        atmo: "96.5% CO₂, about 92× Earth's surface pressure", temp: "≈465 °C", ...ORBITAL
+      },
+      {
+        id: "earth", name: "Earth", kind: "Terrestrial planet — home", radius: .85, obliquity: 23.44, rotation: 23.93,
         dot: "linear-gradient(135deg,#529ac2,#305e98)",
         tex: { style: "earth" },
         gravity: "9.81 m/s² (1 g)", day: "23.9 hours", year: "365.25 days",
         atmo: "78% N₂, 21% O₂, 1 bar", temp: "≈15 °C average",
         type: "Surface laboratory", cabin: "Gravity 1 g — the baseline for most fire tests",
-        note: "Normal gravity makes hot gases rise, giving the familiar teardrop flame. Most spacecraft material flammability screening (NASA-STD-6001 Test 1) is done on Earth, which is why results need care before they're applied to other gravity levels." },
-      { id: "moon", name: "Moon", kind: "Natural satellite of Earth", radius: .3, obliquity: 6.7, rotation: 655.7, parent: "earth",
+        note: "Normal gravity makes hot gases rise, giving the familiar teardrop flame. Most spacecraft material flammability screening (NASA-STD-6001 Test 1) is done on Earth, which is why results need care before they're applied to other gravity levels."
+      },
+      {
+        id: "moon", name: "Moon", kind: "Natural satellite of Earth", radius: .3, obliquity: 6.7, rotation: 655.7, parent: "earth",
         dot: "linear-gradient(135deg,#e2e6df,#7e8b8c)",
         tex: { style: "rocky", colors: ["#a7a9a6", "#c4c6c2", "#7f8382"] },
         gravity: "1.62 m/s² (0.17 g)", day: "27.3 days (always the same face to Earth)", year: "27.3 days around Earth",
         atmo: "Essentially none — a very thin exosphere", temp: "≈ −170 °C at night to 120 °C by day",
         type: "Lunar habitat", cabin: "Gravity 0.17 g — partial gravity",
-        note: "At about one-sixth of Earth's gravity, buoyant flow is much weaker than on Earth but not absent. Partial gravity has far fewer fire experiments than Earth or orbit, so predictions here carry more uncertainty. Lunar dust in the habitat can also affect smoke detection." },
-      { id: "mars", name: "Mars", kind: "Terrestrial planet", radius: .6, obliquity: 25.19, rotation: 24.62,
+        note: "At about one-sixth of Earth's gravity, buoyant flow is much weaker than on Earth but not absent. Partial gravity has far fewer fire experiments than Earth or orbit, so predictions here carry more uncertainty. Lunar dust in the habitat can also affect smoke detection."
+      },
+      {
+        id: "mars", name: "Mars", kind: "Terrestrial planet", radius: .6, obliquity: 25.19, rotation: 24.62,
         dot: "linear-gradient(135deg,#e7a073,#a44e34)",
         tex: { style: "rocky", colors: ["#b5603a", "#c97b4f", "#8e4428"], caps: true },
         gravity: "3.71 m/s² (0.38 g)", day: "24.6 hours", year: "687 days",
         atmo: "95% CO₂, under 1% of Earth's surface pressure", temp: "≈ −60 °C average",
         type: "Mars habitat", cabin: "Gravity 0.38 g — partial gravity",
-        note: "At 0.38 g buoyancy is weaker than on Earth. Like the Moon, partial-gravity fire behaviour has limited test data, and the habitat's chosen pressure and oxygen level strongly affect how easily materials burn." },
-      { id: "jupiter", name: "Jupiter", kind: "Gas giant", radius: 2.1, obliquity: 3.13, rotation: 9.93,
+        note: "At 0.38 g buoyancy is weaker than on Earth. Like the Moon, partial-gravity fire behaviour has limited test data, and the habitat's chosen pressure and oxygen level strongly affect how easily materials burn."
+      },
+      {
+        id: "jupiter", name: "Jupiter", kind: "Gas giant", radius: 2.1, obliquity: 3.13, rotation: 9.93,
         dot: "linear-gradient(135deg,#d9b99a,#a26b51)",
         tex: { style: "bands", colors: ["#d8c2a4", "#b88a64", "#efe1c9", "#a0704f", "#c9a37e"], spot: true },
         gravity: "24.8 m/s² (2.5 g) at the cloud tops", day: "9.9 hours", year: "11.9 years",
-        atmo: "≈90% hydrogen, ≈10% helium", temp: "≈ −110 °C at the 1-bar level", ...ORBITAL },
-      { id: "saturn", name: "Saturn", kind: "Gas giant", radius: 1.8, obliquity: 26.73, rotation: 10.66, rings: true,
+        atmo: "≈90% hydrogen, ≈10% helium", temp: "≈ −110 °C at the 1-bar level", ...ORBITAL
+      },
+      {
+        id: "saturn", name: "Saturn", kind: "Gas giant", radius: 1.8, obliquity: 26.73, rotation: 10.66, rings: true,
         dot: "linear-gradient(135deg,#e4d5a0,#ab956b)",
         tex: { style: "bands", colors: ["#e3d3a3", "#cdb57d", "#efe4bf", "#b9a06c"], soft: true },
         gravity: "10.4 m/s² (1.07 g) at the cloud tops", day: "10.7 hours", year: "29.4 years",
-        atmo: "≈96% hydrogen, ≈3% helium", temp: "≈ −140 °C at the 1-bar level", ...ORBITAL },
-      { id: "uranus", name: "Uranus", kind: "Ice giant", radius: 1.25, obliquity: 97.77, rotation: -17.24,
+        atmo: "≈96% hydrogen, ≈3% helium", temp: "≈ −140 °C at the 1-bar level", ...ORBITAL
+      },
+      {
+        id: "uranus", name: "Uranus", kind: "Ice giant", radius: 1.25, obliquity: 97.77, rotation: -17.24,
         dot: "linear-gradient(135deg,#bde8eb,#5aafb8)",
         tex: { style: "bands", colors: ["#a9dfe3", "#9bd3d8", "#b8e8ea"], soft: true },
         gravity: "8.87 m/s² (0.90 g) at the cloud tops", day: "17.2 hours (retrograde)", year: "84 years",
-        atmo: "Hydrogen, helium and methane", temp: "≈ −195 °C at the 1-bar level", ...ORBITAL },
-      { id: "neptune", name: "Neptune", kind: "Ice giant", radius: 1.2, obliquity: 28.32, rotation: 16.11,
+        atmo: "Hydrogen, helium and methane", temp: "≈ −195 °C at the 1-bar level", ...ORBITAL
+      },
+      {
+        id: "neptune", name: "Neptune", kind: "Ice giant", radius: 1.2, obliquity: 28.32, rotation: 16.11,
         dot: "linear-gradient(135deg,#5895e6,#243b96)",
         tex: { style: "bands", colors: ["#3f6fd1", "#3561c0", "#5a88e0", "#2c4fa8"] },
         gravity: "11.2 m/s² (1.14 g) at the cloud tops", day: "16.1 hours", year: "165 years",
-        atmo: "Hydrogen, helium and methane", temp: "≈ −200 °C at the 1-bar level", ...ORBITAL }
+        atmo: "Hydrogen, helium and methane", temp: "≈ −200 °C at the 1-bar level", ...ORBITAL
+      }
     ];
     const byId = Object.fromEntries(BODIES.map(b => [b.id, b]));
-    const MOON_DISTANCE = 2.3;
+    const MOON_DISTANCE = 3.4;
 
     /* =========================================================
        3. PROCEDURAL TEXTURES (no image files needed)
@@ -1316,11 +1881,11 @@
        6. CLOCK
        ========================================================= */
     const SPEEDS = [
-      { id: "1h",  label: "1 hour / s",  days: 1 / 24 },
-      { id: "1d",  label: "1 day / s",   days: 1 },
-      { id: "1w",  label: "1 week / s",  days: 7 },
+      { id: "1h", label: "1 hour / s", days: 1 / 24 },
+      { id: "1d", label: "1 day / s", days: 1 },
+      { id: "1w", label: "1 week / s", days: 7 },
       { id: "1mo", label: "1 month / s", days: 30.44 },
-      { id: "1y",  label: "1 year / s",  days: 365.25 }
+      { id: "1y", label: "1 year / s", days: 365.25 }
     ];
     const params = new URLSearchParams(location.search);
     let speedIndex = Math.max(0, SPEEDS.findIndex(s => s.id === params.get("speed")));
@@ -1404,7 +1969,7 @@
         const target = flight.getPos();
         controls.target.lerpVectors(flight.fromTarget, target, p);
         const dist = Math.exp(Math.log(flight.fromDist) * (1 - p) + Math.log(flight.endDist) * p)
-                   + flight.arc * Math.sin(Math.PI * p);
+          + flight.arc * Math.sin(Math.PI * p);
         const dir = flight.startDir.clone().lerp(flight.endDir, p).normalize();
         camera.position.copy(controls.target).addScaledVector(dir, dist);
         if (p >= 1) {
@@ -1449,7 +2014,7 @@
     function setText(id, text) { document.getElementById(id).textContent = text; }
 
     function auDistance(id) {
-      if (id === "sun" ) return null;
+      if (id === "sun") return null;
       if (id === "moon") return null;
       const el = elementsAt(id, jd);
       const p = positionFrom(el, el.M);
@@ -1825,14 +2390,17 @@
     })();
 
     const shipObj = { root: ship.group, body: { id: "ship", radius: .5 } };
-    const mission = { state: "parked", at: "earth", target: null, t: 0, dur: 4, angle: 0, handed: false, savedSpeed: null,
-                      p0: new THREE.Vector3(), mid: new THREE.Vector3(), end: new THREE.Vector3() };
+    const mission = {
+      state: "parked", at: "earth", target: null, t: 0, dur: 4, angle: 0, handed: false, savedSpeed: null,
+      p0: new THREE.Vector3(), mid: new THREE.Vector3(), end: new THREE.Vector3()
+    };
     let armed = false;
     const briefing = document.getElementById("briefing");
     const arrival = document.getElementById("arrival");
     const hud = document.getElementById("hud");
 
-    const parkRadius = body => body.radius * 2.2 + .9;
+    // Keep Moon parking orbit proportional to the Moon and well clear of Earth.
+    const parkRadius = body => body.id === "moon" ? .9 : body.radius * 2.2 + .9;
 
     function showCard(el) { el.classList.add("show"); el.setAttribute("aria-hidden", "false"); }
     function hideCard(el) { el.classList.remove("show"); el.setAttribute("aria-hidden", "true"); }
@@ -2113,4 +2681,5 @@
     if (startWorld && byId[startWorld]) setTimeout(() => select(startWorld), 650);
   </script>
 </body>
+
 </html>

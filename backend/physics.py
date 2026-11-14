@@ -51,7 +51,8 @@ def predict(gravity_g, o2_percent, pressure_psi, airflow_cm_s, diluent, fuel_mat
     g, U = gravity_g, airflow_cm_s
 
     # extinction (§6)
-    MOC_eff = f["MOC"] + 2.5 * (1 - g) + 0.20 * max(0, U - 18)
+    g_deficit = max(0.0, 1.0 - g)
+    MOC_eff = f["MOC"] + 2.5 * g_deficit + 0.20 * max(0, U - 18)
     is_flammable = (o2_percent >= MOC_eff) and (OPI >= 0.45)
 
     # spread (§2)
@@ -70,7 +71,7 @@ def predict(gravity_g, o2_percent, pressure_psi, airflow_cm_s, diluent, fuel_mat
     L_ref = f["L0"] * (OPI ** 0.5)
     length = L_ref * math.sqrt(aspect)
     width = L_ref / math.sqrt(aspect)
-    standoff = clamp(2.5 * (1.0 / OPI) * (1.0 + 0.4 * (1 - g)), 0.3, 6.0)
+    standoff = clamp(2.5 * (1.0 / OPI) * (1.0 + 0.4 * g_deficit), 0.3, 6.0)
 
     # soot & flux (§5)
     soot = clamp(
@@ -78,7 +79,7 @@ def predict(gravity_g, o2_percent, pressure_psi, airflow_cm_s, diluent, fuel_mat
         * (1.0 - 0.015 * max(0, o2_percent - 60)),
         0.0, 1.0,
     )
-    flux = clamp(3.0 * OPI * (0.4 + 0.6 * soot) + 1.5 * (1 - g), 0, 25)
+    flux = clamp(3.0 * OPI * (0.4 + 0.6 * soot) + 1.5 * g_deficit, 0, 25)
 
     # regime (§5.3 + §6)
     if (not is_flammable) or spread_rate < 0.05:
