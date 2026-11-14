@@ -1,0 +1,45 @@
+{
+  "investigation": "SAFFIRE-I (Spacecraft Fire Safety Experiment-I)",
+  "psi_id": "PSI-98 / PSI-166",
+  "doi": "10.60555/0t15-1z43",
+  "platform": "Orbital Sciences Cygnus (post-ISS, uncrewed)",
+  "date_utc": "2016-06-14",
+  "pi": "David L. Urban, NASA Glenn Research Center",
+  "sample": {
+    "material": "SIBAL fabric (75% cotton / 25% fiberglass)",
+    "size_mm": "300 \u00d7 800 (width \u00d7 length)",
+    "run": "Sample 1 (S1), concurrent flow"
+  },
+  "measured_at_ignition": {
+    "o2_percent": 22.6242,
+    "co2_percent": 0.4257,
+    "pressure_psia": 14.8496,
+    "flow_cm_s_nominal": 20.0
+  },
+  "events": {
+    "igniter_on_s": 60.03,
+    "igniter_off_s": 67.98
+  },
+  "timing": {
+    "t0_epoch_ms": 1465937043422,
+    "image_sync": "verified",
+    "image_sync_note": "Frame epoch(ms) in filename maps to sensor clock via elapsed=(epoch-t0)/1000, confirmed against the workbook 'Camera Data' sheet."
+  },
+  "camera": {
+    "id": "S1C1",
+    "frames_available": 80,
+    "window_s": [
+      58.043,
+      228.34
+    ],
+    "note": "S1C1_jpeg_part1 covers the early-to-mid burn; later frames are in parts not downloaded."
+  },
+  "sources": [
+    "Saffire-I Sample 1 Sensor Data Complete TM graphs.xlsx \u2192 'Calibrated Data' sheet",
+    "SAFFIRE_I_S1C1_jpeg_part1.zip (S1C1 burn camera)",
+    "SAFFIRE-I Image Directory Nomenclature.pdf",
+    "SFSDP-VIS-0295 Thermocouple Placement.pdf",
+    "PSI-98 metadata (ISA-Tab i_Investigation.txt)"
+  ],
+  "provenance": "real_psi"
+}
