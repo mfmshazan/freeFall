@@ -1,0 +1,4 @@
+Drop two files here from PSI-69 (FLEX):
+  1. i_Investigation.txt        (from the metadata .zip)
+  2. experimental_table.csv     (the "Experimental Table" download, rename to this)
+Then run:  python ../../ingest_psi.py
