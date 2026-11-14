@@ -89,8 +89,6 @@ export function predictLocal(i: CabinInputs): Prediction {
     spread_rate_mm_s = Math.min(spread_rate_mm_s, 0.04)
     flame_length_mm *= 0.5
     flame_width_mm *= 0.5
-  } else if (i.o2_percent >= 60 && i.pressure_psi <= 7.0 && soot_fraction < 0.15) {
-    visual_regime = 'INVISIBLE_COOL_FLAME'
   } else if (i.fuel_material === 'PMMA_Acrylic' && i.o2_percent >= 25) {
     visual_regime = 'BUBBLING_PMMA_STREAKS'
   } else if (soot_fraction >= 0.45) {

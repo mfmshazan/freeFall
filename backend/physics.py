@@ -87,8 +87,6 @@ def predict(gravity_g, o2_percent, pressure_psi, airflow_cm_s, diluent, fuel_mat
         spread_rate = min(spread_rate, 0.04)
         length *= 0.5
         width *= 0.5
-    elif o2_percent >= 60 and pressure_psi <= 7.0 and soot < 0.15:
-        regime = "INVISIBLE_COOL_FLAME"
     elif fuel_material == "PMMA_Acrylic" and o2_percent >= 25:
         regime = "BUBBLING_PMMA_STREAKS"
     elif soot >= 0.45:
