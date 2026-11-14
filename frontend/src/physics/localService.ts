@@ -1,6 +1,6 @@
 // Offline fallback that mirrors the backend /api/predict contract.
 // Uses the physics port (flameModel) + a physics-distance ranker + a
-// distance-to-nearest-data uncertainty heuristic. When the FastAPI backend is
+// distance-to-nearest-training-row uncertainty heuristic. When the FastAPI backend is
 // online the hook prefers it; this keeps the demo fully working if it isn't.
 
 import psi from '../data/psi_master.json'
@@ -76,7 +76,7 @@ function diffs(i: CabinInputs, r: Record): string[] {
 export function predictLocalService(i: CabinInputs): PredictResponse {
   const prediction = predictLocal(i)
 
-  // rank PSI investigations by physics distance
+  // Keep legacy prediction references and the training-row distance for uncertainty.
   const scored = RECORDS.map((r) => ({ r, d: featureDistance(i, r) })).sort((a, b) => a.d - b.d)
   const nearest = scored[0].d
   const ranked: RankedInvestigation[] = scored.slice(0, 4).map(({ r, d }) => ({
@@ -96,7 +96,7 @@ export function predictLocalService(i: CabinInputs): PredictResponse {
     publication_dois: r.publication_dois,
   }))
 
-  // --- uncertainty: grows with distance to nearest real datapoint ---
+  // --- uncertainty: grows with distance to nearest training row ---
   // Heuristic penalty for partial gravity and high oxygen.
   const partialGravity = i.gravity_g > 0.02 && i.gravity_g < 0.95
   const highO2 = i.o2_percent >= 30

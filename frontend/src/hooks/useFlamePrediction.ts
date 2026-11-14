@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { CabinInputs, PredictResponse } from '../types'
 import { predictLocalService } from '../physics/localService'
 import { isCurrentAppearance } from '../physics/appearance'
@@ -10,39 +10,39 @@ const DEBOUNCE_MS = 150
 // doesn't spam the API; local physics result shows immediately either way.
 export function useFlamePrediction(inputs: CabinInputs): PredictResponse {
   const [result, setResult] = useState<PredictResponse>(() => predictLocalService(inputs))
-  const timer = useRef<number | null>(null)
 
   useEffect(() => {
-    let active = true
+    const controller = new AbortController()
+    let timeout: number | undefined
     // show local result instantly for a snappy canvas
     setResult(predictLocalService(inputs))
 
-    if (timer.current) window.clearTimeout(timer.current)
-    timer.current = window.setTimeout(async () => {
+    const debounce = window.setTimeout(async () => {
+      timeout = window.setTimeout(() => controller.abort(), 1200)
       try {
-        const ctrl = new AbortController()
-        const to = window.setTimeout(() => ctrl.abort(), 1200)
         const res = await fetch(API, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(inputs),
-          signal: ctrl.signal,
+          signal: controller.signal,
         })
-        window.clearTimeout(to)
         if (res.ok) {
           const data = (await res.json()) as PredictResponse
-          if (active && data?.prediction && isCurrentAppearance(data.prediction.visual_regime)) {
+          if (!controller.signal.aborted && data?.prediction && isCurrentAppearance(data.prediction.visual_regime)) {
             setResult({ ...data, source: 'backend' })
           }
         }
       } catch {
         /* backend offline — keep local fallback already set */
+      } finally {
+        window.clearTimeout(timeout)
       }
     }, DEBOUNCE_MS)
 
     return () => {
-      active = false
-      if (timer.current) window.clearTimeout(timer.current)
+      controller.abort()
+      window.clearTimeout(debounce)
+      window.clearTimeout(timeout)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [

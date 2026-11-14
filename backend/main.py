@@ -1,17 +1,20 @@
 """Flame in Freefall — FastAPI backend.
 
-POST /api/predict  ->  uncertainty-aware flame prediction + ranked PSI evidence
-                       + engineering playbook, matching the frontend contract.
+POST /api/predict  ->  uncertainty-aware flame prediction + legacy training-row matches
+POST /api/evidence ->  reviewed experiment compatibility, condition differences and outcome coverage.
 """
 from __future__ import annotations
+from functools import lru_cache
+import logging
 import math
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
-from typing import Literal
 
 from surrogate import Surrogate
 import ranker
+from evidence import rank_evidence
+from evidence_api import CabinInputs, EvidenceQuery, EvidenceResponse
+from export_evidence import load_catalog
 
 app = FastAPI(title="Flame in Freefall API", version="0.1.0")
 app.add_middleware(
@@ -19,17 +22,18 @@ app.add_middleware(
 )
 
 SURROGATE = Surrogate()  # train once at startup
+evidence_catalog = lru_cache(maxsize=1)(load_catalog)
+logger = logging.getLogger(__name__)
 
 
-class CabinInputs(BaseModel):
-    gravity_g: float = Field(ge=0, le=1)
-    o2_percent: float = Field(ge=10, le=100)
-    pressure_psi: float = Field(ge=3, le=15)
-    airflow_cm_s: float = Field(ge=0, le=40)
-    diluent: Literal["N2", "CO2", "He"]
-    fuel_material: Literal[
-        "PMMA_Acrylic", "Cotton_Fabric", "Kapton_Wire", "Heptane_Droplet", "Methane_Gas"
-    ]
+@app.post("/api/evidence", response_model=EvidenceResponse)
+def evidence(query: EvidenceQuery):
+    try:
+        catalog = evidence_catalog()
+    except (OSError, KeyError, TypeError, ValueError):
+        logger.exception("Unable to load the reviewed evidence catalog")
+        raise HTTPException(status_code=503, detail="Evidence catalog unavailable") from None
+    return rank_evidence(catalog, query.model_dump())
 
 
 @app.get("/api/health")

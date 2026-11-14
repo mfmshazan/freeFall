@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import TimeSeriesChart, { type Series } from './TimeSeriesChart'
+import { RecordingAppearance } from './RecordingAppearance'
 
 // ---------------------------------------------------------------------------
 // Saffire-I Experiment Replay — REAL NASA data only.
@@ -40,7 +41,7 @@ const GROUPS: { id: string; label: string; unit: string; colors: string[] }[] = 
 ]
 const SPEEDS = [1, 5, 10, 30]
 
-export default function SaffireReplay() {
+export default function SaffireReplay({ focusResults = false }: { focusResults?: boolean }) {
   const [sensors, setSensors] = useState<Sensors | null>(null)
   const [frames, setFrames] = useState<Frames | null>(null)
   const [cond, setCond] = useState<Conditions | null>(null)
@@ -70,6 +71,12 @@ export default function SaffireReplay() {
       .then(r => { if (!r.ok) throw new Error('Report results unavailable'); return r.json() })
       .then(setReport).catch(() => setReport(null))
   }, [])
+
+  useEffect(() => {
+    if (focusResults && report && sensors && frames && cond) {
+      document.getElementById('saffire-report-results')?.focus()
+    }
+  }, [focusResults, report, sensors, frames, cond])
 
   // playback loop (real experiment seconds × speed)
   useEffect(() => {
@@ -130,16 +137,17 @@ export default function SaffireReplay() {
           <span className="ml-2 text-[11px] font-mono text-slate-500">{cond.psi_id} · {cond.date_utc} · DOI {cond.doi}</span>
         </div>
         <span className="text-[10px] font-semibold px-2 py-1 rounded bg-emerald-500/20 text-emerald-300 tracking-wide">
-          REAL NASA DATA — NOT A MODEL
+          Recorded experiment
         </span>
       </div>
 
       {/* LEFT: real images */}
-      <div className="col-span-7 rounded-lg border border-space-600 bg-space-850 p-3">
+      <div className="col-span-12 min-w-0 rounded-lg border border-space-600 bg-space-850 p-3 md:col-span-7">
         <div className="flex items-center justify-between mb-1">
           <span className="text-[11px] text-slate-500">Flight camera {cond.camera.id} — actual burn footage</span>
           <span className="text-[11px] font-mono text-sky-300">t = {t.toFixed(1)} s</span>
         </div>
+        <RecordingAppearance recording="saffire" />
         <div className="relative bg-black rounded flex items-center justify-center" style={{ aspectRatio: '480/345' }}>
           {curFrame ? (
             <img src={`${BASE}/${curFrame.src}`} alt={`S1C1 frame at ${curFrame.t}s`} className="w-full h-full object-contain rounded" />
@@ -163,9 +171,9 @@ export default function SaffireReplay() {
             className="px-3 py-1.5 rounded bg-sky-500/20 border border-sky-500/40 text-sky-200 text-sm w-20">
             {playing ? '❚❚ Pause' : '▶ Play'}
           </button>
-          <input type="range" min={0} max={sensors.duration_s} step={0.1} value={t}
-            onChange={(e) => { setPlaying(false); setT(parseFloat(e.target.value)) }} className="flex-1" />
-          <select value={speed} onChange={(e) => setSpeed(Number(e.target.value))}
+          <input type="range" aria-label="Saffire-I replay time" min={0} max={sensors.duration_s} step={0.1} value={t}
+            onChange={(e) => { setPlaying(false); setT(parseFloat(e.target.value)) }} className="min-w-0 flex-1" />
+          <select aria-label="Playback speed" value={speed} onChange={(e) => setSpeed(Number(e.target.value))}
             className="bg-space-800 border border-space-600 rounded text-xs text-slate-300 px-2 py-1">
             {SPEEDS.map((s) => <option key={s} value={s}>{s}×</option>)}
           </select>
@@ -178,7 +186,7 @@ export default function SaffireReplay() {
       </div>
 
       {/* RIGHT: recorded conditions */}
-      <div className="col-span-5 rounded-lg border border-space-600 bg-space-850 p-3">
+      <div className="col-span-12 min-w-0 rounded-lg border border-space-600 bg-space-850 p-3 md:col-span-5">
         <h3 className="text-xs font-semibold tracking-widest text-slate-500 uppercase mb-2">Replay metadata and calibrated data</h3>
         <dl className="grid grid-cols-2 gap-y-1.5 text-xs">
           <dt className="text-slate-500">Material</dt><dd className="text-slate-200 text-right">{cond.sample.material}</dd>
@@ -205,17 +213,17 @@ export default function SaffireReplay() {
         <p className="mt-2 text-[10px] text-slate-600">Image↔sensor timing: <span className="text-emerald-400">{cond.timing.image_sync}</span>. {cond.timing.image_sync_note}</p>
       </div>
 
-      {report && <section className="col-span-12 rounded-lg border border-space-600 bg-space-850 p-4">
+      {report && <section id="saffire-report-results" tabIndex={-1} className="col-span-12 rounded-lg border border-space-600 bg-space-850 p-4">
         <h3 className="text-sm font-semibold text-slate-200">Measured results in the NASA report</h3>
         <p className="text-xs text-slate-400 mt-1">{report.material} · {report.gravity} · nominal duct flow {report.nominal_duct_flow_cm_s} cm/s · {report.metric}</p>
-        <div className="flex gap-6 mt-2 text-sm text-sky-300">{report.results.map(r => <span key={r.run_id}>Run {r.run_id}, {r.direction}: {r.spread_mm_s} mm/s</span>)}</div>
+        <div className="flex flex-wrap gap-x-6 gap-y-1 mt-2 text-sm text-sky-300">{report.results.map(r => <span key={r.run_id}>Run {r.run_id}, {r.direction}: {r.spread_mm_s} mm/s</span>)}</div>
         <p className="text-xs text-slate-400 mt-2">{report.caveat}</p>
         <a className="text-xs text-sky-400" href={report.source_url} target="_blank" rel="noreferrer">NASA Saffire-I report, page {report.report_page}</a>
       </section>}
 
       {/* chart */}
       <div className="col-span-12 rounded-lg border border-space-600 bg-space-850 p-3">
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
           <h3 className="text-xs font-semibold tracking-widest text-slate-500 uppercase">Verified Measurement — {groupMeta.label}</h3>
           <div className="flex gap-1">
             {GROUPS.map((g) => (

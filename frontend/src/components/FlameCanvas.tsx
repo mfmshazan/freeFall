@@ -1,8 +1,9 @@
 import { useEffect, useRef } from 'react'
-import type { Prediction, Uncertainty } from '../types'
+import type { Prediction, Uncertainty, VisualRegime } from '../types'
+import { APPEARANCE_LABELS } from '../physics/appearance'
 
 // ---------------------------------------------------------------------------
-// FlameCanvas — a calibrated parametric "digital twin" of a microgravity flame.
+// FlameCanvas — an illustrative parametric view of a microgravity flame.
 // Every visual property is locked to numbers from the surrogate model / physics
 // rules (skills/01 + 02). This is NOT video-game fire: no random flicker in 0g.
 // The rAF loop is fully decoupled from React state via refs, so moving sliders
@@ -93,7 +94,8 @@ export default function FlameCanvas({ prediction, uncertainty, gravity_g, airflo
       ref={canvasRef}
       width={520}
       height={440}
-      className="w-full h-full rounded-lg"
+      className="block w-full h-auto rounded-lg"
+      aria-label="Illustrative model flame and model spread halo"
       style={{ background: 'radial-gradient(400px 400px at 50% 55%, #0a0f1c 0%, #05070d 80%)' }}
     />
   )
@@ -116,7 +118,7 @@ function draw(
   ctx: CanvasRenderingContext2D,
   canvas: HTMLCanvasElement,
   f: Frame,
-  regime: string,
+  regime: VisualRegime,
   env: { gravity_g: number; airflow_cm_s: number },
   t: number,
   dashOffset: number,
@@ -135,7 +137,6 @@ function draw(
   const halfWid = (f.width / 2) * PX
 
   const quenched = regime === 'QUENCHED_EXTINGUISHED'
-  const cool = regime === 'INVISIBLE_COOL_FLAME'
 
   // extinction pulse (sine — NOT noise) when quenched/marginal
   const pulse = quenched ? 0.6 + 0.4 * Math.sin(t * 2.4) : 1
@@ -190,30 +191,16 @@ function draw(
       [0.6, 'rgba(60,40,30,0.15)'],
       [1, 'rgba(0,0,0,0)'],
     ])
-  } else if (cool) {
-    // near-invisible violet/blue cool flame, very low opacity, gentle breathing
-    const breathe = 0.12 + 0.05 * Math.sin(t * 1.6)
-    drawBlob(
-      halfWid,
-      halfLen,
-      [
-        [0, 'rgba(109,40,217,0.0)'],
-        [0.55, `rgba(109,40,217,${breathe})`],
-        [0.85, `rgba(76,29,149,${breathe * 0.7})`],
-        [1, 'rgba(0,0,0,0)'],
-      ],
-      1,
-    )
   } else {
-    // outer blue chemiluminescence shell
+    // illustrative blue outer shell
     drawBlob(halfWid, halfLen, [
       [0, 'rgba(30,64,175,0.0)'],
       [0.35, 'rgba(30,64,175,0.55)'],
       [0.7, 'rgba(96,165,250,0.55)'],
       [1, 'rgba(96,165,250,0)'],
     ])
-    // inner soot/yellow core proportional to soot fraction
-    if (f.soot > 0.12) {
+    // illustrative yellow core sized by the soot proxy
+    if (regime === 'SOOTY_YELLOW_CORE' || (regime === 'BUBBLING_PMMA_STREAKS' && f.soot > 0.12)) {
       const coreScale = 0.35 + 0.5 * f.soot
       drawBlob(halfWid * coreScale, halfLen * coreScale, [
         [0, `rgba(253,224,71,${0.5 + 0.4 * f.soot})`],
@@ -281,7 +268,7 @@ function drawScaleBar(ctx: CanvasRenderingContext2D, W: number, H: number, PX: n
   ctx.lineTo(x0 + px, y0 + 4)
   ctx.stroke()
   ctx.font = '11px ui-monospace, monospace'
-  ctx.fillText('20 mm (BASS sphere)', x0, y0 - 8)
+  ctx.fillText('20 mm (model)', x0, y0 - 8)
   ctx.restore()
 }
 
@@ -290,7 +277,7 @@ function drawHUD(
   W: number,
   H: number,
   f: Frame,
-  regime: string,
+  regime: VisualRegime,
   env: { gravity_g: number; airflow_cm_s: number },
 ) {
   ctx.save()
@@ -313,9 +300,8 @@ function drawHUD(
   tr.forEach((s, i) => ctx.fillText(s, W - 14, 20 + i * 15))
   // bottom-right regime + env
   ctx.fillStyle = '#cbd5e1'
-  ctx.fillText(regime === 'INVISIBLE_COOL_FLAME' ? 'FAINT PALETTE (HEURISTIC)' : regime.replace(/_/g, ' '), W - 14, H - 26)
+  ctx.fillText(APPEARANCE_LABELS[regime], W - 14, H - 26)
   ctx.fillStyle = '#64748b'
   ctx.fillText(`g=${env.gravity_g.toFixed(3)}  flow=${env.airflow_cm_s} cm/s`, W - 14, H - 12)
   ctx.restore()
 }
-import { APPEARANCE_LABELS } from '../physics/appearance'

@@ -12,6 +12,7 @@ from pathlib import Path
 from zipfile import BadZipFile, ZipFile
 
 from psi_table_mappings import TABLE_MAPPINGS
+from export_evidence import load_catalog
 
 
 BACKEND = Path(__file__).resolve().parent
@@ -266,7 +267,7 @@ def main() -> int:
         parser.error(f"inbox directory does not exist: {inbox}")
     reports = [report_status(name, WORKSPACE, args.fetch) for name in REPORTS]
     studies = [psi_status(name, number, inbox.resolve()) for name, number in PSI.items()]
-    evidence = json.loads((BACKEND / "data" / "mined_evidence.json").read_text(encoding="utf-8"))
+    evidence = load_catalog()
     output = WORKSPACE / "manifest.json"
     with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=WORKSPACE, delete=False) as f:
         staged = Path(f.name)
@@ -282,7 +283,7 @@ def main() -> int:
         source = entry.get("psi_id", "NTRS")
         detail = entry.get("detail") or ", ".join(entry.get("missing", []))
         print(f"{entry['study']} [{source}]: {entry['status']}" + (f" ({detail})" if detail else ""))
-    print(f"{len(evidence)} reviewed evidence run(s). Manifest: {output}")
+    print(f"{len(evidence['records'])} reviewed evidence case(s). Manifest: {output}")
     return int(any(entry["status"] in {"error", "ambiguous"} for entry in [*reports, *studies]))
 
 

@@ -7,7 +7,7 @@ Start with the [Phase 1 implementation plan](PHASE_1_IMPLEMENTATION_PLAN.md). Th
 ## Starting point
 
 - The local collector manifest lists **16 investigations**: 13 catalogued with tables and 3 without an associated experiment table. The **1,808 mapped rows** include test conditions, indexes, and other records, rather than 1,808 independent flame-outcome measurements. [Data inventory](DATA_INVENTORY.md) · [Collector](backend/mine_nasa.py)
-- Four [reviewed observations](backend/data/mined_evidence.json) are staged: two LUCI SIBAL cases, one CFI-G cool-flame case, and one FLEX droplet case. The app's Saffire-I and BASS-II replays already provide footage; only the Saffire-I replay synchronizes its imagery with continuous measured telemetry. [BASS-II comparison limits](frontend/public/replay/bass-2/compare.json)
+- The [reviewed catalog](backend/data/mined_evidence.json) includes the initial cases from Saffire-I, LUCI, CFI-G, FLEX and BASS-II. The app's Saffire-I and BASS-II replays already provide footage; only the Saffire-I replay synchronizes its imagery with continuous measured telemetry. [BASS-II comparison limits](frontend/public/replay/bass-2/compare.json)
 - The [training dataset](backend/data/psi_master.json) contains 24 seed rows and two sourced Saffire-I condition rows with estimated outcomes. The Gaussian processes also fit 324 synthetic anchors. Their variance is not a demonstrated experimental error bound. [Training code](backend/surrogate.py)
 
 ## Phases and model choices
@@ -45,7 +45,7 @@ See the [Phase 2 implementation plan](PHASE_2_IMPLEMENTATION_PLAN.md) for the ca
 
 ## 3. Make appearance and use cases evidence-led
 
-See the [Phase 3 implementation plan](PHASE_3_IMPLEMENTATION_PLAN.md) for the current-code assessment, source review, delivery sequence, and acceptance checks. It is a plan, not a completion record.
+See the [Phase 3 implementation plan](PHASE_3_IMPLEMENTATION_PLAN.md) for its scope and acceptance checks and the [demo script](DEMO_SCRIPT.md) for the implemented walkthrough.
 
 - Display oxygen partial pressure `pO2 = (O2% / 100) × total pressure`, with `21% × 14.7 psi = 3.09 psi` and `32% × 10.2 psi = 3.26 psi` as an explanatory comparison. Preserve oxygen fraction, total pressure, and balance-gas composition as separate data. Keep the single-diluent model explicitly illustrative; represent reported gas mixtures in evidence without feeding unsupported mixtures into the predictor.
 - Distinguish observed footage from the canvas palette. Describe soot glow and faint emission where the source supports them. Show camera/filter details where known; don't derive temperature, soot concentration, or visibility limits from uncalibrated RGB. Remove the general `high O₂ + low pressure → cool flame` classifier and misleading CFI-G preset. Reserve confirmed cool-flame labels for observations with supporting diagnostics. Update both physics implementations and the physics and canvas specs together.

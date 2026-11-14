@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { CabinInputs, Diluent, FuelMaterial } from '../types'
+import { partialPressure } from '../physics/atmosphere'
 
 interface Props {
   inputs: CabinInputs
@@ -54,7 +55,7 @@ function Slider({
         <span className="text-slate-400">{label}</span>
         <span className="font-mono text-sky-300">{value}{unit}</span>
       </div>
-      <input type="range" className="w-full" min={min} max={max} step={step} value={value}
+      <input type="range" aria-label={label} className="w-full" min={min} max={max} step={step} value={value}
         onChange={(e) => onChange(parseFloat(e.target.value))} />
     </div>
   )
@@ -67,7 +68,7 @@ export default function CabinBuilder({ inputs, onChange }: Props) {
   const activePreset = PRESETS.find((p) =>
     (Object.keys(p.values) as (keyof CabinInputs)[]).every((key) => p.values[key] === inputs[key]),
   )
-  const pO2 = (inputs.o2_percent / 100) * inputs.pressure_psi
+  const pO2 = partialPressure(inputs.o2_percent / 100, inputs.pressure_psi)
 
   return (
     <div className="h-full overflow-y-auto p-4">
@@ -79,6 +80,7 @@ export default function CabinBuilder({ inputs, onChange }: Props) {
         {PRESETS.map((p) => (
           <button
             key={p.name}
+            aria-pressed={activePreset?.name === p.name}
             onClick={() => onChange(p.values)}
             className={`text-left rounded-md border px-3 py-2 transition ${
               activePreset?.name === p.name
@@ -129,6 +131,7 @@ export default function CabinBuilder({ inputs, onChange }: Props) {
         <div className="flex gap-1">
           {DILUENTS.map((d) => (
             <button key={d} onClick={() => set({ diluent: d })}
+              aria-pressed={inputs.diluent === d}
               className={`flex-1 text-xs py-1.5 rounded border ${
                 inputs.diluent === d ? 'border-sky-500 bg-sky-500/10 text-sky-300' : 'border-space-600 bg-space-800 text-slate-400'
               }`}>
@@ -140,8 +143,8 @@ export default function CabinBuilder({ inputs, onChange }: Props) {
       </div>
 
       <div>
-        <div className="text-xs text-slate-400 mb-1">Cabin material</div>
-        <select value={inputs.fuel_material} onChange={(e) => set({ fuel_material: e.target.value as FuelMaterial })}
+        <label htmlFor="cabin-material" className="block text-xs text-slate-400 mb-1">Cabin material</label>
+        <select id="cabin-material" value={inputs.fuel_material} onChange={(e) => set({ fuel_material: e.target.value as FuelMaterial })}
           className="w-full bg-space-800 border border-space-600 rounded px-2 py-2 text-sm text-slate-200">
           {FUELS.map((f) => <option key={f.v} value={f.v}>{f.label}</option>)}
         </select>

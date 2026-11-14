@@ -1,0 +1,27 @@
+{
+  "cabin": {
+    "gravity_g": 0,
+    "o2_percent": 21,
+    "pressure_psi": 14.7,
+    "airflow_cm_s": 20,
+    "diluent": "N2",
+    "fuel_material": "Cotton_Fabric"
+  },
+  "queries": [
+    {"id": "default", "context": {}},
+    {"id": "compatible-saffire", "context": {"material":"sibal","geometry":"saffire-full-sheet","flow_configuration":"concurrent","apparatus":"saffire-duct","metric":"saffire_video_spread"}},
+    {"id": "unknown-luci", "cabin": {"gravity_g": 0.166}, "context": {"material":"sibal","geometry":"luci-5x30-sheet","apparatus":"luci-rotating-chamber","metric":"flame_base_spread_rate"}},
+    {"id": "bass-film-not-sphere", "cabin": {"fuel_material":"PMMA_Acrylic","airflow_cm_s":0}, "context": {"material":"cast-pmma","geometry":"pmma-sphere","flow_configuration":"opposed","apparatus":"bass-duct"}},
+    {"id": "unsupported-flex-mixture", "cabin": {"fuel_material":"Heptane_Droplet"}, "context": {"material":"heptane","geometry":"free-floating-droplet","flow_configuration":"quiescent-droplet-chamber","apparatus":"flex-mdca-cir","metric":"droplet_d_squared_burning_rate"}},
+    {"id": "unsupported-cfi-feed", "cabin": {"fuel_material":"Methane_Gas"}, "context": {"material":"butane30-nitrogen70","geometry":"porous-sphere-burner","flow_configuration":"normal-diffusion","apparatus":"acme-cfi-g-burner","metric":"cool_flame_duration"}},
+    {"id": "metric-with-no-matches", "context": {"metric":"generic_model_spread_rate"}},
+    {"id": "empty-catalog", "catalog": "empty"},
+    {"id": "ties-interval-units-and-missingness", "catalog": "synthetic", "cabin": {"airflow_cm_s":0,"o2_percent":24,"pressure_psi":14}}
+  ],
+  "synthetic_cases": [
+    {"id":"tie-b","fields":[{"dimension":"airflow_cm_s","basis":"duct_velocity","unit":"m/s","value":0}]},
+    {"id":"tie-a","fields":[{"dimension":"airflow_cm_s","basis":"duct_velocity","unit":"cm/s","value":0}]},
+    {"id":"inside-and-outside-interval","fields":[{"dimension":"o2_percent","basis":"mole_fraction","unit":"mole fraction","value":[0.2,0.23]},{"dimension":"pressure_psi","basis":"absolute_pressure","unit":"psia","value":[13,15]}]},
+    {"id":"no-comparable-dimensions","fields":[{"dimension":"airflow_cm_s","basis":"duct_velocity","unit":"cm/s","value":null,"status":"missing"},{"dimension":"pressure_psi","basis":"unknown","unit":"kPa","value":100},{"dimension":"o2_percent","basis":"mole_fraction","unit":"%","value":22,"time":"before"},{"dimension":"o2_percent","basis":"mole_fraction","unit":"%","value":20,"time":"after"},{"dimension":"gravity_g","basis":"acceleration_g","unit":"g","value":0,"status":"assumed"}]}
+  ]
+}

@@ -2,7 +2,7 @@
 
 **Outcome:** Users can distinguish recorded appearance from an illustrative canvas, understand oxygen percentage and partial pressure, and explore six sourced research stories without mistaking them for validated cabin predictions or fire-response advice.
 
-**Status:** Planned, not implemented or tested. Prepared against the working tree on 2026-11-15. Scope follows [Phase 3 of the roadmap](IMPLEMENTATION_ROADMAP.md#3-make-appearance-and-use-cases-evidence-led). Existing uncommitted work must be preserved.
+**Status:** Implemented in the working tree. The sections below retain the original plan and release criteria. See the [demo script](DEMO_SCRIPT.md) for the current walkthrough. Desktop and narrow browser checks remain open because local browser automation is disabled.
 
 ## Starting point and dependencies
 
@@ -81,6 +81,16 @@ Show one selected story at a time, with keyboard-accessible selectors and source
 - [ ] Do not change either master training JSON, promote evidence into GP training, implement gas-mixture physics, or add geometry/direction/confinement coefficients. New scenario controls for those dimensions are deferred; future evidence filters must remain separate from predictor inputs.
 
 ## Verification and release gate
+
+Implementation checks passed for the frontend production build, 17 backend tests (including the
+in-process `/api/predict` route), 12 Python/TypeScript prediction fixtures, nine evidence parity
+fixtures, and the generated catalog. The master JSON files match byte for byte and retain two
+sourced-condition rows and 24 seed rows. The built assets contain no raw archives, tables, or
+camera originals.
+
+Browser verification remains open for desktop and narrow layouts, keyboard navigation, replay
+scrubbing, canvas animation, and switching among the current API, legacy API, and offline modes.
+The automated checks cover the appearance guard and still-air geometry at the model boundary.
 
 These are checks to perform during implementation, not results from this planning pass.
 

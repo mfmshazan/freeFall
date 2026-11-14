@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { RecordingAppearance } from './RecordingAppearance'
 
 // ---------------------------------------------------------------------------
 // BASS-II B1 (Sample 147) vs B3 (Sample 148) — REAL NASA data comparison.
@@ -27,7 +28,7 @@ const STATUS: Record<string, { label: string; cls: string }> = {
   unknown: { label: 'unknown', cls: 'text-violet-300' },
 }
 
-export default function Bass2Compare() {
+export default function Bass2Compare({ focusRun }: { focusRun?: 'b1' | 'b3' }) {
   const [data, setData] = useState<Compare | null>(null)
   const [err, setErr] = useState<string | null>(null)
   const [linked, setLinked] = useState(false)
@@ -38,6 +39,10 @@ export default function Bass2Compare() {
   useEffect(() => {
     fetch(`${BASE}/compare.json`).then((r) => r.json()).then(setData).catch((e) => setErr(String(e)))
   }, [])
+
+  useEffect(() => {
+    if (data && focusRun) document.getElementById(`bass-${focusRun}`)?.focus()
+  }, [data, focusRun])
 
   if (err) return <div className="p-6 text-red-400">Failed to load comparison data: {err}</div>
   if (!data) return <div className="p-6 text-slate-400">Loading B1 vs B3 data…</div>
@@ -50,7 +55,7 @@ export default function Bass2Compare() {
           <span className="text-sm font-semibold text-slate-100">{data.title}</span>
           <span className="ml-2 text-[11px] font-mono text-slate-500">{data.psi_id} · {data.nasa_report} · PI {data.pi}</span>
         </div>
-        <span className="text-[10px] font-semibold px-2 py-1 rounded bg-emerald-500/20 text-emerald-300 tracking-wide">REAL NASA DATA — NOT A MODEL</span>
+        <span className="text-[10px] font-semibold px-2 py-1 rounded bg-emerald-500/20 text-emerald-300 tracking-wide">Recorded experiment</span>
       </div>
 
       {/* link-playback control */}
@@ -67,9 +72,10 @@ export default function Bass2Compare() {
       {/* side-by-side videos */}
       <VideoCard ref={b1Ref} run={data.runs.b1} other={b3Ref} linked={linked} accent="sky" />
       <VideoCard ref={b3Ref} run={data.runs.b3} other={b1Ref} linked={linked} accent="emerald" />
+      <div className="col-span-12"><RecordingAppearance recording="bass" /></div>
 
       {/* difference table */}
-      <div className="col-span-12 rounded-lg border border-space-600 bg-space-850 p-3">
+      <div className="col-span-12 min-w-0 overflow-x-auto rounded-lg border border-space-600 bg-space-850 p-3">
         <h3 className="text-xs font-semibold tracking-widest text-slate-500 uppercase mb-2">
           Documented Conditions — Verified Differences & Unknowns
         </h3>
@@ -103,7 +109,7 @@ export default function Bass2Compare() {
       </div>
 
       {/* sources + limitations */}
-      <div className="col-span-5 rounded-lg border border-space-600 bg-space-850 p-3">
+      <div className="col-span-12 min-w-0 break-words rounded-lg border border-space-600 bg-space-850 p-3 md:col-span-5">
         <h3 className="text-xs font-semibold tracking-widest text-slate-500 uppercase mb-2">Sources & Link</h3>
         <a href={data.investigation_link} target="_blank" rel="noreferrer"
           className="inline-block text-[11px] text-sky-300 hover:underline mb-2">NASA PSI investigation {data.psi_id} ↗</a>
@@ -121,7 +127,7 @@ export default function Bass2Compare() {
           <a href={`${BASE}/${data.runs.b3.proof_sheet}`} target="_blank" rel="noreferrer" className="text-[11px] text-sky-300 hover:underline">B3 proof sheet ↗</a>
         </div>
       </div>
-      <div className="col-span-7 rounded-lg border border-amber-500/30 bg-amber-500/5 p-3">
+      <div className="col-span-12 min-w-0 rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 md:col-span-7">
         <h3 className="text-xs font-semibold tracking-widest text-amber-400/90 uppercase mb-2">Comparison Limitations</h3>
         <ul className="text-[11px] text-slate-400 list-disc list-inside space-y-1">
           {data.comparison_limitations.map((l, i) => <li key={i}>{l}</li>)}
@@ -161,7 +167,8 @@ const VideoCard = forwardRef<HTMLVideoElement, {
   const chip = accent === 'sky' ? 'bg-sky-500/15 text-sky-300' : 'bg-emerald-500/15 text-emerald-300'
 
   return (
-    <div className={`col-span-6 rounded-lg border ${ring} bg-space-850 p-3`}>
+    <div id={`bass-${run.test_no.toLowerCase()}`} tabIndex={-1}
+      className={`col-span-12 min-w-0 rounded-lg border ${ring} bg-space-850 p-3 md:col-span-6`}>
       <div className="flex items-center justify-between mb-1">
         <span className={`text-xs font-semibold px-2 py-0.5 rounded ${chip}`}>Test {run.test_no} · Sample {run.sample_no}</span>
         <span className="text-[11px] font-mono text-amber-300/80">playback time — not sensor time</span>
@@ -174,8 +181,8 @@ const VideoCard = forwardRef<HTMLVideoElement, {
         <button onClick={toggle} className="px-3 py-1.5 rounded bg-space-700 border border-space-600 text-slate-200 text-sm w-20">
           {playing ? '❚❚ Pause' : '▶ Play'}
         </button>
-        <input type="range" min={0} max={dur || 1} step={0.05} value={t}
-          onChange={(e) => seek(parseFloat(e.target.value))} className="flex-1" />
+        <input type="range" aria-label={`BASS-II ${run.test_no} playback time`} min={0} max={dur || 1} step={0.05} value={t}
+          onChange={(e) => seek(parseFloat(e.target.value))} className="min-w-0 flex-1" />
         <span className="font-mono text-[11px] text-slate-400 w-16 text-right">{fmt(t)}/{fmt(dur)}</span>
       </div>
     </div>
