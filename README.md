@@ -52,8 +52,8 @@ driven by the same physics spec** (`skills/01-flame-physics-rules.md` ⇄ `backe
 **Backend** (Python 3.12):
 ```bash
 cd backend
-python -m venv .venv
-.venv/Scripts/activate          # Windows;  source .venv/bin/activate on macOS/Linux
+python3 -m venv .venv
+source .venv/bin/activate       # macOS/Linux; Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 uvicorn main:app --port 8000
 ```
@@ -72,10 +72,11 @@ backend up you get real Gaussian-Process predictive uncertainty.
 ## Project layout
 
 ```
-skills/01-flame-physics-rules.md   # single source of truth for the physics
-skills/02-canvas-animation-spec.md # how FlameCanvas renders each regime
+AGENTS.md                          # repository-wide Codex instructions
+skills/01-flame-physics-rules.md   # canonical physics specification
+skills/02-canvas-animation-spec.md # FlameCanvas rendering contract
 backend/
-  data/psi_master.json             # 25 PSI-grounded seed records (verify DOIs before submit)
+  data/psi_master.json             # 26 records: 2 real_psi, 24 seed (verify citations before submit)
   physics.py                       # physics port (synthetic anchors + fallback)
   surrogate.py                     # multi-output GaussianProcessRegressor
   ranker.py                        # physics-distance PSI similarity + diffs
@@ -89,35 +90,29 @@ frontend/
 DEMO_SCRIPT.md                     # 2-minute judge pitch
 ```
 
-## Adding real PSI data (ingestion pipeline)
+## Collecting NASA experiment evidence
 
-The app ships with real **Saffire-I (PSI-98)** data already ingested, plus seed records for
-coverage. To add more investigations from the NASA PSI dataset:
+From the repository root, with Python 3.12+ and curl:
 
-1. Drop each investigation into its own folder under `backend/data/raw/<name>/` containing:
-   - `i_Investigation.txt` — the ISA-Tab metadata file (has DOI, material, hardware, approach)
-   - `experimental_table.csv` — the per-sample test matrix (O₂, airflow, material, burn time)
-2. (Optional) put a representative frame in `frontend/public/reference/` for the split-screen.
-3. Run the ingester:
-   ```bash
-   cd backend && python ingest_psi.py
-   ```
-   It parses every folder, maps real conditions/materials onto the app schema, and **merges**
-   with the existing records. Real rows are tagged `provenance: "real_psi"`; conditions come
-   straight from NASA, while flame metrics not present in the table are tagged
-   `output_source: "physics_estimate"` until you extract them from imagery/publications.
-4. Restart the backend (`uvicorn main:app --port 8000`) to retrain the GP on the new rows.
+```bash
+python3 backend/mine_nasa.py --fetch
+```
 
-The UI shows a green **REAL PSI** badge on ingested records and a grey **SEED** badge on
-placeholders, so judges can always see what's real. The raw 371 MB Saffire image drop lives in
-`frontend/public/data/` and is **git-ignored** — only the promoted reference image and the
-parsed metadata/CSV in `backend/data/raw/` are committed.
+The collector downloads the public LUCI, BASS-II and SoFIE GEL reports once, inventories local
+PSI exports, and writes `data_raw/mining/manifest.json` with source links, file hashes, mapped
+rows, and missing files. Omit `--fetch` to scan offline. See the [download checklist](DOWNLOAD_CHECKLIST.md)
+for the remaining exports. Downloaded originals stay under the ignored `data_raw/` directory by default.
+
+[Reviewed measurements](backend/data/mined_evidence.json) carry PDF page references, units, and
+limits. The collector stages evidence for review; it does not feed the predictor. The legacy
+`python3 backend/ingest_psi.py` command only rebuilds the two existing Saffire-I rows, whose
+flame outcomes are still model estimates.
 
 ## Data honesty note
 
-`psi_master.json` is a **physically-plausible seed** so the app runs end-to-end today. The input
-parameters and output magnitudes follow real investigations (BASS/BASS-II, Saffire, FLEX/FLEX-2,
-SAME/SAME-R, DAFT-2, ACME BRE/CFI-G/E-FIELD, SPICE, SLICE), but **per-run numbers and DOIs must be
-replaced with verified values from [psi.nasa.gov](https://www.psi.nasa.gov) before final
-submission.** The model's job is to interpolate between real data and *flag when it is
-extrapolating* — which is exactly what the trust meter surfaces.
+`backend/data/psi_master.json` currently contains **26 rows: 2 `real_psi` rows and 24 `seed` rows**.
+For the two real rows, experimental conditions come from Saffire-I; flame outputs are marked as
+`physics_estimate` where they are not direct measurements. Seed rows are plausible examples based
+on investigation families, not NASA measurements. Verify each citation and replace seed values with
+source-backed data before presenting them as evidence. The model is designed to flag when it is
+extrapolating.

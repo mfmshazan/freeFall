@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { CabinInputs, Diluent, FuelMaterial } from '../types'
 
 interface Props {
@@ -13,28 +14,23 @@ interface Preset {
 
 export const PRESETS: Preset[] = [
   {
-    name: 'ISS Standard',
+    name: 'Orbital cabin example',
     tag: '0g · 21% O₂ · quiescent',
     values: { gravity_g: 0.0, o2_percent: 21, pressure_psi: 14.7, airflow_cm_s: 0, diluent: 'N2', fuel_material: 'Methane_Gas' },
   },
   {
-    name: 'Artemis Lunar Base',
+    name: 'Supported lunar habitat example',
     tag: '1/6g · 32% O₂ · 10.2 psi',
     values: { gravity_g: 0.166, o2_percent: 32, pressure_psi: 10.2, airflow_cm_s: 5, diluent: 'N2', fuel_material: 'Cotton_Fabric' },
   },
   {
-    name: 'EMU Spacesuit',
+    name: 'High-oxygen / low-pressure example',
     tag: '0g · 85% O₂ · 4.3 psi',
     values: { gravity_g: 0.0, o2_percent: 85, pressure_psi: 4.3, airflow_cm_s: 0, diluent: 'N2', fuel_material: 'PMMA_Acrylic' },
   },
   {
-    name: 'High-O₂ Gas Leak (CFI-G)',
-    tag: '0g · 85% O₂ · 6 psi · invisible',
-    values: { gravity_g: 0.0, o2_percent: 85, pressure_psi: 6.0, airflow_cm_s: 0, diluent: 'N2', fuel_material: 'Methane_Gas' },
-  },
-  {
-    name: 'Saffire-I Replay (real data)',
-    tag: '0g · 21.6% O₂ · 20 cm/s · SIBAL',
+    name: 'Saffire-I example conditions',
+    tag: '0g · 22% O₂ · 20 cm/s · cotton proxy',
     values: { gravity_g: 0.0, o2_percent: 22, pressure_psi: 14.7, airflow_cm_s: 20, diluent: 'N2', fuel_material: 'Cotton_Fabric' },
   },
 ]
@@ -65,13 +61,13 @@ function Slider({
 }
 
 export default function CabinBuilder({ inputs, onChange }: Props) {
+  const [altitude, setAltitude] = useState(400)
+  const field = (6371 / (6371 + altitude)) ** 2
   const set = (patch: Partial<CabinInputs>) => onChange({ ...inputs, ...patch })
-  const activePreset = PRESETS.find(
-    (p) =>
-      p.values.gravity_g === inputs.gravity_g &&
-      p.values.o2_percent === inputs.o2_percent &&
-      p.values.pressure_psi === inputs.pressure_psi,
+  const activePreset = PRESETS.find((p) =>
+    (Object.keys(p.values) as (keyof CabinInputs)[]).every((key) => p.values[key] === inputs[key]),
   )
+  const pO2 = (inputs.o2_percent / 100) * inputs.pressure_psi
 
   return (
     <div className="h-full overflow-y-auto p-4">
@@ -96,7 +92,7 @@ export default function CabinBuilder({ inputs, onChange }: Props) {
         ))}
       </div>
 
-      <Slider label="Gravity" value={inputs.gravity_g} min={0} max={1} step={0.001} unit=" g"
+      <Slider label="Effective cabin gravity" value={inputs.gravity_g} min={0} max={1} step={0.001} unit=" g"
         onChange={(v) => set({ gravity_g: v })} />
       <div className="flex gap-1 -mt-2 mb-4">
         {[['ISS', 0], ['Moon', 0.166], ['Mars', 0.38], ['Earth', 1]].map(([l, v]) => (
@@ -107,15 +103,29 @@ export default function CabinBuilder({ inputs, onChange }: Props) {
         ))}
       </div>
 
-      <Slider label="Oxygen" value={inputs.o2_percent} min={15} max={85} step={1} unit="%"
+      <p className="text-xs text-slate-400 mb-3">ISS is nominal free fall. Moon and Mars are supported surface habitats; atmospheres are examples, not mission specifications.</p>
+      <div className="rounded border border-space-600 p-3 mb-4">
+        <h3 className="text-sm text-slate-200 mb-2">Earth orbit: field and free fall</h3>
+        <Slider label="Altitude" value={altitude} min={0} max={2000} step={10} unit=" km" onChange={setAltitude} />
+        <p className="text-xs text-slate-300">Earth field: {field.toFixed(3)} g · Nominal orbital effective gravity: 0 g</p>
+        <p className="text-xs text-slate-400 mt-1">Current effective input: {inputs.gravity_g.toFixed(3)} g{inputs.gravity_g !== 0 ? ' (custom or surface)' : ' (nominal orbit)'}. Altitude does not change the prediction. At 0 km the field is a surface reference, not an orbit.</p>
+        <a className="text-xs text-sky-400" href="https://www.nasa.gov/centers-and-facilities/glenn/what-is-microgravity/" target="_blank" rel="noreferrer">NASA: microgravity and free fall</a>
+      </div>
+
+      <Slider label="Oxygen (volume/mole %)" value={inputs.o2_percent} min={15} max={85} step={1} unit="%"
         onChange={(v) => set({ o2_percent: v })} />
-      <Slider label="Pressure" value={inputs.pressure_psi} min={4.3} max={14.7} step={0.1} unit=" psi"
+      <Slider label="Total pressure (absolute)" value={inputs.pressure_psi} min={4.3} max={14.7} step={0.1} unit=" psi"
         onChange={(v) => set({ pressure_psi: v })} />
+      <div className="rounded border border-sky-500/30 bg-sky-500/5 p-3 mb-4 text-xs">
+        <div className="text-sky-200">Derived oxygen partial pressure: <strong className="font-mono">{pO2.toFixed(2)} psi</strong></div>
+        <p className="text-slate-400 mt-1">21% × 14.7 psi = 3.09 psi; 32% × 10.2 psi = 3.26 psi.</p>
+        <p className="text-slate-400 mt-1">Similar partial pressure does not establish equivalent combustion or safety. Oxygen fraction, total pressure, balance gas, material and apparatus also matter.</p>
+      </div>
       <Slider label="Ventilation airflow" value={inputs.airflow_cm_s} min={0} max={30} step={1} unit=" cm/s"
         onChange={(v) => set({ airflow_cm_s: v })} />
 
       <div className="mb-4">
-        <div className="text-xs text-slate-400 mb-1">Diluent gas</div>
+        <div className="text-xs text-slate-400 mb-1">Illustrative balance gas</div>
         <div className="flex gap-1">
           {DILUENTS.map((d) => (
             <button key={d} onClick={() => set({ diluent: d })}
@@ -126,6 +136,7 @@ export default function CabinBuilder({ inputs, onChange }: Props) {
             </button>
           ))}
         </div>
+        <p className="text-[11px] text-slate-500 mt-1">Binary-mixture model: O₂ plus one of N₂, CO₂ or He. Reported mixed-gas experiments stay in evidence.</p>
       </div>
 
       <div>

@@ -46,14 +46,12 @@ export default function FlameCanvas({ prediction, uncertainty, gravity_g, airflo
   const targetRef = useRef<Frame>(toFrame(prediction, uncertainty))
   const curRef = useRef<Frame>(toFrame(prediction, uncertainty))
   const regimeRef = useRef(prediction.visual_regime)
-  const trustRef = useRef(uncertainty.trust_status)
   const envRef = useRef({ gravity_g, airflow_cm_s })
 
   // update targets without touching the running loop
   useEffect(() => {
     targetRef.current = toFrame(prediction, uncertainty)
     regimeRef.current = prediction.visual_regime
-    trustRef.current = uncertainty.trust_status
     envRef.current = { gravity_g, airflow_cm_s }
   }, [prediction, uncertainty, gravity_g, airflow_cm_s])
 
@@ -82,7 +80,7 @@ export default function FlameCanvas({ prediction, uncertainty, gravity_g, airflo
       c.uLen = lerp(c.uLen, tg.uLen, k)
       c.uWid = lerp(c.uWid, tg.uWid, k)
 
-      draw(ctx, canvas, c, regimeRef.current, trustRef.current, envRef.current, t, dashOffset)
+      draw(ctx, canvas, c, regimeRef.current, envRef.current, t, dashOffset)
       dashOffset = (dashOffset + dt * 18) % 1000
       raf = requestAnimationFrame(render)
     }
@@ -109,8 +107,8 @@ function toFrame(p: Prediction, u: Pick<Uncertainty, 'std_length_mm' | 'std_widt
     aspect: p.aspect_ratio_LD,
     soot: p.soot_fraction,
     spread: p.spread_rate_mm_s,
-    uLen: u.std_length_mm * 1.96, // ±95%
-    uWid: u.std_width_mm * 1.96,
+    uLen: u.std_length_mm,
+    uWid: u.std_width_mm,
   }
 }
 
@@ -119,7 +117,6 @@ function draw(
   canvas: HTMLCanvasElement,
   f: Frame,
   regime: string,
-  trust: string,
   env: { gravity_g: number; airflow_cm_s: number },
   t: number,
   dashOffset: number,
@@ -155,7 +152,7 @@ function draw(
   ctx.stroke()
   ctx.restore()
 
-  // ---- uncertainty halo (dashed outer ±95% envelope) ----
+  // ---- uncertainty halo (dashed outer model spread) ----
   const haloLen = ((f.length + f.uLen) / 2) * PX
   const haloWid = ((f.width + f.uWid) / 2) * PX
   ctx.save()
@@ -163,8 +160,7 @@ function draw(
   ctx.setLineDash([6, 6])
   ctx.lineDashOffset = -dashOffset
   ctx.lineWidth = 1.5
-  ctx.strokeStyle =
-    trust === 'HIGH_CONFIDENCE' ? 'rgba(16,185,129,0.45)' : 'rgba(239,68,68,0.5)'
+  ctx.strokeStyle = 'rgba(251,191,36,0.6)'
   ctx.beginPath()
   ctx.ellipse(0, 0, haloWid, haloLen, 0, 0, Math.PI * 2)
   ctx.stroke()
@@ -265,8 +261,6 @@ function draw(
   // ---- HUD telemetry ----
   drawHUD(ctx, W, H, f, regime, env)
 
-  // ---- invisible-flame hazard badge ----
-  if (cool) drawHazardBadge(ctx, W, t)
 }
 
 function drawScaleBar(ctx: CanvasRenderingContext2D, W: number, H: number, PX: number) {
@@ -314,30 +308,14 @@ function drawHUD(
   const tr = [
     `spread ${f.spread.toFixed(2)} mm/s`,
     `standoff ${f.standoff.toFixed(1)} mm`,
-    `±margin ${(f.uLen / 2).toFixed(1)} mm`,
+    `spread ±${f.uLen.toFixed(1)} mm`,
   ]
   tr.forEach((s, i) => ctx.fillText(s, W - 14, 20 + i * 15))
   // bottom-right regime + env
   ctx.fillStyle = '#cbd5e1'
-  ctx.fillText(regime.replace(/_/g, ' '), W - 14, H - 26)
+  ctx.fillText(regime === 'INVISIBLE_COOL_FLAME' ? 'FAINT PALETTE (HEURISTIC)' : regime.replace(/_/g, ' '), W - 14, H - 26)
   ctx.fillStyle = '#64748b'
   ctx.fillText(`g=${env.gravity_g.toFixed(3)}  flow=${env.airflow_cm_s} cm/s`, W - 14, H - 12)
   ctx.restore()
 }
-
-function drawHazardBadge(ctx: CanvasRenderingContext2D, W: number, t: number) {
-  const pulse = 0.5 + 0.5 * Math.sin(t * 4)
-  const text = 'OPTICAL HAZARD: LOW-SOOT / INVISIBLE FLAME — RADIOMETER REQUIRED'
-  ctx.save()
-  ctx.font = 'bold 10px ui-monospace, monospace'
-  ctx.textAlign = 'center'
-  const w = ctx.measureText(text).width + 20
-  const x = W / 2 - w / 2
-  ctx.fillStyle = `rgba(109,40,217,${0.35 + 0.35 * pulse})`
-  ctx.fillRect(x, 44, w, 20)
-  ctx.strokeStyle = `rgba(167,139,250,${0.6 + 0.4 * pulse})`
-  ctx.strokeRect(x, 44, w, 20)
-  ctx.fillStyle = '#e9d5ff'
-  ctx.fillText(text, W / 2, 58)
-  ctx.restore()
-}
+import { APPEARANCE_LABELS } from '../physics/appearance'

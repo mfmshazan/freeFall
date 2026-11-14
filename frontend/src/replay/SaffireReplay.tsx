@@ -26,6 +26,11 @@ interface Conditions {
   sources: string[]; provenance: string
 }
 
+interface ReportResults {
+  source_url: string; report_page: number; material: string; gravity: string; nominal_duct_flow_cm_s: number; metric: string
+  results: { run_id: string; direction: string; spread_mm_s: number }[]; caveat: string
+}
+
 const BASE = '/replay/saffire-1'
 const GROUPS: { id: string; label: string; unit: string; colors: string[] }[] = [
   { id: 'radiometer', label: 'Flame radiation (radiometers)', unit: 'mW/cm²', colors: ['#f87171', '#fb923c', '#fbbf24', '#f472b6'] },
@@ -39,6 +44,7 @@ export default function SaffireReplay() {
   const [sensors, setSensors] = useState<Sensors | null>(null)
   const [frames, setFrames] = useState<Frames | null>(null)
   const [cond, setCond] = useState<Conditions | null>(null)
+  const [report, setReport] = useState<ReportResults | null>(null)
   const [err, setErr] = useState<string | null>(null)
 
   const [t, setT] = useState(0)
@@ -57,6 +63,12 @@ export default function SaffireReplay() {
       // open mid-burn so the first visible frame actually shows the flame front
       .then(([s, f, c]) => { setSensors(s); setFrames(f); setCond(c); setT(Math.round((f.t_start + f.t_end) / 2)) })
       .catch((e) => setErr(String(e)))
+  }, [])
+
+  useEffect(() => {
+    fetch(`${BASE}/report-results.json`)
+      .then(r => { if (!r.ok) throw new Error('Report results unavailable'); return r.json() })
+      .then(setReport).catch(() => setReport(null))
   }, [])
 
   // playback loop (real experiment seconds × speed)
@@ -167,7 +179,7 @@ export default function SaffireReplay() {
 
       {/* RIGHT: recorded conditions */}
       <div className="col-span-5 rounded-lg border border-space-600 bg-space-850 p-3">
-        <h3 className="text-xs font-semibold tracking-widest text-slate-500 uppercase mb-2">Recorded Conditions</h3>
+        <h3 className="text-xs font-semibold tracking-widest text-slate-500 uppercase mb-2">Replay metadata and calibrated data</h3>
         <dl className="grid grid-cols-2 gap-y-1.5 text-xs">
           <dt className="text-slate-500">Material</dt><dd className="text-slate-200 text-right">{cond.sample.material}</dd>
           <dt className="text-slate-500">Sample size</dt><dd className="text-slate-200 text-right">{cond.sample.size_mm} mm</dd>
@@ -192,6 +204,14 @@ export default function SaffireReplay() {
         </div>
         <p className="mt-2 text-[10px] text-slate-600">Image↔sensor timing: <span className="text-emerald-400">{cond.timing.image_sync}</span>. {cond.timing.image_sync_note}</p>
       </div>
+
+      {report && <section className="col-span-12 rounded-lg border border-space-600 bg-space-850 p-4">
+        <h3 className="text-sm font-semibold text-slate-200">Measured results in the NASA report</h3>
+        <p className="text-xs text-slate-400 mt-1">{report.material} · {report.gravity} · nominal duct flow {report.nominal_duct_flow_cm_s} cm/s · {report.metric}</p>
+        <div className="flex gap-6 mt-2 text-sm text-sky-300">{report.results.map(r => <span key={r.run_id}>Run {r.run_id}, {r.direction}: {r.spread_mm_s} mm/s</span>)}</div>
+        <p className="text-xs text-slate-400 mt-2">{report.caveat}</p>
+        <a className="text-xs text-sky-400" href={report.source_url} target="_blank" rel="noreferrer">NASA Saffire-I report, page {report.report_page}</a>
+      </section>}
 
       {/* chart */}
       <div className="col-span-12 rounded-lg border border-space-600 bg-space-850 p-3">

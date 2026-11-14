@@ -56,11 +56,16 @@ def predict(inp: CabinInputs):
         "visual_regime": phys["visual_regime"],
     }
 
+    if i["gravity_g"] == 0 and i["airflow_cm_s"] == 0:
+        prediction["flame_length_mm"] = round(phys["flame_length_mm"], 2)
+        prediction["flame_width_mm"] = prediction["flame_length_mm"]
+        prediction["aspect_ratio_LD"] = 1.0
+
     ranked, nearest = ranker.rank(i)
     top = ranked[0]
 
     # --- trust logic: GP std + out-of-distribution penalty ---
-    partial_gravity = 0.02 < i["gravity_g"] < 0.95   # PSI has NO partial-gravity flames
+    partial_gravity = 0.02 < i["gravity_g"] < 0.95   # model coverage penalty
     high_o2 = i["o2_percent"] >= 30
     extrap_pen = (0.6 if partial_gravity else 0.0) + (0.2 if high_o2 else 0.0)
 
@@ -102,42 +107,9 @@ def predict(inp: CabinInputs):
 
 
 def _explain(status, top, partial_g, high_o2, nearest):
-    if status == "UNVERIFIED_REGIME_DO_NOT_TRUST":
-        return (f"No spaceflight data exists for partial gravity above 30% O2. The GP is "
-                f"extrapolating far from its training set (closest real run: {top['experiment_id']}, "
-                f"{top['similarity']}% match). Require a physical test or apply a heavy margin.")
-    if status == "CAUTION_EXTRAPOLATING":
-        reason = ("you are in partial gravity, which PSI never directly tested (only 0g and 1g)"
-                  if partial_g else
-                  "elevated oxygen pushes beyond the densest part of the dataset" if high_o2 else
-                  f"the nearest PSI run is only a {top['similarity']}% match")
-        return (f"Moderate confidence: {reason}. The GP predictive variance is elevated; treat the "
-                f"number as a bounded estimate anchored by {top['experiment_id']} ({top['similarity']}% match).")
-    return (f"High confidence: cabin settings sit close to real NASA data ({top['experiment_id']}, "
-            f"{top['similarity']}% match, GP distance {nearest:.2f}). Prediction is interpolated "
-            f"within tested conditions.")
+    return ("No comparable measured outcome used by this model. Its training includes synthetic "
+            "examples and estimated outcomes; GP spread is model-based and not a calibrated interval.")
 
 
 def _playbook(i, p):
-    dangerous = p["spread_rate_mm_s"] > 1.5 or p["visual_regime"] == "BUBBLING_PMMA_STREAKS"
-    invisible = p["visual_regime"] == "INVISIBLE_COOL_FLAME"
-    return [
-        {"category": "PREVENTION",
-         "headline": "Swap to a flame-resistant material" if (i["fuel_material"] == "PMMA_Acrylic" or i["o2_percent"] >= 30) else "Material within tested envelope",
-         "detail": (f"At {i['o2_percent']:.0f}% O2, screen cabin polymers — Saffire-II ranked materials at 34% O2. "
-                    "Prefer Nomex/PTFE over acrylic and cotton.") if i["o2_percent"] >= 30 else
-                   "Current material/atmosphere is near NASA-tested limits. Keep ventilation below the concurrent-flow spread peak (~12 cm/s).",
-         "triggered": dangerous},
-        {"category": "DETECTION",
-         "headline": "Optical detectors will MISS this flame" if invisible else "Tune smoke detector for microgravity particles",
-         "detail": ("CFI-G showed high-O2/low-pressure flames emit little visible light. Require radiometric or UV/OH* "
-                    "sensing; standard photoelectric alarms are blind here.") if invisible else
-                   "SAME/SAME-R: microgravity smoke coagulates into larger particles; DAFT-2 shows lunar dust can mimic smoke. "
-                   "Use multi-wavelength scattering to reject dust false-alarms.",
-         "triggered": invisible or i["gravity_g"] < 0.95},
-        {"category": "SUPPRESSION",
-         "headline": "Cut ventilation before discharging agent" if i["airflow_cm_s"] > 0 else "Select the right inert agent",
-         "detail": "FLEX-2: CO2 extinguishes at higher residual O2 than N2 (strong per-mole inerting); He requires more O2 "
-                   "to quench. BASS-II: in microgravity, airflow can feed a dying flame — shut HVAC first, then flood with CO2.",
-         "triggered": p["visual_regime"] != "QUENCHED_EXTINGUISHED"},
-    ]
+    return []

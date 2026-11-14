@@ -14,7 +14,6 @@ export type VisualRegime =
   | 'STRETCHED_LAMINAR_TEARDROP'
   | 'SOOTY_YELLOW_CORE'
   | 'BUBBLING_PMMA_STREAKS'
-  | 'INVISIBLE_COOL_FLAME'
   | 'QUENCHED_EXTINGUISHED'
 
 export type TrustStatus =

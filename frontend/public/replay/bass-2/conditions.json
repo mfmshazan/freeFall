@@ -56,7 +56,7 @@
   },
 
   "sources": [
-    "BASS-II Test Matrix by PI Final.xlsx → 'Bhattacharjee' sheet, row B1 / Sample 147",
+    "BASS-II Test Matrix by PI Final.xlsx → 'Bhattacharjee' sheet, B1 / Sample 147; cross-checked against PSI-25 Experimental Table, CSV line 2",
     "BASS-II Summary Report.pdf — NASA/TM-20210011385, §2.3.5 (apparatus, flow config, pressure)",
     "BASS-II data FAQ.docx (column definitions: fan display, air display, restrictor, O2 calibration)",
     "GMT2014_050_BASS_S147M_TPB1_ProofSheet.pdf",
@@ -77,8 +77,8 @@
     "why": "Same material and geometry (100 µm cast PMMA film, 2 cm wide), same flow restrictor (2), same initial O2 (22.2%), same radiometer gain (50), SAME test day (GMT 050, 2014-02-19) — the cleanest 'different airflow' comparison.",
     "airflow_difference": "Air display 2 cm/s (fan 47 = 4.7 V) vs B1's 5 cm/s (fan 62 = 6.2 V)",
     "other_differences_that_could_affect_comparison": [
-      "Final O2: B3 depletes to 21.8% vs B1 unchanged at 22.2% (B3 burned longer / more fuel consumed)",
-      "CO: B3 12→19 ppm vs B1 0→6 ppm (more incomplete combustion at the lower flow)",
+      "Final O2: B3 depletes to 21.8% vs B1 unchanged at 22.2%",
+      "CO: B3 12→19 ppm vs B1 0→6 ppm",
       "Nikon frames shot: B3 253 vs B1 57 — this is frames shot, NOT a verified burn duration (no documented per-frame timing for the burn window)",
       "Different physical specimen (sample 148 vs 147): normal sample-to-sample variation",
       "Air-display ~1 min response lag means the 2 vs 5 cm/s values carry uncertainty"

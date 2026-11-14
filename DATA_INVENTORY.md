@@ -1,6 +1,52 @@
 # Data Inventory
 
-Covers the two real NASA datasets integrated into FlameAtlas: **Saffire-I** and **BASS-II**.
+Covers NASA replay data integrated into the app and evidence collected for later model evaluation.
+
+## Data mining and reviewed evidence
+
+`python3 backend/mine_nasa.py --fetch` caches public LUCI, BASS-II and SoFIE GEL reports under
+`data_raw/mining/` and builds a local manifest with source URLs, SHA-256 hashes and PSI export
+status. The reports are separate from the official PSI experiment table and metadata downloads.
+The Saffire-I test matrix contributes published conditions as written, including ranges and
+approximate values; the two existing master rows still use modeled flame outcomes.
+
+[Reviewed LUCI evidence](backend/data/mined_evidence.json) records NASA's camera-based linear
+fits for SIBAL flame base and flame tip spread. NASA reports **0.92 / 1.1 mm/s** at simulated
+lunar gravity and **1.5 / 2.8 mm/s** at 1 g. See PDF pages 19 and 33 of the
+[LUCI presentation](https://ntrs.nasa.gov/api/citations/20250010653/downloads/ASGSR%202025-LUCI-Ferkul-Presentation-v2-20250010653.pdf).
+The pressure and airflow inputs are incomplete, the oxygen profiles differ, and the source
+distinguishes base spread from tip spread. These rows are evidence for review, outside training.
+
+## NASA.zip archive mapping
+
+The six experiment tables from the supplied `NASA.zip` are staged as original bytes under
+`data_raw/mining/inbox/`. The [collector mappings](backend/psi_table_mappings.py) record the
+source column meanings; the generated [manifest](data_raw/mining/manifest.json) gives the
+source file, SHA-256 and CSV line for each mapped row. Blank cells stay null, and source
+qualifiers and repeat rows are preserved. macOS archive sidecars are ignored.
+
+| PSI | Files mapped | Result |
+|---|---|---|
+| PSI-25 BASS-II | 129 test-matrix rows | Metadata from the separate `download.zip` declares PSI-25 internally despite the filename containing PSI-101. The summary PDF is byte-identical to the existing NASA/TM-20210011385 cache. |
+| PSI-159 ACME CFI-G | 179 normal and 154 inverse rows; final report | The inverse CSV also has 861 blank rows. Matching ISA-Tab was already staged separately. Test 21174 C3 matches Table 3, PDF p. 46: cool-phase duration 13.9 s, hot/cool flame radii 17.6/7.6 mm. |
+| PSI-69 FLEX | 274 droplet test rows | Windows-1252 export with matching PSI-69/PSI-133 ISA-Tab metadata. [NASA/TP-2015-216046](https://ntrs.nasa.gov/citations/20150023456), Appendix A, documents diameter-squared burning rate in mm²/s and defines the extinction diameter as a droplet measurement. Hardware ID `248F001` matches report test FLEX-018. |
+| PSI-102 SAME | 8 test-matrix rows | Four explicit settings and four material rows referring back to those settings. Aging duration is a test condition. The table has no particle or detector results. Matching ISA-Tab metadata is now catalogued. |
+| PSI-107 SPICE | 469 coflow rows | Nozzle size, gas and air flows, and event times; no smoke-point or soot measurements. Preserve repeated time keys. Matching ISA-Tab metadata is now catalogued. |
+| PSI-99 SAFFIRE-II | 15 experimental rows plus JPEG index workbook and two PDFs | The workbook's `Sample1 - jpeg` through `Sample9 - jpeg` sheets index files by `EpochTime` (ms), `Jpeg File Name` and `Zip File Name`. The referenced frames and sensor data are absent, so the index cannot support a replay. The 15-row table and matching ISA-Tab are catalogued for evidence review. |
+| PSI-10 ACME Flame Design | 327 normal/inverse rows | Normal and inverse flame-design exports with matching ISA-Tab metadata. Feed rates, pressures, mixture fractions and Tad remain source-reported quantities; catalogued as evidence only. |
+| PSI-26 BASS | 122 test-matrix rows | Date/time, test identifiers and fuel sample material; no flame-outcome measurements in this export. Matching ISA-Tab metadata is catalogued. |
+| PSI-100 SAFFIRE-III | 2 sample-matrix rows | Sample geometry, airflow/direction and camera references; no measured flame outcomes in this export. Matching ISA-Tab metadata is catalogued. |
+| PSI-68 FLEX-2 | 8 droplet-condition rows | Fuel, droplet diameter, gas composition, pressure, temperature and flow velocity. Conditions only; matching ISA-Tab metadata is catalogued. |
+| PSI-142 Cool Flame Transitions | 8 dataset-index rows | Dataset descriptions, publication links and figure IDs; not row-level measurements. Matching ISA-Tab metadata is catalogued. |
+| PSI-101 SAME-R | 109 test/aging-condition rows | Sample type, test identifiers, inlet velocity, radius ratio and aging/mixing durations. Preserve reported values; matching ISA-Tab metadata is catalogued. |
+| PSI-60 SPICE analysis | Metadata only | NASA lists no associated Experimental Table. The investigation analyzes PSI-107 data; metadata is catalogued for provenance. |
+| PSI-62 BASS tomography modeling | Metadata only | NASA lists no associated Experimental or Modeling Table. The investigation links back to BASS/PSI-25 and PSI-26 data; metadata is catalogued for provenance. |
+| PSI-117 Thermo-Convective Cool Flames | Metadata plus analyzed CSV/XLSX outputs | NASA lists no associated Experimental Table. Analyzed data and metadata are catalogued as context/evidence, not raw experiment measurements. |
+
+The matched CFI-G and FLEX observations are in [reviewed evidence](backend/data/mined_evidence.json).
+They remain outside the predictor dataset. CFI-G feed rates are mass flows, and burner
+temperature refers to the hardware. FLEX's diameter-squared rate is a different quantity from
+the simulator's mm/s output.
 
 ---
 
@@ -32,11 +78,14 @@ burn duration in seconds, any continuous sensor time-series (only before/after v
 only). Still-camera clock = BASS video clock − 1 day 6 min 10 s (per proof sheet); video-display date
 is +1 day from actual (leap-year). Temperature is **not** measured and is **not** inferred from flame colour.
 
-**Suggested comparison run:** **Test B3 / Sample 148** — same 100 µm PMMA film, 2 cm, restrictor 2,
+**Comparison run:** **Test B3 / Sample 148** — same 100 µm PMMA film, 2 cm, restrictor 2,
 initial O₂ 22.2 %, same day (GMT 050); airflow differs (air 2 cm/s, fan 47/4.7 V vs B1's 5 cm/s, 6.2 V).
-Confounders: B3 final O₂ 21.8 % (vs 22.2), CO 12→19 ppm (vs 0→6), 253 frames (vs 57, longer test),
-different specimen. **Required files (NOT downloaded):** `BASS_GMT50_SAMPLE_148_TEST_B3.mp4`,
-`GMT2014_050_BASS_S148M_TPB3_ProofSheet.pdf` (filename patterns inferred from B1; no URL asserted).
+Confounders: B3 final O₂ 21.8 % (vs 22.2), CO 12→19 ppm (vs 0→6), 253 frames (vs 57),
+different specimen. The processed `b3.mp4`, `proofsheet_b3.pdf` and the run comparison in
+`compare.json` are already bundled in `frontend/public/replay/bass-2/`. The PSI-25 export
+in the inbox cross-checks B1 / 147 at CSV line 2 and B3 / 148 at line 4, including the
+duct display, fan setting and before/after gas readings. The table provides no per-run
+flame spread rates; the report's series-level values are not assigned to these replays.
 
 ---
 
@@ -98,3 +147,7 @@ e.g. 55.02 s ↔ 1465937098442). So frames and sensors share one real clock → 
 - `conditions.json` — conditions + measured-at-ignition atmosphere + channel catalog + provenance.
 - `sensors.json` — 667 samples @1 Hz, 15 channels, nulls preserved as gaps, igniter markers.
 - `frames.json` + `frames/f_<epoch>.jpg` — 80 downscaled (480 px) S1C1 frames with elapsed-time tags.
+
+## Saffire-I report results card
+
+`frontend/public/replay/saffire-1/report-results.json` is a curated transcription of the [NASA Saffire-I report, page 21](https://ntrs.nasa.gov/api/citations/20170008805/downloads/20170008805.pdf#page=21): video-derived average spread rates for runs 1-1 and 1-2, nominal duct flow, and the reused-specimen caveat. It is separate from the partial concurrent-run replay and is not cursor telemetry or model training data. The report describes 40.6 × 94 cm fabric and 21.7% starting oxygen (ISS reading); replay metadata describes 300 × 800 mm and a separate calibrated ignition reading of about 22.62% oxygen. These different bases are not reconciled or averaged.

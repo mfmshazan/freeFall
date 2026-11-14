@@ -11,9 +11,8 @@ shared by **three** consumers so they never disagree:
 3. `backend/ranker.py` — normalizes the same feature space for similarity scoring.
 
 > These are **engineering surrogate correlations** tuned for real-time 2D rendering and for
-> producing physically *plausible, monotonic* trends — **not** validated CFD. Real NASA PSI
-> ground-truth values in `psi_master.json` always override these formulas where they overlap.
-> The model's job is to *interpolate between* real data and *flag* when it is extrapolating.
+> producing physically *plausible, monotonic* trends — **not** validated CFD. The master dataset contains synthetic examples and sourced conditions with estimated outcomes.
+> Model predictions and uncertainty are illustrative and are not validated against comparable outcomes.
 
 ---
 
@@ -149,14 +148,13 @@ soot_fraction = clamp(
 Note the high-O2 *suppression* term: very high O2 + low pressure (suit/cool-flame regimes)
 burns hot and **clean/blue** — soot drops, flame can become near-invisible.
 
-### 5.2 Radiometric heat flux (proxy, for the "invisible flame" detector)
+### 5.2 Radiometric heat flux (proxy, illustrative only)
 
 ```
 radiometric_flux_kw_m2 = clamp(3.0 * OPI * (0.4 + 0.6 * soot_fraction) + 1.5 * (1 - g), 0, 25)
 ```
 
-A cool/blue flame can still have **meaningful radiometric flux while emitting little visible
-light** — that is exactly the optical-detection hazard the dashboard must warn about.
+This proxy is not a measurement and does not establish visibility, chemistry, or detector requirements.
 
 ### 5.3 Visual regime decision (evaluate top-to-bottom, first match wins)
 
@@ -210,9 +208,8 @@ and geometry collapses to a faint shrinking ember.
 - Color stops by regime:
   - Blue chemiluminescence shell: `#1E40AF → #60A5FA → transparent`
   - Soot/yellow core: `#F59E0B → #FDE047`, radius ∝ `soot_fraction`
-  - Cool/invisible: violet-blue `#4C1D95 → #6D28D9` at ≤ 0.18 opacity + hazard badge
-- **Uncertainty halo:** dashed outer contour at mean ± (`std_length_mm`, `std_width_mm`);
-  red `rgba(239,68,68,0.35)` when trust is low, green `rgba(16,185,129,0.25)` when high.
+  - Cool/invisible: violet-blue `#4C1D95 → #6D28D9` at ≤ 0.18 opacity; illustrative only
+- **Uncertainty halo:** amber dashed contour showing model spread, not calibrated coverage.
 
 ---
 
@@ -223,8 +220,12 @@ and geometry collapses to a faint shrinking ember.
 | ISS candle baseline | 0.0 | 21 | 14.7 | 0 | Methane_Gas | perfect blue **sphere**, aspect=1.00, low soot |
 | ISS acrylic + draft | 0.0 | 21 | 14.7 | 10 | PMMA_Acrylic | teardrop, bubbling streaks, moderate soot |
 | Artemis lunar base | 0.166 | 32 | 10.2 | 5 | Cotton_Fabric | stretched, faster spread, **extrapolating** regime |
-| EMU suit fire | 0.0 | 85 | 4.3 | 0 | PMMA_Acrylic | hot, low-soot → **INVISIBLE_COOL_FLAME** hazard |
+| EMU suit fire | 0.0 | 85 | 4.3 | 0 | PMMA_Acrylic | heuristic faint palette; chemistry unconfirmed |
 | CO2 suppression test | 0.0 | 18 | 14.7 | 0 | Heptane_Droplet | near MOC, slow pulse → **QUENCHED** |
 
 These are the trend checkpoints — exact numbers come from the GP trained on `psi_master.json`.
 ```
+
+## Phase 1 presentation contract
+
+At zero effective gravity and zero airflow, the API uses the physical model's equal length and width rather than independent GP dimension estimates. The offline path has the same boundary. The visual-regime classifier and soot and heat proxies are heuristic; palette colors do not confirm cool-flame chemistry or instrument requirements. Model spread is not a calibrated interval.

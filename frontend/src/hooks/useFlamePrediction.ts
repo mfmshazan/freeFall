@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { CabinInputs, PredictResponse } from '../types'
 import { predictLocalService } from '../physics/localService'
+import { isCurrentAppearance } from '../physics/appearance'
 
 const API = 'http://localhost:8000/api/predict'
 const DEBOUNCE_MS = 150
@@ -12,6 +13,7 @@ export function useFlamePrediction(inputs: CabinInputs): PredictResponse {
   const timer = useRef<number | null>(null)
 
   useEffect(() => {
+    let active = true
     // show local result instantly for a snappy canvas
     setResult(predictLocalService(inputs))
 
@@ -29,7 +31,9 @@ export function useFlamePrediction(inputs: CabinInputs): PredictResponse {
         window.clearTimeout(to)
         if (res.ok) {
           const data = (await res.json()) as PredictResponse
-          setResult({ ...data, source: 'backend' })
+          if (active && data?.prediction && isCurrentAppearance(data.prediction.visual_regime)) {
+            setResult({ ...data, source: 'backend' })
+          }
         }
       } catch {
         /* backend offline — keep local fallback already set */
@@ -37,6 +41,7 @@ export function useFlamePrediction(inputs: CabinInputs): PredictResponse {
     }, DEBOUNCE_MS)
 
     return () => {
+      active = false
       if (timer.current) window.clearTimeout(timer.current)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

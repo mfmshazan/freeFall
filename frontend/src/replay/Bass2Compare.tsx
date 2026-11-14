@@ -113,6 +113,7 @@ export default function Bass2Compare() {
           <li>• {data.runs.b3.video_source}</li>
           <li>• {data.runs.b3.proof_source}</li>
           <li>• BASS-II Test Matrix by PI Final.xlsx → Bhattacharjee (B1, B3)</li>
+          <li>• PSI-25 Experimental Table → CSV lines 2 (B1) and 4 (B3)</li>
           <li>• BASS-II Summary Report.pdf ({data.nasa_report}, §2.3.5)</li>
         </ul>
         <div className="mt-2 flex gap-3">

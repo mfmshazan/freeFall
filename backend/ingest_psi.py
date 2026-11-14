@@ -1,20 +1,6 @@
-"""Ingest real NASA PSI investigation drops into psi_master.json.
-
-Each investigation lives in backend/data/raw/<name>/ and contains at least:
-  - i_Investigation.txt      (ISA-Tab investigation metadata)
-  - experimental_table.csv   (the per-sample test matrix)
-  - optional: reference_image (relative path served from frontend/public/reference)
-
-The script parses those, maps real conditions/materials onto the app schema, fills
-any outputs missing from the structured table with a physics estimate (clearly
-tagged), and MERGES the result with the existing seed records — real records keep
-provenance="real_psi", untouched seeds keep provenance="seed". Re-runnable.
-
-Usage:  python ingest_psi.py
-"""
+"""Rebuild the existing PSI-98 Saffire-I rows. Use mine_nasa.py for new studies."""
 from __future__ import annotations
 import csv
-import glob
 import json
 import os
 import re
@@ -87,6 +73,8 @@ def ingest_investigation(folder: str) -> list[dict]:
     csv_path = os.path.join(folder, "experimental_table.csv")
 
     study_id = meta_get(meta, "Study Identifier", os.path.basename(folder))
+    if study_id != "PSI-98":
+        raise ValueError(f"No verified legacy model mapping for {study_id}; use mine_nasa.py")
     name = meta_get(meta, "Study Title", study_id)
     approach = meta_get(meta, "Comment[Approach]")
     impacts = meta_get(meta, "Comment[Research Impacts]")
@@ -101,7 +89,7 @@ def ingest_investigation(folder: str) -> list[dict]:
     rack = "Cygnus" if "cygnus" in (hardware + platform).lower() else (
         "CIR" if "cir" in hardware.lower() else
         "MSG" if "glovebox" in hardware.lower() or "msg" in hardware.lower() else "PSI")
-    gravity = 0.0 if any(k in platform.lower() for k in ("iss", "cygnus", "space station")) else 0.0
+    gravity = 0.0  # PSI-98 flight runs only; simulator's nominal microgravity input
 
     records = []
     with open(csv_path, newline="", encoding="utf-8", errors="replace") as f:
@@ -157,46 +145,20 @@ def ingest_investigation(folder: str) -> list[dict]:
 
 
 def main():
-    base = json.load(open(OUT, encoding="utf-8"))
-    seeds = base["records"]
-
-    real = []
-    for folder in sorted(glob.glob(os.path.join(RAW, "*"))):
-        if os.path.isfile(os.path.join(folder, "i_Investigation.txt")):
-            got = ingest_investigation(folder)
-            real.extend(got)
-            print(f"  + {os.path.basename(folder)}: {len(got)} real record(s)")
-
-    # idempotent merge: always regenerate real records from raw/, so first drop any
-    # previously-ingested real rows, then drop seeds we now have real data for.
-    def sig(name: str) -> frozenset:
-        # normalized token set: ignore parens/acronyms and generic words, keep roman numerals
-        name = re.sub(r"\(.*?\)", " ", name).lower()
-        stop = {"safety", "experiment", "the", "and", "of", "in", "with"}
-        toks = [t for t in re.findall(r"[a-z0-9]+", name) if t not in stop]
-        return frozenset(toks)
-
-    real_ids = {r["experiment_id"] for r in real}
-    real_sigs = {sig(r["investigation_name"]) for r in real}
-    kept_seeds = []
-    for s in seeds:
-        if s.get("provenance") == "real_psi" or s["experiment_id"] in real_ids:
-            continue  # stale real row or id collision — regenerated above
-        if sig(s["investigation_name"]) in real_sigs:
-            continue  # a real version of this investigation now exists — replace the seed
-        s.setdefault("provenance", "seed")
-        s.setdefault("output_source", "seed")
-        kept_seeds.append(s)
-
-    base["records"] = real + kept_seeds
-    base["provenance_summary"] = {
-        "real_psi": len(real),
-        "seed": len(kept_seeds),
-        "note": "real_psi = conditions parsed from NASA PSI ISA-Tab/CSV; flame metrics are physics_estimate until extracted from imagery/publications. seed = plausible placeholder pending real data.",
-    }
-    json.dump(base, open(OUT, "w", encoding="utf-8"), indent=2)
-    json.dump(base, open(FRONT_COPY, "w", encoding="utf-8"), indent=2)
-    print(f"Wrote {len(base['records'])} records ({len(real)} real, {len(kept_seeds)} seed) -> psi_master.json (+ frontend copy)")
+    with open(OUT, encoding="utf-8") as f:
+        base = json.load(f)
+    sourced = ingest_investigation(os.path.join(RAW, "saffire-1"))
+    by_id = {r["experiment_id"]: r for r in sourced}
+    expected = {"SAFFIRE-I-S1", "SAFFIRE-I-S2"}
+    existing = {r["experiment_id"] for r in base["records"] if r.get("provenance") == "real_psi"}
+    if set(by_id) != expected or len(sourced) != len(expected) or not expected <= existing:
+        raise ValueError("Expected the two existing Saffire-I flight rows; no datasets written")
+    base["records"] = [by_id.get(r["experiment_id"], r) for r in base["records"]]
+    document = json.dumps(base, indent=2, allow_nan=False)
+    for path in (OUT, FRONT_COPY):
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(document)
+    print("Rebuilt the two legacy Saffire-I rows in both dataset copies. Use mine_nasa.py for new studies.")
 
 
 if __name__ == "__main__":

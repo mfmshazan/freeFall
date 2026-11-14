@@ -1,0 +1,13 @@
+{
+  "source_url": "https://ntrs.nasa.gov/api/citations/20170008805/downloads/20170008805.pdf#page=21",
+  "report_page": 21,
+  "material": "SIBAL cotton/fiberglass fabric",
+  "gravity": "orbital microgravity",
+  "nominal_duct_flow_cm_s": 20,
+  "metric": "average flame spread from video analysis",
+  "results": [
+    {"run_id": "1-1", "direction": "concurrent", "spread_mm_s": 1.8},
+    {"run_id": "1-2", "direction": "opposed", "spread_mm_s": 1.3}
+  ],
+  "caveat": "The opposed pass used fabric remaining after the concurrent pass, so the comparison does not isolate flow direction. The replay shows a partial image window from the concurrent run; the opposed value comes from the report. Neither rate is an instantaneous cursor reading."
+}
