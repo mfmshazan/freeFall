@@ -16,6 +16,7 @@ from pydantic import Field
 import physics
 from flame_color import FlameColorModel
 import ranker
+from briefing import router as briefing_router
 from evidence import rank_evidence
 from evidence_api import CabinInputs as EvidenceCabinInputs, EvidenceQuery, EvidenceResponse
 from export_evidence import load_catalog
@@ -25,6 +26,7 @@ app = FastAPI(title="Flame in Freefall API", version="0.1.0")
 app.add_middleware(
     CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"],
 )
+app.include_router(briefing_router)
 
 MODEL = "Deterministic physics baseline"
 FLAME_COLOR = FlameColorModel()  # CFI-G color classifier, trained once at startup

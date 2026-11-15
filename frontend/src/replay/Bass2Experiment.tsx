@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { bassReport } from '../shared/provenance'
 import Bass2Compare from './Bass2Compare'
 import { RecordingAppearance } from './RecordingAppearance'
 import { ViewLabel, CategoryTag } from '../shared/evidence'
@@ -101,7 +102,8 @@ export function Bass2Single() {
           <span className="text-[11px] text-slate-500">Flight video (side view, on-board data overlay)</span>
           <div className="flex items-center gap-2">
             <ViewLabel kind="recorded" />
-            <span className="text-[11px] font-mono text-amber-300/80">playback time — not sensor time</span>
+            <span className="text-[11px] font-mono text-amber-300/80">Playback time</span>
+            <span className="text-xs text-sky-300"><button className="source-link" type="button" data-provenance="bass-timing" aria-haspopup="dialog">Playback timing source</button></span>
           </div>
         </div>
         {failed ? (
@@ -131,7 +133,8 @@ export function Bass2Single() {
       {/* RIGHT: verified conditions, grouped */}
       <div className="col-span-12 min-w-0 md:col-span-5 rounded-lg border border-space-600 bg-space-850 p-3">
         <div className="flex items-center justify-between mb-2">
-          <h3 className="text-xs font-semibold tracking-widest text-slate-500 uppercase">Documented Conditions</h3>
+          <h3 className="text-xs font-semibold tracking-widest text-slate-400 uppercase">Documented conditions</h3>
+          <div className="mb-2 text-xs text-sky-300"><button className="source-link" type="button" data-provenance="bass-single" aria-haspopup="dialog">Sources for these values</button></div>
           <ViewLabel kind="recorded" />
         </div>
         <div className="text-[11px] text-slate-500 mb-2">PI {cond.pi} · {cond.platform}</div>
@@ -152,6 +155,7 @@ export function Bass2Single() {
                             <td className="py-1 text-slate-200 text-right">
                               {f.value}
                               {f.qualifier && <span className="block text-[9px] text-amber-400/70">{f.qualifier}</span>}
+                              {f.source && <span className="block text-[10px] text-slate-400">{f.source}</span>}
                             </td>
                           </tr>
                         ))}
@@ -186,7 +190,8 @@ export function Bass2Single() {
       {/* sources + limitations */}
       <div className="col-span-12 min-w-0 md:col-span-5 flex flex-col gap-3">
         <div className="rounded-lg border border-space-600 bg-space-850 p-3">
-          <h3 className="text-xs font-semibold tracking-widest text-slate-500 uppercase mb-2">Sources & Link</h3>
+          <h3 className="text-xs font-semibold tracking-widest text-slate-400 uppercase mb-2">Sources</h3>
+          <a className="block text-[11px] text-sky-300 underline" href={bassReport.href} target="_blank" rel="noreferrer">{bassReport.label}</a>
           <a href={cond.investigation_link} target="_blank" rel="noreferrer"
             className="inline-block text-[11px] text-sky-300 hover:underline mb-2">NASA PSI investigation {cond.psi_id} ↗</a>
           <ul className="text-[10px] font-mono text-slate-500 space-y-0.5">

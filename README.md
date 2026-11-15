@@ -38,7 +38,7 @@ cd backend
 python3 -m venv .venv
 source .venv/bin/activate       # macOS/Linux; Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-uvicorn main:app --port 8000
+uvicorn app:app --port 8000
 ```
 
 **Frontend** (Node 18+):

@@ -1225,6 +1225,7 @@
         are compressed so every world is visible — this view is
         not to scale.
       </p>
+      <button class="source-link" type="button" data-provenance="orbits" aria-haspopup="dialog">Orbital sources and method</button>
     </div>
   </aside>
 
@@ -1238,6 +1239,7 @@
       <span class="label-xs">Fire scenario</span>
       <strong id="infoType"></strong>
       <span class="g" id="infoCabin"></span>
+      <button class="source-link" type="button" data-provenance="cabin-gravity" aria-haspopup="dialog">Scenario gravity</button>
     </div>
 
     <dl class="stats">
@@ -1256,6 +1258,7 @@
       <div>
         <dt id="distLabel">From the Sun now</dt>
         <dd id="infoDist"></dd>
+        <button class="source-link" type="button" data-provenance="planet-distance" aria-haspopup="dialog">Distance source</button>
       </div>
       <div class="wide">
         <dt>Atmosphere</dt>
@@ -1266,6 +1269,8 @@
         <dd id="infoTemp"></dd>
       </div>
     </dl>
+
+    <button class="source-link" type="button" data-provenance="planet-facts" aria-haspopup="dialog">Sources for destination facts</button>
 
     <div class="fire-note">
       <span class="section-label">Fire note</span>
@@ -1287,6 +1292,7 @@
       <div class="date">
         <span class="label-xs">Simulation date</span>
         <strong id="simDate">—</strong>
+        <button class="source-link" type="button" data-provenance="sim-time" aria-haspopup="dialog">How time advances</button>
       </div>
       <button class="icon-btn" id="pauseBtn" type="button" aria-label="Pause time">
         <svg id="pauseIcon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -1314,7 +1320,7 @@
     <p id="briefText"></p>
     <div class="facts">
       <div><span>Destination</span><strong id="briefDest"></strong></div>
-      <div><span>Cabin gravity</span><strong id="briefG"></strong></div>
+      <div><button class="source-link" type="button" data-provenance="arrival-gravity" aria-haspopup="dialog">Cabin gravity</button><strong>≈0 g</strong></div>
       <div><span>Next stop</span><strong>Flame lab</strong></div>
     </div>
     <div class="mission-actions">
@@ -1332,7 +1338,7 @@
       <button type="button" id="skipBtn">Skip</button>
     </div>
     <div class="track"><i id="hudBar"></i></div>
-    <div class="hud-meta"><span id="hudPct">0%</span><span id="hudPhase">Leaving orbit</span></div>
+    <div class="hud-meta"><span id="hudPct">0%</span><span id="hudPhase">Leaving orbit</span> <button class="source-link" type="button" data-provenance="flight-progress" aria-haspopup="dialog">How progress is calculated</button></div>
   </div>
 
   <!-- ARRIVAL -->
@@ -1348,7 +1354,7 @@
     <p id="arriveText"></p>
     <div class="facts">
       <div><span>Scenario</span><strong id="arriveType"></strong></div>
-      <div><span>Gravity</span><strong id="arriveG"></strong></div>
+      <div><button class="source-link" type="button" data-provenance="arrival-gravity" aria-haspopup="dialog">Cabin gravity</button><strong>≈0 g</strong></div>
       <div><span>Flame view</span><strong>Illustration + NASA data</strong></div>
     </div>
     <div class="mission-actions">
@@ -1387,6 +1393,7 @@
   </script>
 
   <script type="module">
+    import { planetaryFacts } from "/src/shared/provenance.ts";
     import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.168.0/build/three.module.js";
     import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.168.0/examples/jsm/controls/OrbitControls.js";
     import { CSS2DRenderer, CSS2DObject } from "https://cdn.jsdelivr.net/npm/three@0.168.0/examples/jsm/renderers/CSS2DRenderer.js";
@@ -1548,7 +1555,7 @@
         id: "uranus", name: "Uranus", kind: "Ice giant", radius: 1.25, obliquity: 97.77, rotation: -17.24,
         dot: "linear-gradient(135deg,#bde8eb,#5aafb8)",
         tex: { style: "bands", colors: ["#a9dfe3", "#9bd3d8", "#b8e8ea"], soft: true }, map: "2k_uranus.jpg",
-        gravity: "8.87 m/s² (0.90 g) at the cloud tops", day: "17.2 hours (retrograde)", year: "84 years",
+        gravity: "8.69 m/s² (0.89 g) at the 1-bar level", day: "17.2 hours (retrograde)", year: "84 years",
         atmo: "Hydrogen, helium and methane", temp: "≈ −195 °C at the 1-bar level", ...ORBITAL
       },
       {
@@ -2137,6 +2144,35 @@
       }
     }
 
+    document.addEventListener("flameatlas:source", ({ detail }) => {
+      const { key, entry } = detail;
+      if (key === "cabin-gravity" && selected) {
+        detail.entry = {
+          title: "Fire scenario gravity", type: "Scenario assumption",
+          description: "The overview previews a supported habitat or laboratory at the destination’s reference gravity, or a spacecraft in free fall at 0 g. The Flame Lab lets you choose those modes independently.",
+          facts: [["Scenario", selected.cabin]],
+          links: [planetaryFacts, { label: "Open the Flame Lab", href: `fire-lab.html?world=${selected.id}` }],
+        };
+      } else if (key === "planet-distance" && selected) {
+        const displayed = document.getElementById("infoDist").textContent;
+        if (selected.id === "sun" || selected.id === "moon") {
+          const sun = selected.id === "sun";
+          detail.entry = {
+            title: sun ? "Solar radius" : "Mean Earth–Moon distance", type: "Reference value",
+            description: sun ? "The Sun’s radius is shown as a rounded reference value." : "The app uses the Moon’s mean orbital distance as a fixed reference.",
+            facts: [["Displayed value", displayed]],
+            links: [{ label: sun ? "NASA Sun fact sheet" : "NASA Moon fact sheet", href: `https://nssdc.gsfc.nasa.gov/planetary/factsheet/${sun ? "sun" : "moon"}fact.html` }],
+          };
+        } else {
+          entry.facts = [["Displayed distance", displayed], ["Simulation date", document.getElementById("simDate").textContent]];
+        }
+      } else if (key === "sim-time") {
+        entry.facts = [["Playback setting", SPEEDS[speedIndex].label], ["Simulated days per real second", String(SPEEDS[speedIndex].days)]];
+      } else if (key === "flight-progress") {
+        entry.facts = [["Displayed progress", document.getElementById("hudPct").textContent], ["Animation duration", `${mission.dur.toFixed(2)} s`]];
+      }
+    });
+
     function updateLiveDistance() {
       if (!selected) return;
       const id = selected.id;
@@ -2328,6 +2364,7 @@
 
     /* ---- Keyboard shortcuts ---- */
     window.addEventListener("keydown", e => {
+      if (document.querySelector(".source-dialog[open]")) return;
       const typing = e.target.matches("input, textarea");
       if (typing) return;
       if (e.key === "/") { e.preventDefault(); search.focus(); }
@@ -2529,9 +2566,8 @@
       document.getElementById("briefTitle").textContent = `Let's check the fire on ${article}`;
       document.getElementById("briefText").textContent =
         `FA-1 will fly from ${mission.at === "moon" ? "the Moon" : byId[mission.at].name} to ${article}. ` +
-        `Once we arrive, we'll open the flame lab and watch how a flame behaves in a ${body.type.toLowerCase()}.`;
+        "The Flame Lab opens in free-fall orbit. You can then explore supported conditions.";
       document.getElementById("briefDest").textContent = body.name;
-      document.getElementById("briefG").textContent = body.cabin.match(/[≈]?\s?[\d.]+ g/)?.[0] ?? "—";
       hint.classList.add("gone");
       showCard(briefing);
       document.getElementById("launchBtn").focus({ preventScroll: true });
@@ -2567,9 +2603,8 @@
       const name = id === "moon" ? "the Moon" : body.name;
       document.getElementById("arriveTitle").textContent = `Welcome to ${name}`;
       document.getElementById("arriveText").textContent =
-        `FA-1 is in orbit. Let's check the flame movement here — see how ${body.cabin.split("—")[0].trim().toLowerCase()} changes its shape, colour and steadiness.`;
-      document.getElementById("arriveType").textContent = body.type;
-      document.getElementById("arriveG").textContent = body.cabin.match(/[≈]?\s?[\d.]+ g/)?.[0] ?? "—";
+        "FA-1 is in free-fall orbit. Open the Flame Lab to see how a flame behaves under these conditions.";
+      document.getElementById("arriveType").textContent = "Orbital spacecraft";
       showCard(arrival);
       document.getElementById("enterLab").focus({ preventScroll: true });
     }

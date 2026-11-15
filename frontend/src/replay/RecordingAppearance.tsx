@@ -4,6 +4,11 @@ interface CameraField {
   locator?: string
 }
 
+const cameraSources = {
+  saffire: 'replay/saffire-1/conditions.json',
+  bass: 'https://ntrs.nasa.gov/api/citations/20210011385/downloads/TM-20210011385.pdf#page=13',
+}
+
 const unknownFields: CameraField[] = [
   { label: 'Filter / band', value: null },
   { label: 'Exposure / camera gain', value: null },
@@ -30,6 +35,9 @@ export function RecordingAppearance({ recording }: { recording: 'saffire' | 'bas
           <dd className="inline">{field.value ?? 'Not documented'}{field.locator && <span className="block text-[11px] text-slate-400">{field.locator}</span>}</dd>
         </div>)}
       </dl>
+      <a href={cameraSources[recording]} target="_blank" rel="noreferrer" className="mt-1 inline-block text-sky-300 underline">
+        {recording === 'saffire' ? 'Processed replay metadata' : 'NASA BASS-II report, camera and overlay (PDF pp. 12–13)'}
+      </a>
       {recording === 'bass' && <p className="mt-1 text-slate-400">Radiometer gain applies to the radiometer channel. Camera gain is undocumented.</p>}
     </details>
   </div>

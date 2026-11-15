@@ -1,10 +1,18 @@
 import json
 import unittest
+import warnings
+
+from sklearn.exceptions import ConvergenceWarning
 
 from flame_color import FlameColorModel, CLASSES
 
 
 class FlameColorModelTest(unittest.TestCase):
+    def test_fit_emits_no_convergence_warning(self):
+        with warnings.catch_warnings():
+            warnings.simplefilter("error", ConvergenceWarning)
+            FlameColorModel()
+
     @classmethod
     def setUpClass(cls):
         cls.model = FlameColorModel()
@@ -32,7 +40,8 @@ class FlameColorModelTest(unittest.TestCase):
         self.assertFalse(gas["extrapolated"])
 
     def test_catalog_counts_match_training(self):
-        blob = json.load(open(self.model_data_path(), encoding="utf-8"))
+        with open(self.model_data_path(), encoding="utf-8") as fh:
+            blob = json.load(fh)
         self.assertEqual(blob["counts"]["total"], len(blob["records"]))
         self.assertGreaterEqual(blob["counts"]["blue"], 1)
 

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import TimeSeriesChart, { type Series } from './TimeSeriesChart'
 import { ViewLabel } from '../shared/evidence'
+import '../shared/provenance'
 import { RecordingAppearance } from './RecordingAppearance'
 
 // ---------------------------------------------------------------------------
@@ -135,7 +136,8 @@ export default function SaffireReplay({ focusResults = false }: { focusResults?:
       <div className="col-span-12 flex items-center justify-between rounded-lg border border-emerald-500/30 bg-emerald-500/5 px-4 py-2">
         <div>
           <span className="text-sm font-semibold text-slate-100">{cond.investigation}</span>
-          <span className="ml-2 text-[11px] font-mono text-slate-500">{cond.psi_id} · {cond.date_utc} · DOI {cond.doi}</span>
+          <span className="ml-2 text-[11px] font-mono text-slate-500">{cond.psi_id} · {cond.date_utc}</span>
+          <span className="ml-2 text-xs text-sky-300"><button className="source-link" type="button" data-provenance="saffire-conditions" aria-haspopup="dialog">Source metadata</button></span>
         </div>
         <ViewLabel kind="recorded" />
       </div>
@@ -146,6 +148,7 @@ export default function SaffireReplay({ focusResults = false }: { focusResults?:
           <span className="text-[11px] text-slate-500">Flight camera {cond.camera.id} — actual burn footage</span>
           <span className="text-[11px] font-mono text-sky-300">t = {t.toFixed(1)} s</span>
         </div>
+        <div className="text-xs text-sky-300"><button className="source-link" type="button" data-provenance="saffire-timing" aria-haspopup="dialog">Source and time alignment</button></div>
         <RecordingAppearance recording="saffire" />
         <div className="relative bg-black rounded flex items-center justify-center" style={{ aspectRatio: '480/345' }}>
           {curFrame ? (
@@ -187,9 +190,10 @@ export default function SaffireReplay({ focusResults = false }: { focusResults?:
       {/* RIGHT: recorded conditions */}
       <div className="col-span-12 min-w-0 rounded-lg border border-space-600 bg-space-850 p-3 md:col-span-5">
         <h3 className="text-xs font-semibold tracking-widest text-slate-500 uppercase mb-2">Replay metadata and calibrated data</h3>
+        <div className="mb-2 text-xs text-sky-300"><button className="source-link" type="button" data-provenance="saffire-conditions" aria-haspopup="dialog">Sources for geometry and ignition values</button></div>
         <dl className="grid grid-cols-2 gap-y-1.5 text-xs">
           <dt className="text-slate-500">Material</dt><dd className="text-slate-200 text-right">{cond.sample.material}</dd>
-          <dt className="text-slate-500">Sample size</dt><dd className="text-slate-200 text-right">{cond.sample.size_mm} mm</dd>
+          <dt className="text-slate-400">Replay sample size (provisional)</dt><dd className="text-slate-200 text-right">{cond.sample.size_mm} mm</dd>
           <dt className="text-slate-500">Platform</dt><dd className="text-slate-200 text-right">{cond.platform}</dd>
           <dt className="text-slate-500">O₂ at ignition</dt><dd className="font-mono text-sky-300 text-right">{cond.measured_at_ignition.o2_percent?.toFixed(2)} %</dd>
           <dt className="text-slate-500">CO₂ at ignition</dt><dd className="font-mono text-sky-300 text-right">{cond.measured_at_ignition.co2_percent?.toFixed(2)} %</dd>
@@ -199,7 +203,8 @@ export default function SaffireReplay({ focusResults = false }: { focusResults?:
 
         {/* live readout at current time */}
         <div className="mt-3 pt-2 border-t border-space-700">
-          <div className="text-[11px] text-slate-500 mb-1">Live sensor values @ t = {t.toFixed(1)} s</div>
+          <div className="text-[11px] text-slate-500 mb-1">Sensor values at sample t = {curSample?.t.toFixed(1) ?? "—"} s</div>
+          <div className="mb-1 text-xs text-sky-300"><button className="source-link" type="button" data-provenance="saffire-sensors" aria-haspopup="dialog">Sensor data source</button></div>
           <div className="grid grid-cols-2 gap-y-1 text-xs font-mono">
             <LiveVal label="O₂" v={curSample?.o2} unit="%" />
             <LiveVal label="CO₂" v={curSample?.co2} unit="%" />
@@ -223,7 +228,8 @@ export default function SaffireReplay({ focusResults = false }: { focusResults?:
       {/* chart */}
       <div className="col-span-12 rounded-lg border border-space-600 bg-space-850 p-3">
         <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-          <h3 className="text-xs font-semibold tracking-widest text-slate-500 uppercase">Verified Measurement — {groupMeta.label}</h3>
+          <div><h3 className="text-xs font-semibold tracking-widest text-slate-400 uppercase">Calibrated sensor data — {groupMeta.label}</h3>
+            <span className="text-xs text-sky-300"><button className="source-link" type="button" data-provenance="saffire-sensors" aria-haspopup="dialog">Chart data and source</button></span></div>
           <div className="flex gap-1">
             {GROUPS.map((g) => (
               <button key={g.id} onClick={() => setGroup(g.id)}
@@ -241,7 +247,7 @@ export default function SaffireReplay({ focusResults = false }: { focusResults?:
               <span className="inline-block w-2.5 h-2.5 rounded-sm" style={{ background: s.color }} />{s.label}
             </span>
           ))}
-          <span className="text-[10px] text-slate-600 ml-auto">Source: {cond.sources[0]} · click chart or drag slider to seek</span>
+          <span className="text-[10px] text-slate-400 ml-auto">Click the chart or drag the slider to seek</span>
         </div>
       </div>
     </div>

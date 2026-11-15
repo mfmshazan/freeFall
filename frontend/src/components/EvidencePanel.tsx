@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import '../shared/provenance'
 import { CONTEXT_FILTERS } from '../evidence/rankEvidence'
 import type {
   Compatibility, ContextKey, EvidenceField, EvidenceMatch, EvidenceQuery, EvidenceRecord,
@@ -130,6 +131,7 @@ function EvidenceCard({ record, match, onReplay }: {
               ? item.normalized.map(bound => Number(bound.toPrecision(5))).join('–')
               : Number(item.normalized.toPrecision(5))} ${item.unit})`}
             {' · '}{statuses[item.status]} · {item.basis}
+            {item.source && <SourceLink reference={item.source} />}
           </li>)}
         </ul>}
         {match.missing_dimensions.length > 0 &&
@@ -199,6 +201,7 @@ export default function EvidencePanel({ filters, onChange, result, message, onRe
       Cases with more comparable conditions appear first within each group, followed by smaller condition differences.
       Evidence filters leave the prediction and its uncertainty unchanged.
     </p>
+    <div className="text-xs text-sky-300"><button className="source-link" type="button" data-provenance="evidence-ranking" aria-haspopup="dialog">How matches and counts are calculated</button></div>
     {message && <p className="text-xs text-amber-300" role="status">{message}</p>}
     <fieldset className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2">
       <legend className="mb-1 text-sm font-semibold text-slate-200">Evidence filters</legend>

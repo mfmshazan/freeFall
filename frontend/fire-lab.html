@@ -228,7 +228,11 @@
     .readouts { display: flex; flex-wrap: wrap; gap: 1px; background: var(--line); border: 1px solid var(--line); }
     .readouts div { background: #071323e6; padding: 8px 12px; }
     .readouts span { display: block; font-size: 9px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase; color: var(--muted); }
+    .readouts .source-link { display:block; color:#b6d9f4; pointer-events:auto; }
+    .chart-sources { display:flex; flex-wrap:wrap; gap:0 14px; color:var(--ink); }
+    .experiments .findings .source-link { margin-left:.5em; }
     .readouts b { font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .readouts .r-size-spread:not(:empty) { margin-inline-start: .35em; }
     .readouts b em { font-style: normal; font-size: 8px; font-weight: 800; letter-spacing: .8px; text-transform: uppercase; margin-left: 5px; padding: 1px 4px; vertical-align: middle; }
     .basis-measured { background: #1f6f43; color: #d7ffe9; }
     .basis-estimate { background: #7a5a12; color: #ffe9b8; }
@@ -529,13 +533,15 @@
       .cards { grid-template-columns: 1fr; }
     }
     @media (max-width: 720px) {
-      header { padding: 0 16px; }
+      body > header { height:auto; padding:10px 16px; flex-direction:column; align-items:flex-start; gap:6px; }
       .crumb { display: none; }
       .btn .txt { display: none; }
+      .actions { flex-wrap:wrap; gap:6px; }
+      .actions .btn { height:34px; padding:0 8px; gap:4px; font-size:10px; letter-spacing:.02em; }
+      .actions a .txt { display:inline; }
       .lab { padding: 16px; }
-      .panes.compare { grid-template-columns: 1fr 1fr; }
-      .panes.compare .pane { height: 380px; }
-      .panes.compare .readouts div:nth-child(n+3) { display: none; }
+      .panes.compare { grid-template-columns: 1fr; }
+      .panes.compare .pane { height: 460px; }
       .panes.compare .status { display: none; }
       .pane { height: 460px; }
       .explain { grid-template-columns: 1fr; }
@@ -566,9 +572,13 @@
       <a class="btn" id="backLink" href="simulator.html">
         <span aria-hidden="true">←</span><span class="txt">Solar system</span>
       </a>
-      <button class="btn solid" id="exportTop" type="button">
+      <button class="btn solid" id="exportTop" type="button" aria-label="Export scenario summary as Markdown">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 21h16"/></svg>
-        <span class="txt">Export summary</span>
+        <span class="txt">Export summary (.md)</span>
+      </button>
+      <button class="btn" id="exportCsvTop" type="button" aria-label="Export scenario data as CSV">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="1"/><path d="M3 10h18M9 4v16m6-16v16"/></svg>
+        <span class="txt">Export data (.csv)</span>
       </button>
     </div>
   </header>
@@ -622,24 +632,32 @@
           <span class="section-label">Model &amp; uncertainty</span>
           <h3 id="trustTitle">Waiting for model prediction…</h3>
           <p id="trustText"></p>
+          <button class="source-link" type="button" data-provenance="trust" aria-haspopup="dialog">How trust and uncertainty are calculated</button>
         </div>
       </div>
 
       <div class="explain" data-validation-summary style="margin-top:12px;grid-template-columns:1fr;"></div>
       <p style="margin-top:12px;"><a id="scenarioEvidence" href="evidence.html#reviewed-evidence">Compare conditions with reviewed NASA evidence</a></p>
+      <div id="evidenceRank" aria-live="polite"></div>
+      <button class="btn" type="button" id="briefBtn" style="margin-top:10px;">Explain NASA evidence</button>
+      <div id="briefingOut" aria-live="polite" style="margin-top:8px;"></div>
 
       <div class="explain" id="flameColorBox" style="margin-top:12px;grid-template-columns:1fr;">
         <div>
-          <span class="section-label">Flame Colour Map — trained on NASA ACME CFI-G</span>
-          <h3 style="margin:2px 0 2px;">Where your cabin sits in the real flame-colour data</h3>
+          <span class="section-label">NASA ACME CFI-G</span>
+          <h3 style="margin:2px 0 2px;">Flame colour map</h3>
           <p style="font-size:12px;color:var(--muted-ink);margin:0 0 8px;">
             Each dot is a real CFI-G inverse-flame run: observed <b style="color:#5aa0ff">blue</b>,
             <b style="color:#ffb13c">yellow</b> (sooting), <b style="color:#b9a0d8">yellow-blue</b> or an
-            extinction <b style="color:#8a94a6">limit</b>, by oxygen fraction and flame temperature.
-            The ✦ marker is your current flame, placed by the colour model.
+            extinction <b style="color:#8a94a6">limit</b>, by burner-feed oxygen fraction and source-reported adiabatic temperature.
+            The white-ring marker shows the cabin estimate.
           </p>
-          <canvas id="flameColorChart" style="width:100%;height:260px;display:block;border-radius:10px;background:#0a1626;"></canvas>
+          <canvas id="flameColorChart" role="img" aria-label="CFI-G flame colour observations by oxygen and adiabatic temperature. Use Data and citation for the plotted values." style="width:100%;height:260px;display:block;border-radius:10px;background:#0a1626;"></canvas>
           <p id="flameColorBasis" style="font-size:11px;color:var(--muted);margin:6px 0 0;"></p>
+          <div class="chart-sources">
+            <button class="source-link" type="button" data-provenance="colour-chart" aria-haspopup="dialog">Data and citation</button>
+            <button class="source-link" type="button" data-provenance="colour" id="colourMarkerSource" aria-haspopup="dialog" hidden>How the cabin marker is calculated</button>
+          </div>
         </div>
       </div>
     </section>
@@ -651,11 +669,11 @@
 
       <div class="ctrl">
         <div class="ctrl-head">
-          <span class="label-xs">Distance from surface</span>
+          <button class="source-link" type="button" data-provenance="gravity" aria-haspopup="dialog">Distance from surface</button>
           <output id="altOut">200 km · Free orbit</output>
         </div>
         <div class="ctrl-head" style="margin-top:-4px;margin-bottom:8px;">
-          <span class="label-xs" style="color:var(--orange);">Cabin gravity</span>
+          <button class="source-link" type="button" data-provenance="gravity" aria-haspopup="dialog">Cabin gravity</button>
           <output id="gOut" style="color:var(--orange);">≈0 g (0.00 m/s²)</output>
         </div>
         <input type="range" id="gRange" min="0" max="1" step="0.002" value="1" aria-label="Distance from surface from 0 km surface to maximum orbit">
@@ -673,21 +691,21 @@
       </div>
 
       <div class="ctrl">
-        <div class="ctrl-head"><span class="label-xs">Oxygen</span><output id="o2Out">21%</output></div>
+        <div class="ctrl-head"><button class="source-link" type="button" data-provenance="o2" aria-haspopup="dialog">Oxygen</button><output id="o2Out">21%</output></div>
         <input type="range" id="o2Range" min="15" max="85" step="0.5" value="21" aria-label="Oxygen concentration in percent">
-        <p class="hint-txt">Earth air and the ISS cabin are about 21% oxygen.</p>
+        <p class="hint-txt">Choose an oxygen fraction for the scenario.</p>
       </div>
 
       <div class="ctrl">
-        <div class="ctrl-head"><span class="label-xs">Airflow</span><output id="flowOut">0 cm/s</output></div>
+        <div class="ctrl-head"><button class="source-link" type="button" data-provenance="flow" aria-haspopup="dialog">Airflow</button><output id="flowOut">0 cm/s</output></div>
         <input type="range" id="flowRange" min="0" max="30" step="1" value="0" aria-label="Airflow speed in centimetres per second">
         <p class="hint-txt">Cabin ventilation pushes air left → right across the flame.</p>
       </div>
 
       <div class="ctrl">
-        <div class="ctrl-head"><span class="label-xs">Cabin pressure</span><output id="pressOut">14.7 psi</output></div>
+        <div class="ctrl-head"><button class="source-link" type="button" data-provenance="pressure" aria-haspopup="dialog">Cabin pressure</button><output id="pressOut">14.7 psi</output></div>
         <input type="range" id="pressRange" min="4.3" max="14.7" step="0.1" value="14.7" aria-label="Cabin pressure in psi">
-        <div class="ctrl-head"><span class="label-xs">Oxygen partial pressure</span><output id="ppo2Out">3.09 psi</output></div>
+        <div class="ctrl-head"><button class="source-link" type="button" data-provenance="partial" aria-haspopup="dialog">Oxygen partial pressure</button><output id="ppo2Out">3.09 psi</output></div>
       </div>
 
       <div class="ctrl">
@@ -723,8 +741,10 @@
         The animation explains the effects of gravity and airflow.
         The model readouts show exploratory estimates.
       </p>
+      <div id="fixItPanel" aria-live="polite"></div>
     </aside>
   </main>
+  <section id="earthCard" aria-live="polite"></section>
 
   <section class="experiments" id="experiments">
     <div class="wrap">
@@ -750,7 +770,8 @@
         <div id="compareOut" class="compare-empty">Choose “Compare” on two experiments above.</div>
         <div class="export-row">
           <button class="btn solid" type="button" id="exportBottom">Export summary (.md)</button>
-          <small>Includes your sandbox settings (marked illustrative), the compared experiments and their sources.</small>
+          <button class="btn" type="button" id="exportCsvBottom">Export data (.csv)</button>
+          <small>Both exports include your illustrative sandbox settings and selected experiments.</small>
         </div>
       </div>
     </div>
@@ -763,7 +784,13 @@
 
   <script type="module" src="/src/flameatlas/predictBridge.ts"></script>
   <script type="module" src="/src/flameatlas/validationSummary.ts"></script>
-  <script>
+  <script type="module" src="/src/flameatlas/evidenceRail.ts"></script>
+  <script type="module" src="/src/flameatlas/playbook.ts"></script>
+  <script type="module" src="/src/flameatlas/briefingClient.ts"></script>
+  <script type="module">
+    import { sourceButton } from "/src/shared/provenance.ts";
+    import { gravitySource, predictionSource, colourChartSource } from "/src/flameatlas/labSources.ts";
+
     /* =========================================================
        DATA
        ========================================================= */
@@ -816,6 +843,10 @@
       rod:     { id: 3, name: "Acrylic rod",  soot: .95, size: 1.08 }
     };
 
+    const candleReport = page => [`Dietrich et al., Candle Flames in Non-Buoyant Atmospheres (PDF p. ${page})`, `https://ntrs.nasa.gov/api/citations/20000005087/downloads/20000005087.pdf#page=${page}`];
+    const saffireReport = page => [`NASA Large-Scale Spacecraft Flammability Tests (PDF p. ${page})`, `https://ntrs.nasa.gov/api/citations/20170008805/downloads/20170008805.pdf#page=${page}`];
+    const flexOverview = ["NASA Scientific Visualization Studio, Great Balls of Fire", "https://svs.gsfc.nasa.gov/11318"];
+    const saffireSix = ["NASA Saffire-VI preliminary results, Table 1", "https://ntrs.nasa.gov/api/citations/20240002981/downloads/Saffire-ICES-2024-ICES-365-accepted%20final.pdf"];
     // Real experiments. Status: reported | partial | unknown.
     const EXPERIMENTS = [
       {
@@ -827,12 +858,11 @@
           Fuel:     ["Small candles — about 2 mm wick, 5 mm candle diameter (Shuttle)", "reported"],
           Oxygen:   ["21.7% (Shuttle cabin)", "reported"],
           Airflow:  ["No forced flow — oxygen arrives by diffusion only", "reported"],
-          Pressure: ["1 atm (Shuttle cabin)", "reported"]
+          Pressure: ["Exact run pressure unavailable in the cited summary", "unknown"]
         },
         findings: [
           "Spherical and bright yellow right after ignition. After 8–10 s the yellow soot glow disappeared and the flame turned blue and nearly hemispherical.",
           "The flames were small (about 1.5 cm across) and dim blue.",
-          "The flame stood about 7 mm off the wick, compared with 1–2 mm on Earth.",
           "On Mir, flames lasted from just over 100 seconds to more than 45 minutes."
         ],
         footage: { label: "NASA image: candle flame in 1 g vs microgravity", url: "https://science.nasa.gov/?p=157833" },
@@ -841,6 +871,10 @@
           ["Dietrich et al., Candle Flames in Non-Buoyant Atmospheres (NTRS 20000005087)", "https://ntrs.nasa.gov/api/citations/20000005087/downloads/20000005087.pdf"],
           ["Candle Flames in Microgravity (NTRS 20010074076)", "https://ntrs.nasa.gov/citations/20010074076"]
         ],
+        citations: {
+          Where: [candleReport(2)], Fuel: [candleReport(4)], Oxygen: [candleReport(14)],
+          Airflow: [candleReport(2)], "Finding 1": [candleReport(5)], "Finding 2": [candleReport(5)], "Finding 3": [candleReport(6)],
+        },
         preset: { g: 0, o2: 21.7, flow: 0, fuel: "candle" },
         assumed: []
       },
@@ -853,19 +887,19 @@
           Fuel:     ["Liquid fuel droplets — heptane and methanol (FLEX-2 also tested heptane/isooctane mixes)", "reported"],
           Oxygen:   ["Varied between tests, including reduced oxygen", "partial"],
           Airflow:  ["Not listed in our sources", "unknown"],
-          Pressure: ["Mostly 1 atm or below; the chamber was limited to about 3 atm", "reported"]
+          Pressure: ["Varied by run. See Appendix A for the reported test conditions.", "partial"]
         },
         findings: [
           "Each flame formed an almost perfect ball around the droplet.",
-          "Before going out, the flames oscillated at about 1 Hz.",
           "Large heptane droplets kept burning as an invisible “cool flame” after the visible flame went out.",
-          "The visible flames reached about 2,200–3,100 °F (roughly 1,200–1,700 °C)."
+          "NASA’s experiment overview gives a visible-flame range of 2,200–3,100 °F (roughly 1,200–1,700 °C)."
         ],
         footage: { label: "NASA video: “Great Balls of Fire” (FLEX on the ISS)", url: "https://svs.gsfc.nasa.gov/11318" },
         sources: [
-          ["Dietrich et al., Droplet combustion experiments aboard the ISS (Microgravity Sci. Technol., 2014)", "https://link.springer.com/doi/10.1007/s12217-014-9372-2"],
-          ["NASA Scientific Visualization Studio, Great Balls of Fire", "https://svs.gsfc.nasa.gov/11318"]
+          ["NASA/TP-2015-216046, Appendix A (run conditions)", "https://ntrs.nasa.gov/citations/20150023456"],
+          flexOverview
         ],
+        citations: { "Finding 1": [flexOverview], "Finding 2": [flexOverview], "Finding 3": [flexOverview] },
         preset: { g: 0, o2: 21, flow: 0, fuel: "droplet" },
         assumed: ["airflow (assumed still air)", "oxygen (set to 21%)"]
       },
@@ -875,15 +909,14 @@
         where: "ISS Microgravity Science Glovebox · BASS in 2012, BASS-II through 2014",
         fields: {
           Gravity:  ["Microgravity (orbit)", "reported"],
-          Fuel:     ["A wide variety of solid samples — 41 in the first BASS run", "reported"],
+          Fuel:     ["Solid samples included PMMA, other polymers and thin materials.", "reported"],
           Oxygen:   ["ISS air; BASS-II lowered oxygen by diluting with nitrogen", "partial"],
           Airflow:  ["Fan-driven flow through a small duct, varied by the crew", "partial"],
           Pressure: ["Not listed in our sources", "unknown"]
         },
         findings: [
           "Recorded flame shape, spread rate and pulsations as the flow speed changed.",
-          "In one test, turning the airflow off after two minutes of burning put the flame out rapidly — supporting “turn off forced airflow” as a first response.",
-          "In another, a nitrogen jet made the flame respond but did not put it out."
+          "The BASS-II report documents quenching, blowoff and sustained spread for specific test configurations."
         ],
         footage: null,
         sources: [
@@ -900,7 +933,7 @@
         where: "Uncrewed Cygnus cargo ships after leaving the ISS · 2016 to January 2024",
         fields: {
           Gravity:  ["Microgravity (orbit)", "reported"],
-          Fuel:     ["Large samples — cotton-fibreglass fabric (SIBAL), acrylic (PMMA) and Nomex; Saffire-I burned a 0.4 m × 1 m sample", "reported"],
+          Fuel:     ["Saffire-I used a 40.6 × 94 cm cotton-fibreglass (SIBAL) sheet. Saffire-II also tested acrylic (PMMA) and Nomex.", "reported"],
           Oxygen:   ["Saffire-VI used a higher oxygen level than earlier flights", "partial"],
           Airflow:  ["Forced flow through a flow duct that worked like a wind tunnel", "partial"],
           Pressure: ["Saffire-VI used lower pressure than earlier flights", "partial"]
@@ -908,13 +941,19 @@
         findings: [
           "The largest fires ever burned in space — earlier space fire experiments were about the size of an index card.",
           "Measured flame spread rate, flame temperature, radiant heat, and CO₂ and CO across the cabin.",
-          "Cabin temperature and pressure rose less than the CO₂ and CO levels did."
+          "Later flights studied how the burns changed the gas composition inside Cygnus."
         ],
         footage: null,
         sources: [
+          saffireReport(14),
           ["Saffire IV & V results, ICES 2021 (NTRS 20210011521)", "https://ntrs.nasa.gov/citations/20210011521"],
-          ["Preliminary Results from the Saffire VI Experiment (NTRS 20240002981)", "https://ntrs.nasa.gov/citations/20240002981"]
+          saffireSix
         ],
+        citations: {
+          Where: [["NASA Saffire mission timeline and conclusion", "https://www.nasa.gov/centers-and-facilities/glenn/flame-burns-out-on-nasas-long-running-spacecraft-fire-experiment/"]],
+          Fuel: [saffireReport(29)], Oxygen: [saffireSix], Pressure: [saffireSix], Airflow: [saffireReport(14)],
+          "Finding 1": [saffireReport(26)], "Finding 2": [saffireReport(21), saffireSix], "Finding 3": [saffireSix],
+        },
         preset: { g: 0, o2: 21, flow: 20, fuel: "sheet" },
         assumed: ["airflow (20 cm/s is a placeholder)", "oxygen (set to 21%)"]
       }
@@ -1089,6 +1128,7 @@
     const params = new URLSearchParams(location.search);
     let worldId = WORLDS[params.get("world")] ? params.get("world") : "moon";
     const shared = { o2: 21, flow: 0, fuel: "candle", pressure: 14.7, diluent: "N2" };
+    const inputOrigins = {};
     let assumedNote = null;
     let paused = false;
     let simTime = 0;
@@ -1113,6 +1153,7 @@
         burnout: 0,
         reason: "",
         model: null,
+        modelInput: null,
         modelSoot: null,
         modelSize: null
       };
@@ -1207,20 +1248,20 @@
         </div>
         <div class="pane-bottom">
           <div class="readouts">
-            <div title="Effective cabin gravity"><span>Gravity</span><b class="r-g"></b></div>
-            <div title="Distance above planet surface / 1-bar level"><span>Altitude</span><b class="r-alt"></b></div>
-            <div><span>Oxygen</span><b class="r-o2"></b></div>
-            <div><span>Airflow</span><b class="r-flow"></b></div>
+            <div title="Effective cabin gravity"><button class="source-link" type="button" data-provenance="gravity" aria-haspopup="dialog">Gravity</button><b class="r-g"></b></div>
+            <div title="Distance above planet surface / 1-bar level"><button class="source-link" type="button" data-provenance="gravity" aria-haspopup="dialog">Altitude</button><b class="r-alt"></b></div>
+            <div><button class="source-link" type="button" data-provenance="o2" aria-haspopup="dialog">Oxygen</button><b class="r-o2"></b></div>
+            <div><button class="source-link" type="button" data-provenance="flow" aria-haspopup="dialog">Airflow</button><b class="r-flow"></b></div>
             <div><span>Fuel</span><b class="r-fuel"></b></div>
-            <div title="Illustrative linear rate with heuristic spread. FLEX droplet rates use mm²/s."><span>Illustrative rate</span><b class="r-spread"></b></div>
-            <div title="Model flame length × width and heuristic spread"><span>Dimensions</span><b class="r-dims">—</b><b class="r-size-spread"></b></div>
-            <div title="Model radiometric heat flux proxy"><span>Heat flux</span><b class="r-flux">—</b></div>
-            <div title="Exploratory model status"><span>Model trust</span><b class="r-trust">—</b></div>
-            <div title="Flame colour predicted by the CFI-G colour model"><span>Flame colour</span><b class="r-color">—</b></div>
+            <div title="Illustrative linear rate with heuristic spread. FLEX droplet rates use mm²/s."><button class="source-link" type="button" data-provenance="spread" aria-haspopup="dialog">Illustrative rate</button><b class="r-spread"></b></div>
+            <div title="Model flame length × width and heuristic spread"><button class="source-link" type="button" data-provenance="dimensions" aria-haspopup="dialog">Dimensions</button><b class="r-dims">—</b><b class="r-size-spread"></b></div>
+            <div title="Model radiometric heat flux proxy"><button class="source-link" type="button" data-provenance="flux" aria-haspopup="dialog">Heat flux</button><b class="r-flux">—</b></div>
+            <div title="Heuristic score based on similarity to example inputs"><button class="source-link" type="button" data-provenance="trust" aria-haspopup="dialog">Model confidence</button><b class="r-trust">—</b></div>
+            <div title="Flame colour predicted by the CFI-G colour model"><button class="source-link" type="button" data-provenance="colour" aria-haspopup="dialog">Flame colour</button><b class="r-color">—</b></div>
           </div>
           <div class="status" role="status"></div>
         </div>`;
-      el.setAttribute("role", "img");
+      el.setAttribute("role", "group");
       panesEl.appendChild(el);
       const canvas = el.querySelector("canvas");
       let flame = null;
@@ -1240,6 +1281,9 @@
       while (panes.length > want) panes.pop();
       panes[0].world = worldId;
       if (panes[1]) {
+        if (panes[1].world !== compareWorld) {
+          panes[1].model = panes[1].modelInput = panes[1].modelSoot = panes[1].modelSize = null;
+        }
         panes[1].world = compareWorld;
         applyGravityMode(panes[1], "surface");
       }
@@ -1315,23 +1359,25 @@
         const spreadB = pe.el.querySelector(".r-size-spread");
         const fluxB = pe.el.querySelector(".r-flux");
         const trustB = pe.el.querySelector(".r-trust");
-        if (p.model) {
+        const colorB = pe.el.querySelector(".r-color");
+        if (p.model && shared.fuel !== "candle") {
           const mp = p.model.prediction;
           const mu = p.model.uncertainty;
           spB.textContent = `${mp.spread_rate_mm_s.toFixed(2)} ± ${mu.std_spread_rate.toFixed(2)} mm/s`;
           dimsB.textContent = `${mp.flame_length_mm.toFixed(1)} × ${mp.flame_width_mm.toFixed(1)} mm (L/D ${mp.aspect_ratio_LD.toFixed(2)})`;
           spreadB.textContent = `± ${mu.std_length_mm.toFixed(2)} × ${mu.std_width_mm.toFixed(2)} mm`;
           fluxB.textContent = `${mp.radiometric_flux_kw_m2.toFixed(2)} kW/m²`;
-          trustB.textContent = statusLabel(mu.trust_status);
-          const colorB = pe.el.querySelector(".r-color");
+          trustB.textContent = `${mu.trust_score}/100 · ${statusLabel(mu.trust_status)}`;
           const fc = p.model.flame_color;
           if (colorB && fc) {
             const name = fc.label === "mixed" ? "yellow-blue" : fc.label;
             colorB.innerHTML = `<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${fc.hex};margin-right:5px;vertical-align:middle;box-shadow:0 0 6px ${fc.hex}"></span>${name} · ${Math.round(fc.confidence * 100)}%${fc.extrapolated ? " <em class='basis-estimate'>extrap.</em>" : ""}`;
-            colorB.title = `${fc.basis} · ~${Math.round(fc.est_flame_temp_k)} K (P blue ${Math.round(fc.p_blue*100)} / mixed ${Math.round(fc.p_mixed*100)} / yellow ${Math.round(fc.p_yellow*100)})`;
+          } else {
+            colorB.textContent = "—";
           }
         } else {
-          spB.textContent = dimsB.textContent = fluxB.textContent = trustB.textContent = "—";
+          spB.textContent = dimsB.textContent = fluxB.textContent = colorB.textContent = "—";
+          trustB.textContent = shared.fuel === "candle" ? "Candle illustration only" : "—";
           spreadB.textContent = "";
         }
         pe.el.querySelector(".gvec i").style.setProperty("--len", `${8 + Math.min(1.6, p.g) * 65}px`);
@@ -1372,13 +1418,13 @@
         html = `Hot gas rises and pulls fresh air in from below. That stretches the flame into a flickering teardrop and carries soot to the tip, where it glows yellow. NASA recorded this contrast in candle tests at 1 g and in microgravity. <a href="https://science.nasa.gov/?p=157833" target="_blank" rel="noopener">NASA image ↗</a>`;
       } else if (g >= 0.03) {
         title = "Partial gravity: weaker buoyancy";
-        html = `With ${gLabel(g)} the rising flow is weaker, so the illustration shows a shorter, wider, calmer flame. Very few fire experiments have been run at partial gravity, so treat this view as an estimate between the 1 g and microgravity cases.`;
+        html = `With ${gLabel(g)} the illustration shows a shorter, wider, calmer flame. NASA’s LUCI trial provides partial-gravity context for one test material. <a href="https://ntrs.nasa.gov/api/citations/20250010653/downloads/ASGSR%202025-LUCI-Ferkul-Presentation-v2-20250010653.pdf#page=19" target="_blank" rel="noopener">LUCI results ↗</a>`;
       } else if (shared.flow >= 1) {
         title = "Microgravity with airflow";
         html = `Without buoyancy, the cabin's airflow is what brings oxygen in, so the flame leans downstream. NASA's BASS experiment recorded flame shape, spread and pulsations as the flow speed changed. <a href="https://ntrs.nasa.gov/citations/20160000593" target="_blank" rel="noopener">BASS-II results ↗</a>`;
       } else {
         title = "Still air in microgravity";
-        html = `Oxygen can only reach the flame by diffusion, so it becomes a small, dim, round flame. On the Shuttle, candle flames turned from yellow to blue within about 10 seconds; on Mir some burned for over 45 minutes. Solid samples can go out quickly once airflow stops. <a href="https://ntrs.nasa.gov/api/citations/20000005087/downloads/20000005087.pdf" target="_blank" rel="noopener">Candle study ↗</a>`;
+        html = `In still air, oxygen reaches the flame mainly by diffusion. Shuttle candles turned from yellow to blue in 8–10 seconds. Some Mir candles burned for more than 45 minutes. <a href="https://ntrs.nasa.gov/api/citations/20000005087/downloads/20000005087.pdf#page=5" target="_blank" rel="noopener">Candle study, pp. 5–6 ↗</a>`;
       }
       document.getElementById("explainTitle").textContent = title;
       document.getElementById("explainText").innerHTML = html;
@@ -1397,6 +1443,7 @@
     let predictTimer = null;
     let predictAbort = null;
     function schedulePrediction() {
+      predictAbort?.abort();
       if (predictTimer) clearTimeout(predictTimer);
       predictTimer = setTimeout(runPrediction, 120);
     }
@@ -1418,7 +1465,7 @@
         gravity_mode: p.mode,
       }));
       if (shared.fuel === "candle") {
-        panes.forEach(p => { p.model = p.modelSoot = p.modelSize = null; });
+        panes.forEach(p => { p.model = p.modelInput = p.modelSoot = p.modelSize = null; });
         renderPaneLabels();
         renderModelPanels(null, inputs[0]);
         return;
@@ -1430,6 +1477,7 @@
           const p = panes[idx];
           if (!p) return;
           p.model = res;
+          p.modelInput = window.FlameAtlasPredict.normalizeInputs(inputs[idx]);
           // Flame colour comes from the CFI-G colour model when available, so the
           // rendered blue↔yellow tint is data-driven; physics soot is the fallback.
           p.modelSoot = res.flame_color ? res.flame_color.soot_equivalent : res.prediction.soot_fraction;
@@ -1454,12 +1502,12 @@
       badge.textContent = res
         ? `${res.model} · ${res.source === "backend" ? "API" : "offline"}`
         : "Candle illustration";
-      document.getElementById("trustBadge").textContent = statusLabel(res?.uncertainty.trust_status);
+      document.getElementById("trustBadge").textContent = res ? statusLabel(res.uncertainty.trust_status) : "Illustrative";
       document.getElementById("trustTitle").textContent = res
         ? window.FlameAtlasPredict.appearanceLabels[res.prediction.visual_regime]
         : "Candle illustration";
       document.getElementById("trustText").textContent = res
-        ? res.uncertainty.plain_english_explanation
+        ? `The confidence score is a heuristic based on how closely the scenario matches example inputs. ${res.uncertainty.plain_english_explanation}`
         : "The candle view shows a qualitative illustration. Choose a fabric sheet, acrylic rod or droplet for model estimates.";
 
       const resolved = { ...window.FlameAtlasPredict.normalizeInputs(input),
@@ -1470,7 +1518,17 @@
       const evidence = document.getElementById("scenarioEvidence");
       evidence.href = res ? `evidence.html?${query}#reviewed-evidence` : "evidence.html#reviewed-evidence";
       evidence.textContent = res ? "Compare conditions with reviewed NASA evidence" : "Browse reviewed NASA evidence";
+      document.getElementById("colourMarkerSource").hidden = !res?.flame_color;
       updateFlameColorChart(res?.flame_color);
+
+      // Phase 1 contract: scenario event consumed by the evidence rail and later tracks.
+      const scenarioKey = [gravity_g, o2_percent, pressure_psi, airflow_cm_s, diluent, res ? fuel_material : "candle"]
+        .map(v => (typeof v === "number" ? Number(v.toFixed(4)) : v)).join("|");
+      const detail = { scenarioKey, cabin: resolved, trustStatus: res?.uncertainty.trust_status ?? null,
+        spreadModeled: res?.prediction ?? null, uncertainty: res?.uncertainty ?? null,
+        paneLabel: panes[0] ? describePaneLocation(panes[0]).title : "Pane 1" };
+      window.__flameatlasScenario = detail;
+      window.dispatchEvent(new CustomEvent("flameatlas:scenario", { detail }));
     }
 
     /* ---- Flame-colour map: real CFI-G scatter + live cabin marker ---- */
@@ -1481,11 +1539,11 @@
       const ctx = canvas.getContext("2d");
       const X0 = 0.10, X1 = 0.90, Y0 = 1500, Y1 = 3050;   // oxygen fraction, Tad (K)
       const DOT = { blue: "#5aa0ff", yellow: "#ffb13c", mixed: "#b9a0d8", limit: "#8a94a6" };
-      let points = null, marker = null;
+      let catalog = null, marker = null;
 
       fetch("data/flame_color_catalog.json")
         .then(r => r.ok ? r.json() : null)
-        .then(d => { if (d) { points = d.points || []; draw(); } })
+        .then(d => { if (d) { catalog = d; draw(); } })
         .catch(() => {});
 
       function px(w) { return canvas.width / (window.devicePixelRatio || 1) * w; }
@@ -1516,7 +1574,7 @@
         }
 
         // real CFI-G observations
-        (points || []).forEach(p => {
+        (catalog?.points ?? []).forEach(p => {
           if (p.tad_k == null) return;
           const x = sx(p.xo2, W, padL, padR), y = sy(p.tad_k, H, padT, padB);
           ctx.beginPath(); ctx.arc(x, y, p.color === "limit" ? 2.4 : 3.2, 0, Math.PI * 2);
@@ -1538,6 +1596,7 @@
       }
 
       return {
+        source: () => colourChartSource(catalog),
         update(fc) {
           marker = fc || null;
           if (basisEl) basisEl.textContent = fc
@@ -1547,6 +1606,39 @@
         }
       };
     })();
+    const modelReadouts = {
+      spread: ".r-spread", dimensions: ".r-dims, .r-size-spread",
+      flux: ".r-flux", trust: ".r-trust", colour: ".r-color"
+    };
+    document.addEventListener("flameatlas:source", ({ detail }) => {
+      const { key, trigger } = detail;
+      const pane = panes.find(p => paneEls[p.key]?.el.contains(trigger)) ?? panes[0];
+      if (key === "gravity") {
+        detail.entry = gravitySource(pane.world, pane.mode, pane.altKm, pane.g);
+      } else if (key === "colour-chart") {
+        detail.entry = flameColorChart.source();
+      } else if (key === "partial") {
+        detail.entry = {
+          title: "Oxygen partial pressure", type: "Calculated from your settings",
+          description: "The lab multiplies the selected cabin pressure by the oxygen mole fraction and rounds the result to two decimal places.",
+          formula: `O₂ partial pressure = (O₂ % ÷ 100) × cabin pressure
+(${shared.o2} ÷ 100) × ${shared.pressure.toFixed(1)} psi = ${document.getElementById("ppo2Out").textContent}`,
+        };
+      } else if (["o2", "flow", "pressure"].includes(key)) {
+        const input = { o2: ["Oxygen fraction", "o2Range", "%"], flow: ["Airflow speed", "flowRange", " cm/s"], pressure: ["Cabin pressure", "pressRange", " psi"] }[key];
+        const field = document.getElementById(input[1]);
+        const origin = inputOrigins[key];
+        detail.entry = {
+          title: input[0], type: origin?.links ? "Experiment-inspired preset" : "Scenario input",
+          description: origin?.description ?? "This is the starting sandbox value chosen by FlameAtlas. Use the slider to test another condition.",
+          facts: [["Selected value", `${shared[key]}${input[2]}`], ["Slider range", `${field.min}–${field.max}${input[2]}`]],
+          links: origin?.links,
+        };
+      } else if (Object.hasOwn(modelReadouts, key)) {
+        const shown = Array.from(paneEls[pane.key].el.querySelectorAll(modelReadouts[key]), e => e.textContent).join(" ");
+        detail.entry = predictionSource(key, pane.model, pane.modelInput, shown);
+      }
+    });
     function updateFlameColorChart(fc) { flameColorChart.update(fc); }
     window.addEventListener("resize", () => updateFlameColorChart(panes[0] && panes[0].model ? panes[0].model.flame_color : null));
 
@@ -1597,11 +1689,11 @@
       const gHint = document.getElementById("gHint");
       if (gHint) {
         if (p0.mode === "free_orbit") {
-          gHint.textContent = `Free-fall orbit at ${formatKm(w.lowOrbitKm)} around ${w.name}: local gravity is ${gLabel(lowAltG)}, but orbital free-fall cancels it so cabin gravity is ≈0 g. Click "${w.surfaceLabel}" or drag the slider to test surface-to-max-orbit gravity.`;
+          gHint.textContent = `At ${formatKm(w.lowOrbitKm)} around ${w.name}, local gravity is ${gLabel(lowAltG)}. The spacecraft and its contents fall together, giving effective cabin gravity of ≈0 g.`;
         } else if (p0.mode === "surface" || p0.altKm <= 0) {
           gHint.textContent = `${w.name} ${w.surfaceLabel.toLowerCase()} (0 km): full gravity of ${gLabel(w.gSurface)} (${w.gSurfaceMs2.toFixed(2)} m/s²). Drag the slider right to increase distance toward maximum orbit (${formatKm(w.maxOrbitKm)}).`;
         } else if (p0.mode === "max_orbit" || p0.altKm >= w.maxOrbitKm * 0.995) {
-          gHint.textContent = `Maximum orbit (${formatKm(w.maxOrbitKm)} Hill sphere limit of ${w.name}): gravitational pull drops to ≈0 g.`;
+          gHint.textContent = `At the maximum scenario altitude (${formatKm(w.maxOrbitKm)}), the app assigns effective cabin gravity of 0 g.`;
         } else {
           gHint.textContent = `At ${formatKm(p0.altKm)} above ${w.name} (R = ${Math.round(w.radiusKm).toLocaleString()} km), inverse-square gravity g(h) = g₀·(R/(R+h))² gives ${gLabel(p0.g)} (${ms2} m/s²).`;
         }
@@ -1625,7 +1717,10 @@
       schedulePrediction();
     }
 
-    function edited() { assumedNote = null; }
+    function edited(field) {
+      assumedNote = null;
+      if (field) inputOrigins[field] = { description: "You selected this value with the sandbox slider." };
+    }
 
     gRange.addEventListener("input", () => {
       const w = WORLDS[panes[0].world];
@@ -1634,13 +1729,13 @@
       edited();
       renderControls();
     });
-    o2Range.addEventListener("input", () => { shared.o2 = +o2Range.value; edited(); renderControls(); });
+    o2Range.addEventListener("input", () => { shared.o2 = +o2Range.value; edited("o2"); renderControls(); });
     flowRange.addEventListener("input", () => {
       shared.flow = +flowRange.value;
       panes.forEach(p => { if (shared.flow >= 1) p.burnout = 0; });
-      edited(); renderControls();
+      edited("flow"); renderControls();
     });
-    pressRange.addEventListener("input", () => { shared.pressure = +pressRange.value; edited(); renderControls(); });
+    pressRange.addEventListener("input", () => { shared.pressure = +pressRange.value; edited("pressure"); renderControls(); });
     document.getElementById("dilSeg").addEventListener("click", e => {
       const b = e.target.closest("button"); if (!b) return;
       shared.diluent = b.dataset.dil; edited(); renderControls();
@@ -1664,6 +1759,7 @@
     document.getElementById("resetBtn").addEventListener("click", () => {
       applyGravityMode(panes[0], "free_orbit");
       Object.assign(shared, { o2: 21, flow: 0, fuel: "candle", pressure: 14.7, diluent: "N2" });
+      for (const key of Object.keys(inputOrigins)) delete inputOrigins[key];
       edited(); ignite(); renderControls();
     });
 
@@ -1703,11 +1799,13 @@
       compareSelect.value = compareWorld;
       syncPanes();
       ignite();
+      schedulePrediction();
     });
     compareSelect.addEventListener("change", () => {
       compareWorld = compareSelect.value;
       syncPanes();
       ignite();
+      schedulePrediction();
     });
 
     /* ---- Arrival banner (coming from the spaceship) ---- */
@@ -1737,23 +1835,49 @@
       return e;
     }
 
+    function experimentLinks(experiment, field) {
+      const selected = experiment.citations?.[field] ?? experiment.sources;
+      return selected.map(([label, href]) => ({ label, href }));
+    }
+
+    function citeExperiment(experiment, label, value, status) {
+      const button = sourceButton("experiment", "Source", `${label} source for ${experiment.title}`);
+      button.addEventListener("flameatlas:source", ({ detail }) => {
+        detail.entry = { title: `${experiment.title} · ${label}`,
+          type: status ? STATUS[status] : "Source context",
+          description: value, links: experimentLinks(experiment, label),
+        };
+        if (experiment.id === "flex" && label === "Finding 3") {
+          detail.entry.formula = "°C = (°F − 32) × 5/9\n2,200–3,100 °F ≈ 1,204–1,704 °C, rounded to 1,200–1,700 °C in the card.";
+        }
+      });
+      return button;
+    }
+
     EXPERIMENTS.forEach(x => {
       const card = el("article", "exp");
       card.dataset.compare = "false";
       const head = el("div", "exp-head");
       head.append(el("span", "section-label", "NASA experiment"), el("h3", null, x.title), el("p", null, x.where));
+      head.append(citeExperiment(x, "Where", x.where));
       card.appendChild(head);
 
       const dl = el("dl", "fields");
       Object.entries(x.fields).forEach(([k, [v, st]]) => {
         const row = el("div", "field");
-        row.append(el("dt", null, k), el("dd", null, v), el("span", `tag ${st}`, STATUS[st]));
+        const value = el("dd", null, v);
+        if (st !== "unknown") value.append(" ", citeExperiment(x, k, v, st));
+        row.append(el("dt", null, k), value, el("span", `tag ${st}`, STATUS[st]));
         dl.appendChild(row);
       });
       card.appendChild(dl);
 
       const ul = el("ul", "findings");
-      x.findings.forEach(f => ul.appendChild(el("li", null, f)));
+      x.findings.forEach((finding, i) => {
+        const item = el("li", null, finding);
+        item.append(" ", citeExperiment(x, `Finding ${i + 1}`, finding));
+        ul.append(item);
+      });
       card.appendChild(ul);
 
       const fo = el("div", "footage" + (x.footage ? "" : " none"));
@@ -1783,6 +1907,13 @@
       load.addEventListener("click", () => {
         applyGravityMode(panes[0], x.preset.g === 0 ? "free_orbit" : "surface");
         Object.assign(shared, { o2: x.preset.o2, flow: x.preset.flow, fuel: x.preset.fuel });
+        for (const [key, label, field] of [["o2", "oxygen", "Oxygen"], ["flow", "airflow", "Airflow"]]) {
+          const assumption = x.assumed.find(item => item.startsWith(label));
+          inputOrigins[key] = {
+            description: assumption ? `The ${x.title} sandbox preset uses ${assumption}.` : `The ${x.title} sandbox preset uses the reported condition. ${x.fields[field][0]}.`,
+            links: experimentLinks(x, field),
+          };
+        }
         const assumptions = [...x.assumed, "current pressure and balance gas"];
         assumedNote = `Illustrative preset for ${x.title.split(" (")[0]}. Scenario assumptions include ${assumptions.join(", ")}.`;
         ignite();
@@ -1832,10 +1963,13 @@
       const row = (label, va, vb) => {
         const tr = el("tr");
         tr.append(el("th", null, label));
-        [va, vb].forEach(v => {
+        [va, vb].forEach((v, i) => {
           const td = el("td");
           if (Array.isArray(v)) { td.append(el("div", null, v[0]), el("span", `tag ${v[1]}`, STATUS[v[1]])); }
           else td.textContent = v;
+          if (!Array.isArray(v) || v[1] !== "unknown") {
+            td.append(" ", citeExperiment(i === 0 ? a : b, label === "Key finding" ? "Finding 1" : label, Array.isArray(v) ? v[0] : v, Array.isArray(v) ? v[1] : undefined));
+          }
           tr.appendChild(td);
         });
         tbody.appendChild(tr);
@@ -1886,8 +2020,65 @@
       a.remove();
       setTimeout(() => URL.revokeObjectURL(a.href), 1000);
     }
+
+    function csvCell(value) {
+      const text = value == null ? "" : String(value);
+      return `"${text.replace(/"/g, '""')}"`;
+    }
+
+    function exportCsv() {
+      const exportedAt = new Date().toISOString();
+      const headers = [
+        "record_type", "data_basis", "exported_at", "destination", "destination_type",
+        "pane", "pane_world", "gravity_mode", "altitude_km", "gravity_g",
+        "oxygen_percent", "airflow_cm_s", "pressure_psi", "diluent", "fuel",
+        "assumptions", "experiment_id", "experiment_title", "experiment_location",
+        "evidence_gravity", "evidence_gravity_status", "evidence_fuel", "evidence_fuel_status",
+        "evidence_oxygen", "evidence_oxygen_status", "evidence_airflow", "evidence_airflow_status",
+        "evidence_pressure", "evidence_pressure_status", "findings", "source_labels", "source_urls"
+      ];
+      const selectedExperiments = comparePick
+        .map(id => EXPERIMENTS.find(experiment => experiment.id === id))
+        .filter(Boolean);
+      const experiments = selectedExperiments.length ? selectedExperiments : [null];
+      const rows = [headers];
+
+      panes.forEach(pane => {
+        const paneWorld = WORLDS[pane.world];
+        experiments.forEach(experiment => {
+          const fields = experiment?.fields ?? {};
+          const fieldValue = key => fields[key]?.[0] ?? "";
+          const fieldStatus = key => fields[key]?.[1] ?? "";
+          rows.push([
+            "simulation_scenario", "illustrative_not_measured", exportedAt, WORLDS[worldId].name, WORLDS[worldId].type,
+            pane.key, paneWorld.name, pane.mode, pane.altKm, pane.g,
+            shared.o2, shared.flow, shared.pressure, shared.diluent, FUELS[shared.fuel].name,
+            assumedNote ?? "", experiment?.id ?? "", experiment?.title ?? "", experiment?.where ?? "",
+            fieldValue("Gravity"), fieldStatus("Gravity"), fieldValue("Fuel"), fieldStatus("Fuel"),
+            fieldValue("Oxygen"), fieldStatus("Oxygen"), fieldValue("Airflow"), fieldStatus("Airflow"),
+            fieldValue("Pressure"), fieldStatus("Pressure"),
+            experiment?.findings.join(" | ") ?? "",
+            experiment?.sources.map(([label]) => label).join(" | ") ?? "",
+            experiment?.sources.map(([, url]) => url).join(" | ") ?? ""
+          ]);
+        });
+      });
+
+      const csv = "\uFEFF" + rows.map(row => row.map(csvCell).join(",")).join("\r\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `flameatlas-${worldId}-scenario.csv`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+    }
+
     document.getElementById("exportTop").addEventListener("click", exportSummary);
     document.getElementById("exportBottom").addEventListener("click", exportSummary);
+    document.getElementById("exportCsvTop").addEventListener("click", exportCsv);
+    document.getElementById("exportCsvBottom").addEventListener("click", exportCsv);
 
     /* =========================================================
        LOOP

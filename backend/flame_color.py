@@ -53,7 +53,8 @@ def _blend(soot_eq: float) -> str:
 
 class FlameColorModel:
     def __init__(self):
-        blob = json.load(open(DATA, encoding="utf-8"))
+        with open(DATA, encoding="utf-8") as fh:
+            blob = json.load(fh)
         self.citation = blob["citation"]
         self.counts = blob["counts"]
         records = blob["records"]
@@ -63,7 +64,7 @@ class FlameColorModel:
         Xc = np.array([[r["oxygen_fraction"], r["flame_temp_k"], r["sooting_index"]] for r in cls], float)
         yc = np.array([CLASSES.index(r["color"]) for r in cls])
         self.cls_scaler = StandardScaler().fit(Xc)
-        kernel = ConstantKernel(1.0) * RBF(length_scale=[1.0, 1.0, 1.0])
+        kernel = ConstantKernel(1.0) * RBF(length_scale=[1.0, 1.0, 1.0], length_scale_bounds=(1e-1, 1e6))
         self.classifier = GaussianProcessClassifier(kernel=kernel, max_iter_predict=200)
         self.classifier.fit(self.cls_scaler.transform(Xc), yc)
         self._fit_classes = sorted(set(yc.tolist()))
@@ -75,8 +76,8 @@ class FlameColorModel:
         yt = np.array([r["flame_temp_k"] for r in temp], float)
         self.tad_scaler = StandardScaler().fit(Xt)
         tkernel = (
-            ConstantKernel(1.0) * Matern(length_scale=[1.0, 1.0], nu=2.5)
-            + WhiteKernel(noise_level=1e3, noise_level_bounds=(1e1, 1e5))
+            ConstantKernel(1.0) * Matern(length_scale=[1.0, 1.0], length_scale_bounds=(1e-1, 1e3), nu=2.5)
+            + WhiteKernel(noise_level=1e-2, noise_level_bounds=(1e-6, 1e1))  # normalize_y=True: noise is on unit-variance scale
         )
         self.tad = GaussianProcessRegressor(kernel=tkernel, normalize_y=True, n_restarts_optimizer=1, alpha=1e-6)
         self.tad.fit(self.tad_scaler.transform(Xt), yt)

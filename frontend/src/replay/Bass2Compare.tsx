@@ -1,4 +1,5 @@
 import { forwardRef, useEffect, useRef, useState } from 'react'
+import { bassReport } from '../shared/provenance'
 import { RecordingAppearance } from './RecordingAppearance'
 import { ViewLabel, CategoryTag } from '../shared/evidence'
 
@@ -73,6 +74,7 @@ export default function Bass2Compare({ focusRun }: { focusRun?: 'b1' | 'b3' }) {
         <span className="text-[11px] text-amber-300/80">
           Playback-position alignment only — independent recordings with no documented scientific-time synchronization. If one clip ends, both stop.
         </span>
+        <span className="text-xs text-sky-300"><button className="source-link" type="button" data-provenance="bass-timing" aria-haspopup="dialog">Playback timing source</button></span>
       </div>
 
       {/* side-by-side videos */}
@@ -117,7 +119,10 @@ export default function Bass2Compare({ focusRun }: { focusRun?: 'b1' | 'b3' }) {
                 {vals.map((v, i) => (
                   <div key={i} className="mt-0.5">
                     <span className="text-sm text-slate-100 font-mono">{v.value}{selected.unit ? ` ${selected.unit}` : ''}</span>
-                    <span className="block text-[9px] text-slate-500">{v.source}</span>
+                    {v.source !== '—' && <a className="block text-[10px] text-sky-300 underline" target="_blank" rel="noreferrer"
+                      href={/proof|still|nikon/i.test(v.source) ? `${BASE}/${run.proof_sheet}` : /video|overlay/i.test(v.source) ? `${BASE}/${run.video}` : /report|§|^TM/i.test(v.source) ? bassReport.href : data.investigation_link}>
+                      {v.source}
+                    </a>}
                   </div>
                 ))}
               </div>
@@ -140,6 +145,7 @@ export default function Bass2Compare({ focusRun }: { focusRun?: 'b1' | 'b3' }) {
           <h3 className="text-xs font-semibold tracking-widest text-slate-500 uppercase">Documented evidence (grouped)</h3>
           <ViewLabel kind="recorded" />
         </div>
+        <p className="mb-2 text-xs text-sky-300"><button className="source-link" type="button" data-provenance="bass-values" aria-haspopup="dialog">Sources for table values</button></p>
         <div className="overflow-x-auto">
           <table className="w-full text-xs min-w-[460px]">
             <thead>
@@ -163,6 +169,7 @@ export default function Bass2Compare({ focusRun }: { focusRun?: 'b1' | 'b3' }) {
       <div className="col-span-12 min-w-0 md:col-span-5 rounded-lg border border-space-600 bg-space-850 p-3">
         <h3 className="text-xs font-semibold tracking-widest text-slate-500 uppercase mb-2">Sources & link</h3>
         <a href={data.investigation_link} target="_blank" rel="noreferrer" className="inline-block text-[11px] text-sky-300 hover:underline mb-2">NASA PSI investigation {data.psi_id} ↗</a>
+        <a href={bassReport.href} target="_blank" rel="noreferrer" className="ml-3 text-[11px] text-sky-300 underline">{bassReport.label}</a>
         <ul className="text-[10px] font-mono text-slate-500 space-y-0.5">
           <li>• {data.runs.b1.video_source}</li>
           <li>• {data.runs.b1.proof_source}</li>

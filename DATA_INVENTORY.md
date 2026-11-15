@@ -87,6 +87,12 @@ change the predictor's training or hard limits.
 
 ## Research stories and optical metadata
 
+The Flame Lab's [plotted colour catalog](frontend/public/data/flame_color_catalog.json) uses the
+NASA PSI-159 CFI-G Inverse Flames table. XO₂ is the oxidizer mole fraction in the burner feed.
+Tad is the source's calculated adiabatic temperature. See the CFI-G final report, PDF pp. 29 and 59.
+The chart lists each retained test ID alongside its plotted values and gives the method
+for the cabin marker. The original table remains outside the frontend bundle.
+
 The [story summaries](frontend/src/data/researchStories.ts) link to the bundled evidence catalog and
 existing replays. Source locators include Saffire-I p. 21, BASS-II §2.3.5, LUCI pp. 19 and 33,
 SoFIE GEL §§2–3, the ACME Flame Design investigation overview, the SAME results and conclusions,

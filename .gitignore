@@ -17,3 +17,8 @@ data_raw/
 .idea/
 .DS_Store
 *.zip
+
+# local secrets
+.env
+backend/.env
+backend/logs/

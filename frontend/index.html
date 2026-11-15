@@ -533,8 +533,7 @@
             <div>
               <h3>Choose Your Destination</h3>
               <p>
-                The planets move around the Sun from where they
-                really are today. Select a planet or the Moon and
+                The orrery starts from approximate positions for today. Select a planet or the Moon and
                 the simulator will open on that scenario.
               </p>
             </div>
@@ -550,7 +549,7 @@
             </div>
             <p class="orrery-caption">
               Positions for <strong id="orreryDate"></strong>
-              · distances compressed
+              · distances compressed · <button class="source-link" type="button" data-provenance="orbits" aria-haspopup="dialog">How positions are calculated</button>
             </p>
           </div>
 
@@ -762,6 +761,11 @@
     const dateEl = document.getElementById("orreryDate");
     const toggle = document.getElementById("orbitToggle");
     const status = document.getElementById("worldStatus");
+    const factsLink = document.createElement("a");
+    factsLink.href = "https://nssdc.gsfc.nasa.gov/planetary/factsheet/";
+    factsLink.textContent = "Gravity reference";
+    factsLink.target = "_blank";
+    factsLink.rel = "noopener noreferrer";
     const launch = document.getElementById("launchLink");
     const navLaunch = document.getElementById("navLaunch");
     const SVGNS = "http://www.w3.org/2000/svg";
@@ -919,7 +923,7 @@
       const link = document.createElement("a");
       link.href = url;
       link.textContent = "Continue to simulator";
-      status.append(message, description, link);
+      status.append(message, description, link, " · ", factsLink);
     }
 
     /* ---------- ANIMATION ---------- */
@@ -992,5 +996,6 @@
       });
     }
   </script>
+  <script type="module" src="/src/shared/provenance.ts"></script>
 </body>
 </html>

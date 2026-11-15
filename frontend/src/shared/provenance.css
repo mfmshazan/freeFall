@@ -1,0 +1,74 @@
+button.source-link {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: .25em 0;
+  color: inherit;
+  font: inherit;
+  font-size: .85em;
+  font-weight: 650;
+  letter-spacing: normal;
+  text-transform: none;
+  text-decoration: underline;
+  text-underline-offset: .22em;
+  cursor: pointer;
+}
+.source-link:hover { text-decoration-thickness: .15em; }
+.source-link:focus-visible, .source-dialog :is(button, a):focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+.source-dialog {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: min(40rem, calc(100% - 2rem));
+  max-width: none;
+  max-height: min(46rem, calc(100% - 2rem));
+  padding: 0;
+  border: 1px solid #405572;
+  border-radius: 16px;
+  background: #101d2d;
+  color: #edf4ff;
+  box-shadow: 0 24px 80px #0009;
+  font: 400 15px/1.55 system-ui, sans-serif;
+}
+.source-dialog[open] { display: flex; flex-direction: column; }
+.source-dialog::backdrop { background: #030915b8; }
+.source-dialog .source-header {
+  position: static;
+  display: flex;
+  height: auto;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: .75rem;
+  background: #16263a;
+  padding: 1.2rem 1.35rem;
+  border: 0;
+  border-bottom: 1px solid #405572;
+  color: inherit;
+}
+.source-dialog h2 { margin: 0; font: 650 clamp(1.15rem, 4vw, 1.5rem)/1.18 system-ui, sans-serif; }
+.source-dialog .source-type { margin: 0 0 .3rem; color: #fea87c; font-size: .82rem; font-weight: 650; }
+.source-dialog .source-close {
+  border: 1px solid #678099;
+  border-radius: 7px;
+  background: #263c54;
+  color: inherit;
+  font: inherit;
+  padding: .42rem .65rem;
+  cursor: pointer;
+}
+.source-dialog .source-content { padding: 1.15rem 1.35rem 1.35rem; overflow: auto; overflow-wrap: anywhere; }
+.source-dialog :is(p, dl, pre, ul, table) { margin: 0 0 1rem; }
+.source-dialog .source-content > :last-child { margin-bottom: 0; }
+.source-dialog dl > div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .2rem 1rem; border-bottom: 1px solid #33465d; padding: .3rem 0; }
+.source-dialog dd { margin: 0; font-variant-numeric: tabular-nums; font-weight: 650; }
+.source-dialog pre { background: #081320; padding: .7rem .85rem; border-radius: 7px; white-space: pre-wrap; font: .85rem/1.6 ui-monospace, monospace; }
+.source-dialog ul { padding-inline-start: 1.2rem; list-style: disc; }
+.source-dialog a { color: #a8d8ff; text-decoration: underline; text-underline-offset: .15em; }
+.source-dialog table { width: 100%; border-collapse: collapse; background: transparent; font-size: .8rem; text-align: left; }
+.source-dialog caption { text-align: left; font-weight: 650; padding-bottom: .35rem; }
+.source-dialog :is(th, td) { padding: .35rem .4rem; border-bottom: 1px solid #405572; }
+.source-dialog th { background: #16263a; font-size: inherit; }

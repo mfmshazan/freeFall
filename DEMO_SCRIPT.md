@@ -39,6 +39,6 @@ link to Table I and open the report for the exclusions and missing measurements.
 
 ## Before the demo
 
-Start `npm run dev` in `frontend/`. To show API mode, start `uvicorn main:app --port 8000`
+Start `npm run dev` in `frontend/`. To show API mode, start `uvicorn app:app --port 8000`
 in the backend environment. Check both replays and the model source badge. Original reports
 require internet access.

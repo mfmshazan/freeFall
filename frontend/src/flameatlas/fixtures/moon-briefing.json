@@ -1,0 +1,42 @@
+{
+  "scenario_key": "moon|o2=34|p=8.2|v=10|PMMA",
+  "mode": "summary",
+  "fields": {
+    "observation": {
+      "text": "Fixture: BASS-II run M20 reports flame spread over a PMMA slab in opposed flow in orbit.",
+      "record_id": "bass-ii-m20",
+      "citation": {
+        "source_id": "bass-ii-summary",
+        "title": "BASS-II Summary Report",
+        "locator": "Table 5.1",
+        "url": "https://ntrs.nasa.gov/citations/20210011385",
+        "pdf_page": 65,
+        "printed_page": null
+      }
+    },
+    "relevance": {
+      "text": "Partial context match: the record is a slab in orbit, while this scenario is a rod on the Moon.",
+      "record_id": "bass-ii-m20",
+      "citation": {
+        "source_id": "bass-ii-summary",
+        "title": "BASS-II Summary Report",
+        "locator": "Table 5.1",
+        "url": "https://ntrs.nasa.gov/citations/20210011385",
+        "pdf_page": 65,
+        "printed_page": null
+      }
+    },
+    "limit": {
+      "text": "Geometry, gravity level and apparatus differ, so this is not a validation of the scenario.",
+      "record_id": "bass-ii-m20",
+      "citation": {
+        "source_id": "bass-ii-summary",
+        "title": "BASS-II Summary Report",
+        "locator": "Table 5.1",
+        "url": "https://ntrs.nasa.gov/citations/20210011385",
+        "pdf_page": 65,
+        "printed_page": null
+      }
+    }
+  }
+}
