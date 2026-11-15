@@ -1,0 +1,1104 @@
+{
+  "citation": {
+    "study": "PSI-159",
+    "investigation": "ACME CFI-G (Coflow Flames of Interest \u2014 Gravity), inverse flames",
+    "source": "NASA Physical Sciences Informatics",
+    "url": "https://www.nasa.gov/combustion-integrated-rack-advanced-combustion-via-microgravity-experiments-acme/",
+    "note": "Gaseous hydrocarbon inverse jet flames; observed color recorded per run."
+  },
+  "fuel_sooting_index": {
+    "methane": 0.08,
+    "ethane": 0.12,
+    "propane": 0.22,
+    "butane": 0.3
+  },
+  "counts": {
+    "total": 120,
+    "blue": 59,
+    "yellow": 10,
+    "mixed": 22,
+    "limit": 29
+  },
+  "records": [
+    {
+      "test_id": "21196 A2",
+      "day": "1",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.21,
+      "flame_temp_k": 2120.0,
+      "sooting_index": 0.12,
+      "color": "yellow"
+    },
+    {
+      "test_id": "21196 F1",
+      "day": "1",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.15,
+      "flame_temp_k": 1787.0,
+      "sooting_index": 0.12,
+      "color": "blue"
+    },
+    {
+      "test_id": "21196 F2",
+      "day": "1",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.15,
+      "flame_temp_k": 1785.1,
+      "sooting_index": 0.12,
+      "color": "blue"
+    },
+    {
+      "test_id": "21196 F6",
+      "day": "1",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.15,
+      "flame_temp_k": 1783.3,
+      "sooting_index": 0.12,
+      "color": "blue"
+    },
+    {
+      "test_id": "21196 L2",
+      "day": "1",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.21,
+      "flame_temp_k": 2111.0,
+      "sooting_index": 0.12,
+      "color": "blue"
+    },
+    {
+      "test_id": "21196 M2",
+      "day": "1",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.3,
+      "flame_temp_k": 2401.0,
+      "sooting_index": 0.12,
+      "color": "blue"
+    },
+    {
+      "test_id": "21196 M2_1",
+      "day": "1",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.3,
+      "flame_temp_k": 2397.9,
+      "sooting_index": 0.12,
+      "color": "blue"
+    },
+    {
+      "test_id": "21202 A2",
+      "day": "2",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2077.5,
+      "sooting_index": 0.12,
+      "color": "blue"
+    },
+    {
+      "test_id": "21202 A3",
+      "day": "2",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2077.4,
+      "sooting_index": 0.12,
+      "color": "blue"
+    },
+    {
+      "test_id": "21202 A4",
+      "day": "2",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2077.2,
+      "sooting_index": 0.12,
+      "color": "blue"
+    },
+    {
+      "test_id": "21202 H1",
+      "day": "2",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2566.5,
+      "sooting_index": 0.12,
+      "color": "limit"
+    },
+    {
+      "test_id": "21202 H2",
+      "day": "2",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2566.0,
+      "sooting_index": 0.12,
+      "color": "limit"
+    },
+    {
+      "test_id": "21202 H3",
+      "day": "2",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2565.2,
+      "sooting_index": 0.12,
+      "color": "blue"
+    },
+    {
+      "test_id": "21202 H4",
+      "day": "2",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2564.5,
+      "sooting_index": 0.12,
+      "color": "blue"
+    },
+    {
+      "test_id": "21202 J1",
+      "day": "2",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2563.8,
+      "sooting_index": 0.12,
+      "color": "blue"
+    },
+    {
+      "test_id": "21202 K1",
+      "day": "2",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2563.0,
+      "sooting_index": 0.12,
+      "color": "blue"
+    },
+    {
+      "test_id": "21202 K2",
+      "day": "2",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2560.7,
+      "sooting_index": 0.12,
+      "color": "blue"
+    },
+    {
+      "test_id": "21202 L1",
+      "day": "2",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2558.6,
+      "sooting_index": 0.12,
+      "color": "blue"
+    },
+    {
+      "test_id": "21209 A1",
+      "day": "3",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2821.0,
+      "sooting_index": 0.12,
+      "color": "limit"
+    },
+    {
+      "test_id": "21209 A3",
+      "day": "3",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2819.8,
+      "sooting_index": 0.12,
+      "color": "limit"
+    },
+    {
+      "test_id": "21209 B1",
+      "day": "3",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2814.2,
+      "sooting_index": 0.12,
+      "color": "limit"
+    },
+    {
+      "test_id": "21209 A4",
+      "day": "3",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2802.2,
+      "sooting_index": 0.12,
+      "color": "limit"
+    },
+    {
+      "test_id": "21209 H1",
+      "day": "3",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.5,
+      "flame_temp_k": 2621.4,
+      "sooting_index": 0.12,
+      "color": "limit"
+    },
+    {
+      "test_id": "21209 J1",
+      "day": "3",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.3,
+      "flame_temp_k": 2339.8,
+      "sooting_index": 0.12,
+      "color": "yellow"
+    },
+    {
+      "test_id": "21209 F1",
+      "day": "3",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.21,
+      "flame_temp_k": 2044.8,
+      "sooting_index": 0.12,
+      "color": "limit"
+    },
+    {
+      "test_id": "21209 F2",
+      "day": "3",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.21,
+      "flame_temp_k": 2035.8,
+      "sooting_index": 0.12,
+      "color": "blue"
+    },
+    {
+      "test_id": "21209 F3",
+      "day": "3",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.21,
+      "flame_temp_k": 2029.6,
+      "sooting_index": 0.12,
+      "color": "blue"
+    },
+    {
+      "test_id": "21209 B2",
+      "day": "3",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2763.4,
+      "sooting_index": 0.12,
+      "color": "blue"
+    },
+    {
+      "test_id": "21209 K1",
+      "day": "3",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.18,
+      "flame_temp_k": 1885.1,
+      "sooting_index": 0.12,
+      "color": "blue"
+    },
+    {
+      "test_id": "21216 A1",
+      "day": "4",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2468.3,
+      "sooting_index": 0.12,
+      "color": "blue"
+    },
+    {
+      "test_id": "21216 A2",
+      "day": "4",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2467.8,
+      "sooting_index": 0.12,
+      "color": "blue"
+    },
+    {
+      "test_id": "21216 A3",
+      "day": "4",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2467.4,
+      "sooting_index": 0.12,
+      "color": "blue"
+    },
+    {
+      "test_id": "21216 A4",
+      "day": "4",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2466.7,
+      "sooting_index": 0.12,
+      "color": "blue"
+    },
+    {
+      "test_id": "21216 A6",
+      "day": "4",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2466.4,
+      "sooting_index": 0.12,
+      "color": "blue"
+    },
+    {
+      "test_id": "21216 B1",
+      "day": "4",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2465.9,
+      "sooting_index": 0.12,
+      "color": "limit"
+    },
+    {
+      "test_id": "21216 C1",
+      "day": "4",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.5,
+      "flame_temp_k": 2292.7,
+      "sooting_index": 0.12,
+      "color": "blue"
+    },
+    {
+      "test_id": "21216 F1",
+      "day": "4",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.21,
+      "flame_temp_k": 1786.7,
+      "sooting_index": 0.12,
+      "color": "blue"
+    },
+    {
+      "test_id": "21216 H1",
+      "day": "4",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2460.6,
+      "sooting_index": 0.12,
+      "color": "blue"
+    },
+    {
+      "test_id": "21216 H2",
+      "day": "4",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2459.0,
+      "sooting_index": 0.12,
+      "color": "blue"
+    },
+    {
+      "test_id": "21216 J1",
+      "day": "4",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.5,
+      "flame_temp_k": 2284.0,
+      "sooting_index": 0.12,
+      "color": "blue"
+    },
+    {
+      "test_id": "21216 K1",
+      "day": "4",
+      "fuel": "ethane",
+      "oxygen_fraction": 0.21,
+      "flame_temp_k": 1779.8,
+      "sooting_index": 0.12,
+      "color": "blue"
+    },
+    {
+      "test_id": "21222 A1",
+      "day": "5",
+      "fuel": "propane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2532.6,
+      "sooting_index": 0.22,
+      "color": "blue"
+    },
+    {
+      "test_id": "21222 A2",
+      "day": "5",
+      "fuel": "propane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2532.3,
+      "sooting_index": 0.22,
+      "color": "limit"
+    },
+    {
+      "test_id": "21222 A3",
+      "day": "5",
+      "fuel": "propane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2532.0,
+      "sooting_index": 0.22,
+      "color": "limit"
+    },
+    {
+      "test_id": "21222 A4",
+      "day": "5",
+      "fuel": "propane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2531.2,
+      "sooting_index": 0.22,
+      "color": "blue"
+    },
+    {
+      "test_id": "21222 B1",
+      "day": "5",
+      "fuel": "propane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2531.0,
+      "sooting_index": 0.22,
+      "color": "limit"
+    },
+    {
+      "test_id": "21222 C1",
+      "day": "5",
+      "fuel": "propane",
+      "oxygen_fraction": 0.5,
+      "flame_temp_k": 2358.8,
+      "sooting_index": 0.22,
+      "color": "blue"
+    },
+    {
+      "test_id": "21222 C2",
+      "day": "5",
+      "fuel": "propane",
+      "oxygen_fraction": 0.5,
+      "flame_temp_k": 2358.6,
+      "sooting_index": 0.22,
+      "color": "blue"
+    },
+    {
+      "test_id": "21228 A1",
+      "day": "6",
+      "fuel": "propane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2586.9,
+      "sooting_index": 0.22,
+      "color": "limit"
+    },
+    {
+      "test_id": "21228 A2",
+      "day": "6",
+      "fuel": "propane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2586.6,
+      "sooting_index": 0.22,
+      "color": "limit"
+    },
+    {
+      "test_id": "21228 A3",
+      "day": "6",
+      "fuel": "propane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2586.0,
+      "sooting_index": 0.22,
+      "color": "limit"
+    },
+    {
+      "test_id": "21228 A4",
+      "day": "6",
+      "fuel": "propane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2585.7,
+      "sooting_index": 0.22,
+      "color": "blue"
+    },
+    {
+      "test_id": "21228 B1",
+      "day": "6",
+      "fuel": "propane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2585.6,
+      "sooting_index": 0.22,
+      "color": "limit"
+    },
+    {
+      "test_id": "21228 C1",
+      "day": "6",
+      "fuel": "propane",
+      "oxygen_fraction": 0.5,
+      "flame_temp_k": 2414.7,
+      "sooting_index": 0.22,
+      "color": "blue"
+    },
+    {
+      "test_id": "21228 C2",
+      "day": "6",
+      "fuel": "propane",
+      "oxygen_fraction": 0.5,
+      "flame_temp_k": 2414.4,
+      "sooting_index": 0.22,
+      "color": "blue"
+    },
+    {
+      "test_id": "21228 C3",
+      "day": "6",
+      "fuel": "propane",
+      "oxygen_fraction": 0.5,
+      "flame_temp_k": 2409.6,
+      "sooting_index": 0.22,
+      "color": "blue"
+    },
+    {
+      "test_id": "21228 C4",
+      "day": "6",
+      "fuel": "propane",
+      "oxygen_fraction": 0.5,
+      "flame_temp_k": 2409.4,
+      "sooting_index": 0.22,
+      "color": "blue"
+    },
+    {
+      "test_id": "21228 F1",
+      "day": "6",
+      "fuel": "propane",
+      "oxygen_fraction": 0.21,
+      "flame_temp_k": 1873.4,
+      "sooting_index": 0.22,
+      "color": "blue"
+    },
+    {
+      "test_id": "21228 H1",
+      "day": "6",
+      "fuel": "propane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2574.9,
+      "sooting_index": 0.22,
+      "color": "blue"
+    },
+    {
+      "test_id": "21228 H2",
+      "day": "6",
+      "fuel": "propane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2574.3,
+      "sooting_index": 0.22,
+      "color": "blue"
+    },
+    {
+      "test_id": "21228 J1",
+      "day": "6",
+      "fuel": "propane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2574.0,
+      "sooting_index": 0.22,
+      "color": "blue"
+    },
+    {
+      "test_id": "21228 K1",
+      "day": "6",
+      "fuel": "propane",
+      "oxygen_fraction": 0.5,
+      "flame_temp_k": 2402.9,
+      "sooting_index": 0.22,
+      "color": "blue"
+    },
+    {
+      "test_id": "21228 K2",
+      "day": "6",
+      "fuel": "propane",
+      "oxygen_fraction": 0.5,
+      "flame_temp_k": 2402.1,
+      "sooting_index": 0.22,
+      "color": "blue"
+    },
+    {
+      "test_id": "21228 L1",
+      "day": "6",
+      "fuel": "propane",
+      "oxygen_fraction": 0.21,
+      "flame_temp_k": 1867.6,
+      "sooting_index": 0.22,
+      "color": "blue"
+    },
+    {
+      "test_id": "21228 L2",
+      "day": "6",
+      "fuel": "propane",
+      "oxygen_fraction": 0.21,
+      "flame_temp_k": 1867.4,
+      "sooting_index": 0.22,
+      "color": "blue"
+    },
+    {
+      "test_id": "21235 A1",
+      "day": "7",
+      "fuel": "propane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2861.5,
+      "sooting_index": 0.22,
+      "color": "mixed"
+    },
+    {
+      "test_id": "21235 A2",
+      "day": "7",
+      "fuel": "propane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2859.8,
+      "sooting_index": 0.22,
+      "color": "mixed"
+    },
+    {
+      "test_id": "21242 A1",
+      "day": "8",
+      "fuel": "propane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2978.4,
+      "sooting_index": 0.22,
+      "color": "yellow"
+    },
+    {
+      "test_id": "21242 P1",
+      "day": "8",
+      "fuel": "propane",
+      "oxygen_fraction": 0.3,
+      "flame_temp_k": 2507.0,
+      "sooting_index": 0.22,
+      "color": "yellow"
+    },
+    {
+      "test_id": "21256 A1",
+      "day": "9",
+      "fuel": "butane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2678.6,
+      "sooting_index": 0.3,
+      "color": "mixed"
+    },
+    {
+      "test_id": "21256 A2",
+      "day": "9",
+      "fuel": "butane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2678.3,
+      "sooting_index": 0.3,
+      "color": "mixed"
+    },
+    {
+      "test_id": "21256 A3",
+      "day": "9",
+      "fuel": "butane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2678.1,
+      "sooting_index": 0.3,
+      "color": "mixed"
+    },
+    {
+      "test_id": "21256 A4",
+      "day": "9",
+      "fuel": "butane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2678.0,
+      "sooting_index": 0.3,
+      "color": "mixed"
+    },
+    {
+      "test_id": "21256 A5",
+      "day": "9",
+      "fuel": "butane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2678.0,
+      "sooting_index": 0.3,
+      "color": "mixed"
+    },
+    {
+      "test_id": "21256 C1",
+      "day": "9",
+      "fuel": "butane",
+      "oxygen_fraction": 0.5,
+      "flame_temp_k": 2509.3,
+      "sooting_index": 0.3,
+      "color": "mixed"
+    },
+    {
+      "test_id": "21256 F1",
+      "day": "9",
+      "fuel": "butane",
+      "oxygen_fraction": 0.21,
+      "flame_temp_k": 1956.1,
+      "sooting_index": 0.3,
+      "color": "mixed"
+    },
+    {
+      "test_id": "21256 B1",
+      "day": "9",
+      "fuel": "butane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2673.4,
+      "sooting_index": 0.3,
+      "color": "mixed"
+    },
+    {
+      "test_id": "21256 C2",
+      "day": "9",
+      "fuel": "butane",
+      "oxygen_fraction": 0.5,
+      "flame_temp_k": 2504.9,
+      "sooting_index": 0.3,
+      "color": "mixed"
+    },
+    {
+      "test_id": "21256 H1",
+      "day": "9",
+      "fuel": "butane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2585.9,
+      "sooting_index": 0.3,
+      "color": "mixed"
+    },
+    {
+      "test_id": "21256 H2",
+      "day": "9",
+      "fuel": "butane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2585.7,
+      "sooting_index": 0.3,
+      "color": "mixed"
+    },
+    {
+      "test_id": "21256 H3",
+      "day": "9",
+      "fuel": "butane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2585.5,
+      "sooting_index": 0.3,
+      "color": "mixed"
+    },
+    {
+      "test_id": "21256 H4",
+      "day": "9",
+      "fuel": "butane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2585.4,
+      "sooting_index": 0.3,
+      "color": "mixed"
+    },
+    {
+      "test_id": "21256 H5",
+      "day": "9",
+      "fuel": "butane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2585.4,
+      "sooting_index": 0.3,
+      "color": "mixed"
+    },
+    {
+      "test_id": "21256 K1",
+      "day": "9",
+      "fuel": "butane",
+      "oxygen_fraction": 0.5,
+      "flame_temp_k": 2415.9,
+      "sooting_index": 0.3,
+      "color": "mixed"
+    },
+    {
+      "test_id": "21265 A1",
+      "day": "10",
+      "fuel": "butane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2493.3,
+      "sooting_index": 0.3,
+      "color": "mixed"
+    },
+    {
+      "test_id": "21265 A2",
+      "day": "10",
+      "fuel": "butane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2493.1,
+      "sooting_index": 0.3,
+      "color": "mixed"
+    },
+    {
+      "test_id": "21265 A3",
+      "day": "10",
+      "fuel": "butane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2493.0,
+      "sooting_index": 0.3,
+      "color": "mixed"
+    },
+    {
+      "test_id": "21265 A4",
+      "day": "10",
+      "fuel": "butane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2493.0,
+      "sooting_index": 0.3,
+      "color": "mixed"
+    },
+    {
+      "test_id": "21265 A5",
+      "day": "10",
+      "fuel": "butane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2492.9,
+      "sooting_index": 0.3,
+      "color": "mixed"
+    },
+    {
+      "test_id": "21265 C1",
+      "day": "10",
+      "fuel": "butane",
+      "oxygen_fraction": 0.5,
+      "flame_temp_k": 2320.7,
+      "sooting_index": 0.3,
+      "color": "blue"
+    },
+    {
+      "test_id": "21265 C2",
+      "day": "10",
+      "fuel": "butane",
+      "oxygen_fraction": 0.5,
+      "flame_temp_k": 2320.6,
+      "sooting_index": 0.3,
+      "color": "blue"
+    },
+    {
+      "test_id": "21265 C3",
+      "day": "10",
+      "fuel": "butane",
+      "oxygen_fraction": 0.5,
+      "flame_temp_k": 2320.3,
+      "sooting_index": 0.3,
+      "color": "blue"
+    },
+    {
+      "test_id": "21265 F1",
+      "day": "10",
+      "fuel": "butane",
+      "oxygen_fraction": 0.21,
+      "flame_temp_k": 1807.0,
+      "sooting_index": 0.3,
+      "color": "blue"
+    },
+    {
+      "test_id": "21265 F2",
+      "day": "10",
+      "fuel": "butane",
+      "oxygen_fraction": 0.21,
+      "flame_temp_k": 1807.0,
+      "sooting_index": 0.3,
+      "color": "blue"
+    },
+    {
+      "test_id": "21265 H1",
+      "day": "10",
+      "fuel": "butane",
+      "oxygen_fraction": 0.4,
+      "flame_temp_k": 2209.0,
+      "sooting_index": 0.3,
+      "color": "blue"
+    },
+    {
+      "test_id": "21265 H2",
+      "day": "10",
+      "fuel": "butane",
+      "oxygen_fraction": 0.4,
+      "flame_temp_k": 2209.0,
+      "sooting_index": 0.3,
+      "color": "blue"
+    },
+    {
+      "test_id": "21265 J1",
+      "day": "10",
+      "fuel": "butane",
+      "oxygen_fraction": 0.7,
+      "flame_temp_k": 2427.1,
+      "sooting_index": 0.3,
+      "color": "blue"
+    },
+    {
+      "test_id": "21265 K1",
+      "day": "10",
+      "fuel": "butane",
+      "oxygen_fraction": 0.45,
+      "flame_temp_k": 2260.7,
+      "sooting_index": 0.3,
+      "color": "blue"
+    },
+    {
+      "test_id": "21265 H3",
+      "day": "10",
+      "fuel": "butane",
+      "oxygen_fraction": 0.4,
+      "flame_temp_k": 2203.1,
+      "sooting_index": 0.3,
+      "color": "blue"
+    },
+    {
+      "test_id": "21270 A1",
+      "day": "11",
+      "fuel": "butane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2872.8,
+      "sooting_index": 0.3,
+      "color": "limit"
+    },
+    {
+      "test_id": "21270 A2",
+      "day": "11",
+      "fuel": "butane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2871.5,
+      "sooting_index": 0.3,
+      "color": "limit"
+    },
+    {
+      "test_id": "21270 A3",
+      "day": "11",
+      "fuel": "butane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2868.3,
+      "sooting_index": 0.3,
+      "color": "limit"
+    },
+    {
+      "test_id": "21270 A4",
+      "day": "11",
+      "fuel": "butane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2867.9,
+      "sooting_index": 0.3,
+      "color": "limit"
+    },
+    {
+      "test_id": "21270 C1",
+      "day": "11",
+      "fuel": "butane",
+      "oxygen_fraction": 0.5,
+      "flame_temp_k": 2681.7,
+      "sooting_index": 0.3,
+      "color": "limit"
+    },
+    {
+      "test_id": "21270 H1",
+      "day": "11",
+      "fuel": "butane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2822.9,
+      "sooting_index": 0.3,
+      "color": "limit"
+    },
+    {
+      "test_id": "21270 H2",
+      "day": "11",
+      "fuel": "butane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2821.3,
+      "sooting_index": 0.3,
+      "color": "limit"
+    },
+    {
+      "test_id": "21270 H3",
+      "day": "11",
+      "fuel": "butane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2820.7,
+      "sooting_index": 0.3,
+      "color": "limit"
+    },
+    {
+      "test_id": "21270 H4",
+      "day": "11",
+      "fuel": "butane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2819.7,
+      "sooting_index": 0.3,
+      "color": "limit"
+    },
+    {
+      "test_id": "21270 H5",
+      "day": "11",
+      "fuel": "butane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2815.5,
+      "sooting_index": 0.3,
+      "color": "limit"
+    },
+    {
+      "test_id": "21277 A1",
+      "day": "12",
+      "fuel": "butane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2977.8,
+      "sooting_index": 0.3,
+      "color": "yellow"
+    },
+    {
+      "test_id": "21277 H1",
+      "day": "12",
+      "fuel": "butane",
+      "oxygen_fraction": 0.5,
+      "flame_temp_k": 2788.0,
+      "sooting_index": 0.3,
+      "color": "yellow"
+    },
+    {
+      "test_id": "21277 K2",
+      "day": "12",
+      "fuel": "butane",
+      "oxygen_fraction": 0.3,
+      "flame_temp_k": 2507.2,
+      "sooting_index": 0.3,
+      "color": "yellow"
+    },
+    {
+      "test_id": "21277 C1",
+      "day": "12",
+      "fuel": "butane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2932.5,
+      "sooting_index": 0.3,
+      "color": "yellow"
+    },
+    {
+      "test_id": "21277 C2",
+      "day": "12",
+      "fuel": "butane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2931.9,
+      "sooting_index": 0.3,
+      "color": "yellow"
+    },
+    {
+      "test_id": "21277 L1",
+      "day": "12",
+      "fuel": "butane",
+      "oxygen_fraction": 0.5,
+      "flame_temp_k": 2744.2,
+      "sooting_index": 0.3,
+      "color": "yellow"
+    },
+    {
+      "test_id": "21277 F1",
+      "day": "12",
+      "fuel": "butane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2878.3,
+      "sooting_index": 0.3,
+      "color": "limit"
+    },
+    {
+      "test_id": "21277 F2",
+      "day": "12",
+      "fuel": "butane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2875.7,
+      "sooting_index": 0.3,
+      "color": "limit"
+    },
+    {
+      "test_id": "21277 M1",
+      "day": "12",
+      "fuel": "butane",
+      "oxygen_fraction": 0.85,
+      "flame_temp_k": 2823.9,
+      "sooting_index": 0.3,
+      "color": "limit"
+    },
+    {
+      "test_id": "21277 N1",
+      "day": "12",
+      "fuel": "butane",
+      "oxygen_fraction": 0.5,
+      "flame_temp_k": 2643.0,
+      "sooting_index": 0.3,
+      "color": "blue"
+    },
+    {
+      "test_id": "21277 P1",
+      "day": "12",
+      "fuel": "butane",
+      "oxygen_fraction": 0.3,
+      "flame_temp_k": 2368.8,
+      "sooting_index": 0.3,
+      "color": "blue"
+    }
+  ]
+}

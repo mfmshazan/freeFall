@@ -17,6 +17,7 @@ from pydantic import BaseModel, Field
 from typing import Literal
 
 from surrogate import Surrogate
+from flame_color import FlameColorModel
 import ranker
 from planets import PLANETS, resolve_planet_gravity
 from evidence import rank_evidence
@@ -29,6 +30,7 @@ app.add_middleware(
 )
 
 SURROGATE = Surrogate()  # train once at startup
+FLAME_COLOR = FlameColorModel()  # CFI-G color classifier, trained once at startup
 evidence_catalog = lru_cache(maxsize=1)(load_catalog)
 logger = logging.getLogger(__name__)
 
@@ -99,6 +101,8 @@ def predict(inp: CabinInputs):
         prediction["flame_width_mm"] = prediction["flame_length_mm"]
         prediction["aspect_ratio_LD"] = 1.0
 
+    flame_color = FLAME_COLOR.predict(i["o2_percent"], i["fuel_material"])
+
     ranked, nearest = ranker.rank(i)
     top = ranked[0]
 
@@ -139,6 +143,7 @@ def predict(inp: CabinInputs):
     return {
         "prediction": prediction,
         "uncertainty": uncertainty,
+        "flame_color": flame_color,
         "ranked_investigations": ranked,
         "engineering_playbook": _playbook(i, prediction),
         "earth_spinoff": top["earth_spinoff_application"],

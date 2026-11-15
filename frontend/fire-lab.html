@@ -167,6 +167,11 @@
       display: grid;
       grid-template-columns: 1fr;
       gap: 12px;
+      /* keep the flame anchored in view while the explanation + experiments
+         scroll past underneath it */
+      position: sticky;
+      top: 88px;
+      z-index: 5;
     }
     .panes.compare { grid-template-columns: 1fr 1fr; }
     .pane {
@@ -228,6 +233,11 @@
     .basis-measured { background: #1f6f43; color: #d7ffe9; }
     .basis-estimate { background: #7a5a12; color: #ffe9b8; }
     .basis-none { color: #ff9b9b; }
+    /* compare mode: narrower panes wrap the readouts taller, so keep them compact
+       and anchored low enough that the (lifted) flame stays fully visible above them */
+    .panes.compare .readouts div { padding: 5px 9px; }
+    .panes.compare .readouts span { font-size: 8px; letter-spacing: 1px; }
+    .panes.compare .readouts b { font-size: 12px; }
     .status {
       padding: 8px 12px;
       background: #071323e6;
@@ -515,6 +525,7 @@
     @media (max-width: 1100px) {
       .lab { grid-template-columns: 1fr; }
       .controls { position: static; }
+      .panes { position: static; }
       .cards { grid-template-columns: 1fr; }
     }
     @media (max-width: 720px) {
@@ -612,6 +623,21 @@
           <h3 id="trustTitle">Waiting for model prediction…</h3>
           <p id="trustText"></p>
           <p id="spinoffText" style="margin-top:6px;font-size:12px;color:var(--muted-ink);"></p>
+        </div>
+      </div>
+
+      <div class="explain" id="flameColorBox" style="margin-top:12px;grid-template-columns:1fr;">
+        <div>
+          <span class="section-label">Flame Colour Map — trained on NASA ACME CFI-G</span>
+          <h3 style="margin:2px 0 2px;">Where your cabin sits in the real flame-colour data</h3>
+          <p style="font-size:12px;color:var(--muted-ink);margin:0 0 8px;">
+            Each dot is a real CFI-G inverse-flame run: observed <b style="color:#5aa0ff">blue</b>,
+            <b style="color:#ffb13c">yellow</b> (sooting), <b style="color:#b9a0d8">yellow-blue</b> or an
+            extinction <b style="color:#8a94a6">limit</b>, by oxygen fraction and flame temperature.
+            The ✦ marker is your current flame, placed by the colour model.
+          </p>
+          <canvas id="flameColorChart" style="width:100%;height:260px;display:block;border-radius:10px;background:#0a1626;"></canvas>
+          <p id="flameColorBasis" style="font-size:11px;color:var(--muted);margin:6px 0 0;"></p>
         </div>
       </div>
 
@@ -928,7 +954,7 @@
       }
 
       void main(){
-        vec2 uv = (gl_FragCoord.xy - vec2(0.5 * uRes.x, 0.3 * uRes.y)) / uRes.y;
+        vec2 uv = (gl_FragCoord.xy - vec2(0.5 * uRes.x, 0.42 * uRes.y)) / uRes.y;
         float buoy = sqrt(clamp(uG, 0.0, 2.6));
         float buoyUnit = clamp(buoy, 0.0, 1.0);
         float o2 = clamp((uO2 - 0.15) / 0.25, 0.0, 1.6);
@@ -1250,6 +1276,7 @@
             <div title="Model flame length × width (±1σ)"><span>Dimensions</span><b class="r-dims">—</b></div>
             <div title="Model radiometric heat flux proxy"><span>Heat flux</span><b class="r-flux">—</b></div>
             <div title="GP surrogate confidence score"><span>Model trust</span><b class="r-trust">—</b></div>
+            <div title="Flame colour predicted by the CFI-G colour model"><span>Flame colour</span><b class="r-color">—</b></div>
           </div>
           <div class="status" role="status"></div>
         </div>`;
@@ -1356,6 +1383,13 @@
           fluxB.textContent = `${mp.radiometric_flux_kw_m2.toFixed(2)} kW/m²`;
           trustB.textContent = `${mu.trust_score}% (${mu.safety_margin_multiplier}×)`;
           trustB.style.color = mu.trust_status === "HIGH_CONFIDENCE" ? "#8fd9a8" : mu.trust_status === "CAUTION_EXTRAPOLATING" ? "#ffc58f" : "#ff8a8a";
+          const colorB = pe.el.querySelector(".r-color");
+          const fc = p.model.flame_color;
+          if (colorB && fc) {
+            const name = fc.label === "mixed" ? "yellow-blue" : fc.label;
+            colorB.innerHTML = `<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${fc.hex};margin-right:5px;vertical-align:middle;box-shadow:0 0 6px ${fc.hex}"></span>${name} · ${Math.round(fc.confidence * 100)}%${fc.extrapolated ? " <em class='basis-estimate'>extrap.</em>" : ""}`;
+            colorB.title = `${fc.basis} · ~${Math.round(fc.est_flame_temp_k)} K (P blue ${Math.round(fc.p_blue*100)} / mixed ${Math.round(fc.p_mixed*100)} / yellow ${Math.round(fc.p_yellow*100)})`;
+          }
         } else {
           const sp = estimateSpread(shared.fuel, p.g, shared.o2, shared.flow);
           const basisLabel = sp.basis === "measured" ? "measured" : sp.basis === "estimate" ? "est." : "";
@@ -1458,7 +1492,9 @@
           const p = panes[idx];
           if (!p) return;
           p.model = res;
-          p.modelSoot = res.prediction.soot_fraction;
+          // Flame colour comes from the CFI-G colour model when available, so the
+          // rendered blue↔yellow tint is data-driven; physics soot is the fallback.
+          p.modelSoot = res.flame_color ? res.flame_color.soot_equivalent : res.prediction.soot_fraction;
           const diag = Math.sqrt(res.prediction.flame_length_mm * res.prediction.flame_width_mm);
           p.modelSize = Math.max(0.55, Math.min(1.6, diag / 28));
         });
@@ -1534,7 +1570,86 @@
           pbList.appendChild(card);
         });
       }
+
+      updateFlameColorChart(res.flame_color);
     }
+
+    /* ---- Flame-colour map: real CFI-G scatter + live cabin marker ---- */
+    const flameColorChart = (() => {
+      const canvas = document.getElementById("flameColorChart");
+      const basisEl = document.getElementById("flameColorBasis");
+      if (!canvas) return { update() {} };
+      const ctx = canvas.getContext("2d");
+      const X0 = 0.10, X1 = 0.90, Y0 = 1500, Y1 = 3050;   // oxygen fraction, Tad (K)
+      const DOT = { blue: "#5aa0ff", yellow: "#ffb13c", mixed: "#b9a0d8", limit: "#8a94a6" };
+      let points = null, marker = null;
+
+      fetch("data/flame_color_catalog.json")
+        .then(r => r.ok ? r.json() : null)
+        .then(d => { if (d) { points = d.points || []; draw(); } })
+        .catch(() => {});
+
+      function px(w) { return canvas.width / (window.devicePixelRatio || 1) * w; }
+      function sx(xo2, W, padL, padR) { return padL + (xo2 - X0) / (X1 - X0) * (W - padL - padR); }
+      function sy(tad, H, padT, padB) { return H - padB - (tad - Y0) / (Y1 - Y0) * (H - padT - padB); }
+
+      function draw() {
+        const dpr = window.devicePixelRatio || 1;
+        const W = canvas.clientWidth, H = canvas.clientHeight;
+        canvas.width = W * dpr; canvas.height = H * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, W, H);
+        const padL = 46, padR = 12, padT = 12, padB = 30;
+
+        // axes + gridlines
+        ctx.strokeStyle = "#ffffff18"; ctx.fillStyle = "#8a94a6"; ctx.lineWidth = 1;
+        ctx.font = "10px system-ui,sans-serif"; ctx.textAlign = "right"; ctx.textBaseline = "middle";
+        for (let t = 1600; t <= 3000; t += 350) {
+          const y = sy(t, H, padT, padB);
+          ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
+          ctx.fillText(t + "K", padL - 6, y);
+        }
+        ctx.textAlign = "center"; ctx.textBaseline = "top";
+        for (let x = 0.2; x <= 0.85; x += 0.15) {
+          const xx = sx(x, W, padL, padR);
+          ctx.beginPath(); ctx.moveTo(xx, padT); ctx.lineTo(xx, H - padB); ctx.stroke();
+          ctx.fillText(Math.round(x * 100) + "% O₂", xx, H - padB + 6);
+        }
+
+        // real CFI-G observations
+        (points || []).forEach(p => {
+          if (p.tad_k == null) return;
+          const x = sx(p.xo2, W, padL, padR), y = sy(p.tad_k, H, padT, padB);
+          ctx.beginPath(); ctx.arc(x, y, p.color === "limit" ? 2.4 : 3.2, 0, Math.PI * 2);
+          ctx.fillStyle = (DOT[p.color] || "#999") + (p.color === "limit" ? "88" : "cc");
+          ctx.fill();
+        });
+
+        // live cabin marker
+        if (marker && marker.est_flame_temp_k != null) {
+          const x = sx(marker.oxygen_fraction, W, padL, padR);
+          const y = sy(Math.max(Y0, Math.min(Y1, marker.est_flame_temp_k)), H, padT, padB);
+          ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.arc(x, y, 8, 0, Math.PI * 2); ctx.stroke();
+          ctx.fillStyle = marker.hex || "#fff";
+          ctx.beginPath(); ctx.arc(x, y, 5.5, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "#fff"; ctx.font = "bold 12px system-ui"; ctx.textAlign = "left"; ctx.textBaseline = "bottom";
+          ctx.fillText("✦ your flame", x + 11, y - 4);
+        }
+      }
+
+      return {
+        update(fc) {
+          marker = fc || null;
+          if (basisEl) basisEl.textContent = fc
+            ? `Marker: ${fc.label === "mixed" ? "yellow-blue" : fc.label} flame, ~${Math.round(fc.est_flame_temp_k)} K · ${fc.basis}${fc.extrapolated ? " · extrapolated beyond the gaseous-fuel data" : ""}`
+            : "";
+          draw();
+        }
+      };
+    })();
+    function updateFlameColorChart(fc) { flameColorChart.update(fc); }
+    window.addEventListener("resize", () => updateFlameColorChart(panes[0] && panes[0].model ? panes[0].model.flame_color : null));
 
     window.addEventListener("flameatlas:bridge-ready", schedulePrediction);
 

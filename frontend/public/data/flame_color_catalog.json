@@ -1,0 +1,851 @@
+{
+  "citation": {
+    "study": "PSI-159",
+    "investigation": "ACME CFI-G (Coflow Flames of Interest \u2014 Gravity), inverse flames",
+    "source": "NASA Physical Sciences Informatics",
+    "url": "https://www.nasa.gov/combustion-integrated-rack-advanced-combustion-via-microgravity-experiments-acme/",
+    "note": "Gaseous hydrocarbon inverse jet flames; observed color recorded per run."
+  },
+  "points": [
+    {
+      "xo2": 0.21,
+      "tad_k": 2120.0,
+      "color": "yellow",
+      "fuel": "ethane",
+      "test_id": "21196 A2"
+    },
+    {
+      "xo2": 0.15,
+      "tad_k": 1787.0,
+      "color": "blue",
+      "fuel": "ethane",
+      "test_id": "21196 F1"
+    },
+    {
+      "xo2": 0.15,
+      "tad_k": 1785.1,
+      "color": "blue",
+      "fuel": "ethane",
+      "test_id": "21196 F2"
+    },
+    {
+      "xo2": 0.15,
+      "tad_k": 1783.3,
+      "color": "blue",
+      "fuel": "ethane",
+      "test_id": "21196 F6"
+    },
+    {
+      "xo2": 0.21,
+      "tad_k": 2111.0,
+      "color": "blue",
+      "fuel": "ethane",
+      "test_id": "21196 L2"
+    },
+    {
+      "xo2": 0.3,
+      "tad_k": 2401.0,
+      "color": "blue",
+      "fuel": "ethane",
+      "test_id": "21196 M2"
+    },
+    {
+      "xo2": 0.3,
+      "tad_k": 2397.9,
+      "color": "blue",
+      "fuel": "ethane",
+      "test_id": "21196 M2_1"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2077.5,
+      "color": "blue",
+      "fuel": "ethane",
+      "test_id": "21202 A2"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2077.4,
+      "color": "blue",
+      "fuel": "ethane",
+      "test_id": "21202 A3"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2077.2,
+      "color": "blue",
+      "fuel": "ethane",
+      "test_id": "21202 A4"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2566.5,
+      "color": "limit",
+      "fuel": "ethane",
+      "test_id": "21202 H1"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2566.0,
+      "color": "limit",
+      "fuel": "ethane",
+      "test_id": "21202 H2"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2565.2,
+      "color": "blue",
+      "fuel": "ethane",
+      "test_id": "21202 H3"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2564.5,
+      "color": "blue",
+      "fuel": "ethane",
+      "test_id": "21202 H4"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2563.8,
+      "color": "blue",
+      "fuel": "ethane",
+      "test_id": "21202 J1"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2563.0,
+      "color": "blue",
+      "fuel": "ethane",
+      "test_id": "21202 K1"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2560.7,
+      "color": "blue",
+      "fuel": "ethane",
+      "test_id": "21202 K2"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2558.6,
+      "color": "blue",
+      "fuel": "ethane",
+      "test_id": "21202 L1"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2821.0,
+      "color": "limit",
+      "fuel": "ethane",
+      "test_id": "21209 A1"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2819.8,
+      "color": "limit",
+      "fuel": "ethane",
+      "test_id": "21209 A3"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2814.2,
+      "color": "limit",
+      "fuel": "ethane",
+      "test_id": "21209 B1"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2802.2,
+      "color": "limit",
+      "fuel": "ethane",
+      "test_id": "21209 A4"
+    },
+    {
+      "xo2": 0.5,
+      "tad_k": 2621.4,
+      "color": "limit",
+      "fuel": "ethane",
+      "test_id": "21209 H1"
+    },
+    {
+      "xo2": 0.3,
+      "tad_k": 2339.8,
+      "color": "yellow",
+      "fuel": "ethane",
+      "test_id": "21209 J1"
+    },
+    {
+      "xo2": 0.21,
+      "tad_k": 2044.8,
+      "color": "limit",
+      "fuel": "ethane",
+      "test_id": "21209 F1"
+    },
+    {
+      "xo2": 0.21,
+      "tad_k": 2035.8,
+      "color": "blue",
+      "fuel": "ethane",
+      "test_id": "21209 F2"
+    },
+    {
+      "xo2": 0.21,
+      "tad_k": 2029.6,
+      "color": "blue",
+      "fuel": "ethane",
+      "test_id": "21209 F3"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2763.4,
+      "color": "blue",
+      "fuel": "ethane",
+      "test_id": "21209 B2"
+    },
+    {
+      "xo2": 0.18,
+      "tad_k": 1885.1,
+      "color": "blue",
+      "fuel": "ethane",
+      "test_id": "21209 K1"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2468.3,
+      "color": "blue",
+      "fuel": "ethane",
+      "test_id": "21216 A1"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2467.8,
+      "color": "blue",
+      "fuel": "ethane",
+      "test_id": "21216 A2"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2467.4,
+      "color": "blue",
+      "fuel": "ethane",
+      "test_id": "21216 A3"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2466.7,
+      "color": "blue",
+      "fuel": "ethane",
+      "test_id": "21216 A4"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2466.4,
+      "color": "blue",
+      "fuel": "ethane",
+      "test_id": "21216 A6"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2465.9,
+      "color": "limit",
+      "fuel": "ethane",
+      "test_id": "21216 B1"
+    },
+    {
+      "xo2": 0.5,
+      "tad_k": 2292.7,
+      "color": "blue",
+      "fuel": "ethane",
+      "test_id": "21216 C1"
+    },
+    {
+      "xo2": 0.21,
+      "tad_k": 1786.7,
+      "color": "blue",
+      "fuel": "ethane",
+      "test_id": "21216 F1"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2460.6,
+      "color": "blue",
+      "fuel": "ethane",
+      "test_id": "21216 H1"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2459.0,
+      "color": "blue",
+      "fuel": "ethane",
+      "test_id": "21216 H2"
+    },
+    {
+      "xo2": 0.5,
+      "tad_k": 2284.0,
+      "color": "blue",
+      "fuel": "ethane",
+      "test_id": "21216 J1"
+    },
+    {
+      "xo2": 0.21,
+      "tad_k": 1779.8,
+      "color": "blue",
+      "fuel": "ethane",
+      "test_id": "21216 K1"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2532.6,
+      "color": "blue",
+      "fuel": "propane",
+      "test_id": "21222 A1"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2532.3,
+      "color": "limit",
+      "fuel": "propane",
+      "test_id": "21222 A2"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2532.0,
+      "color": "limit",
+      "fuel": "propane",
+      "test_id": "21222 A3"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2531.2,
+      "color": "blue",
+      "fuel": "propane",
+      "test_id": "21222 A4"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2531.0,
+      "color": "limit",
+      "fuel": "propane",
+      "test_id": "21222 B1"
+    },
+    {
+      "xo2": 0.5,
+      "tad_k": 2358.8,
+      "color": "blue",
+      "fuel": "propane",
+      "test_id": "21222 C1"
+    },
+    {
+      "xo2": 0.5,
+      "tad_k": 2358.6,
+      "color": "blue",
+      "fuel": "propane",
+      "test_id": "21222 C2"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2586.9,
+      "color": "limit",
+      "fuel": "propane",
+      "test_id": "21228 A1"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2586.6,
+      "color": "limit",
+      "fuel": "propane",
+      "test_id": "21228 A2"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2586.0,
+      "color": "limit",
+      "fuel": "propane",
+      "test_id": "21228 A3"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2585.7,
+      "color": "blue",
+      "fuel": "propane",
+      "test_id": "21228 A4"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2585.6,
+      "color": "limit",
+      "fuel": "propane",
+      "test_id": "21228 B1"
+    },
+    {
+      "xo2": 0.5,
+      "tad_k": 2414.7,
+      "color": "blue",
+      "fuel": "propane",
+      "test_id": "21228 C1"
+    },
+    {
+      "xo2": 0.5,
+      "tad_k": 2414.4,
+      "color": "blue",
+      "fuel": "propane",
+      "test_id": "21228 C2"
+    },
+    {
+      "xo2": 0.5,
+      "tad_k": 2409.6,
+      "color": "blue",
+      "fuel": "propane",
+      "test_id": "21228 C3"
+    },
+    {
+      "xo2": 0.5,
+      "tad_k": 2409.4,
+      "color": "blue",
+      "fuel": "propane",
+      "test_id": "21228 C4"
+    },
+    {
+      "xo2": 0.21,
+      "tad_k": 1873.4,
+      "color": "blue",
+      "fuel": "propane",
+      "test_id": "21228 F1"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2574.9,
+      "color": "blue",
+      "fuel": "propane",
+      "test_id": "21228 H1"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2574.3,
+      "color": "blue",
+      "fuel": "propane",
+      "test_id": "21228 H2"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2574.0,
+      "color": "blue",
+      "fuel": "propane",
+      "test_id": "21228 J1"
+    },
+    {
+      "xo2": 0.5,
+      "tad_k": 2402.9,
+      "color": "blue",
+      "fuel": "propane",
+      "test_id": "21228 K1"
+    },
+    {
+      "xo2": 0.5,
+      "tad_k": 2402.1,
+      "color": "blue",
+      "fuel": "propane",
+      "test_id": "21228 K2"
+    },
+    {
+      "xo2": 0.21,
+      "tad_k": 1867.6,
+      "color": "blue",
+      "fuel": "propane",
+      "test_id": "21228 L1"
+    },
+    {
+      "xo2": 0.21,
+      "tad_k": 1867.4,
+      "color": "blue",
+      "fuel": "propane",
+      "test_id": "21228 L2"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2861.5,
+      "color": "mixed",
+      "fuel": "propane",
+      "test_id": "21235 A1"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2859.8,
+      "color": "mixed",
+      "fuel": "propane",
+      "test_id": "21235 A2"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2978.4,
+      "color": "yellow",
+      "fuel": "propane",
+      "test_id": "21242 A1"
+    },
+    {
+      "xo2": 0.3,
+      "tad_k": 2507.0,
+      "color": "yellow",
+      "fuel": "propane",
+      "test_id": "21242 P1"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2678.6,
+      "color": "mixed",
+      "fuel": "butane",
+      "test_id": "21256 A1"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2678.3,
+      "color": "mixed",
+      "fuel": "butane",
+      "test_id": "21256 A2"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2678.1,
+      "color": "mixed",
+      "fuel": "butane",
+      "test_id": "21256 A3"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2678.0,
+      "color": "mixed",
+      "fuel": "butane",
+      "test_id": "21256 A4"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2678.0,
+      "color": "mixed",
+      "fuel": "butane",
+      "test_id": "21256 A5"
+    },
+    {
+      "xo2": 0.5,
+      "tad_k": 2509.3,
+      "color": "mixed",
+      "fuel": "butane",
+      "test_id": "21256 C1"
+    },
+    {
+      "xo2": 0.21,
+      "tad_k": 1956.1,
+      "color": "mixed",
+      "fuel": "butane",
+      "test_id": "21256 F1"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2673.4,
+      "color": "mixed",
+      "fuel": "butane",
+      "test_id": "21256 B1"
+    },
+    {
+      "xo2": 0.5,
+      "tad_k": 2504.9,
+      "color": "mixed",
+      "fuel": "butane",
+      "test_id": "21256 C2"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2585.9,
+      "color": "mixed",
+      "fuel": "butane",
+      "test_id": "21256 H1"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2585.7,
+      "color": "mixed",
+      "fuel": "butane",
+      "test_id": "21256 H2"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2585.5,
+      "color": "mixed",
+      "fuel": "butane",
+      "test_id": "21256 H3"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2585.4,
+      "color": "mixed",
+      "fuel": "butane",
+      "test_id": "21256 H4"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2585.4,
+      "color": "mixed",
+      "fuel": "butane",
+      "test_id": "21256 H5"
+    },
+    {
+      "xo2": 0.5,
+      "tad_k": 2415.9,
+      "color": "mixed",
+      "fuel": "butane",
+      "test_id": "21256 K1"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2493.3,
+      "color": "mixed",
+      "fuel": "butane",
+      "test_id": "21265 A1"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2493.1,
+      "color": "mixed",
+      "fuel": "butane",
+      "test_id": "21265 A2"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2493.0,
+      "color": "mixed",
+      "fuel": "butane",
+      "test_id": "21265 A3"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2493.0,
+      "color": "mixed",
+      "fuel": "butane",
+      "test_id": "21265 A4"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2492.9,
+      "color": "mixed",
+      "fuel": "butane",
+      "test_id": "21265 A5"
+    },
+    {
+      "xo2": 0.5,
+      "tad_k": 2320.7,
+      "color": "blue",
+      "fuel": "butane",
+      "test_id": "21265 C1"
+    },
+    {
+      "xo2": 0.5,
+      "tad_k": 2320.6,
+      "color": "blue",
+      "fuel": "butane",
+      "test_id": "21265 C2"
+    },
+    {
+      "xo2": 0.5,
+      "tad_k": 2320.3,
+      "color": "blue",
+      "fuel": "butane",
+      "test_id": "21265 C3"
+    },
+    {
+      "xo2": 0.21,
+      "tad_k": 1807.0,
+      "color": "blue",
+      "fuel": "butane",
+      "test_id": "21265 F1"
+    },
+    {
+      "xo2": 0.21,
+      "tad_k": 1807.0,
+      "color": "blue",
+      "fuel": "butane",
+      "test_id": "21265 F2"
+    },
+    {
+      "xo2": 0.4,
+      "tad_k": 2209.0,
+      "color": "blue",
+      "fuel": "butane",
+      "test_id": "21265 H1"
+    },
+    {
+      "xo2": 0.4,
+      "tad_k": 2209.0,
+      "color": "blue",
+      "fuel": "butane",
+      "test_id": "21265 H2"
+    },
+    {
+      "xo2": 0.7,
+      "tad_k": 2427.1,
+      "color": "blue",
+      "fuel": "butane",
+      "test_id": "21265 J1"
+    },
+    {
+      "xo2": 0.45,
+      "tad_k": 2260.7,
+      "color": "blue",
+      "fuel": "butane",
+      "test_id": "21265 K1"
+    },
+    {
+      "xo2": 0.4,
+      "tad_k": 2203.1,
+      "color": "blue",
+      "fuel": "butane",
+      "test_id": "21265 H3"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2872.8,
+      "color": "limit",
+      "fuel": "butane",
+      "test_id": "21270 A1"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2871.5,
+      "color": "limit",
+      "fuel": "butane",
+      "test_id": "21270 A2"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2868.3,
+      "color": "limit",
+      "fuel": "butane",
+      "test_id": "21270 A3"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2867.9,
+      "color": "limit",
+      "fuel": "butane",
+      "test_id": "21270 A4"
+    },
+    {
+      "xo2": 0.5,
+      "tad_k": 2681.7,
+      "color": "limit",
+      "fuel": "butane",
+      "test_id": "21270 C1"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2822.9,
+      "color": "limit",
+      "fuel": "butane",
+      "test_id": "21270 H1"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2821.3,
+      "color": "limit",
+      "fuel": "butane",
+      "test_id": "21270 H2"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2820.7,
+      "color": "limit",
+      "fuel": "butane",
+      "test_id": "21270 H3"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2819.7,
+      "color": "limit",
+      "fuel": "butane",
+      "test_id": "21270 H4"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2815.5,
+      "color": "limit",
+      "fuel": "butane",
+      "test_id": "21270 H5"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2977.8,
+      "color": "yellow",
+      "fuel": "butane",
+      "test_id": "21277 A1"
+    },
+    {
+      "xo2": 0.5,
+      "tad_k": 2788.0,
+      "color": "yellow",
+      "fuel": "butane",
+      "test_id": "21277 H1"
+    },
+    {
+      "xo2": 0.3,
+      "tad_k": 2507.2,
+      "color": "yellow",
+      "fuel": "butane",
+      "test_id": "21277 K2"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2932.5,
+      "color": "yellow",
+      "fuel": "butane",
+      "test_id": "21277 C1"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2931.9,
+      "color": "yellow",
+      "fuel": "butane",
+      "test_id": "21277 C2"
+    },
+    {
+      "xo2": 0.5,
+      "tad_k": 2744.2,
+      "color": "yellow",
+      "fuel": "butane",
+      "test_id": "21277 L1"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2878.3,
+      "color": "limit",
+      "fuel": "butane",
+      "test_id": "21277 F1"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2875.7,
+      "color": "limit",
+      "fuel": "butane",
+      "test_id": "21277 F2"
+    },
+    {
+      "xo2": 0.85,
+      "tad_k": 2823.9,
+      "color": "limit",
+      "fuel": "butane",
+      "test_id": "21277 M1"
+    },
+    {
+      "xo2": 0.5,
+      "tad_k": 2643.0,
+      "color": "blue",
+      "fuel": "butane",
+      "test_id": "21277 N1"
+    },
+    {
+      "xo2": 0.3,
+      "tad_k": 2368.8,
+      "color": "blue",
+      "fuel": "butane",
+      "test_id": "21277 P1"
+    }
+  ]
+}
