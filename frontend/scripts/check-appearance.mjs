@@ -20,20 +20,26 @@ const fixtures = [
   [inputs(55, 14.7, 0, 4, 'N2', 'Heptane_Droplet'), 'SOOTY_YELLOW_CORE'],
   [inputs(15, 4.3, 0, 0, 'CO2', 'Heptane_Droplet'), 'QUENCHED_EXTINGUISHED'],
   [inputs(21, 14.7, 1, 8, 'CO2', 'Kapton_Wire'), 'STRETCHED_LAMINAR_TEARDROP'],
+  [{ ...inputs(21, 14.7), world: 'mercury', gravity_mode: 'free_orbit', gravity_g: 0.38 }, 'SOOT_FREE_BLUE_SPHERE'],
+  [{ ...inputs(21, 14.7), world: 'mercury', gravity_mode: 'surface' }, 'STRETCHED_LAMINAR_TEARDROP'],
+  [{ ...inputs(21, 14.7), world: 'mercury', gravity_mode: 'altitude', altitude_km: 2439.7 }, 'SOOT_FREE_BLUE_SPHERE'],
+  [{ ...inputs(34, 10.2), world: 'jupiter', gravity_mode: 'surface' }, 'STRETCHED_LAMINAR_TEARDROP'],
+  [{ ...inputs(21, 14.7), world: 'earth', gravity_mode: 'max_orbit' }, 'SOOT_FREE_BLUE_SPHERE'],
+
 ]
 
 try {
   execFileSync(process.execPath, [
-    'node_modules/typescript/bin/tsc', 'src/hooks/useFlamePrediction.ts', 'src/physics/atmosphere.ts',
+    'node_modules/typescript/bin/tsc', 'src/physics/localService.ts', 'src/physics/atmosphere.ts', 'src/physics/appearance.ts',
     'src/data/researchStories.ts', '--module', 'commonjs', '--target', 'ES2020', '--strict',
-    '--resolveJsonModule', '--esModuleInterop', '--skipLibCheck', '--outDir', temp,
+    '--resolveJsonModule', '--esModuleInterop', '--skipLibCheck', '--rootDir', root, '--outDir', temp,
   ], { cwd: frontend, stdio: 'inherit' })
   const load = createRequire(import.meta.url)
-  const { predictLocal } = load(join(temp, 'physics/flameModel.js'))
-  const { predictLocalService } = load(join(temp, 'physics/localService.js'))
-  const { partialPressure } = load(join(temp, 'physics/atmosphere.js'))
-  const { isCurrentAppearance } = load(join(temp, 'physics/appearance.js'))
-  const { RESEARCH_STORIES } = load(join(temp, 'data/researchStories.js'))
+  const { predictLocal } = load(join(temp, 'frontend/src', 'physics/flameModel.js'))
+  const { predictLocalService } = load(join(temp, 'frontend/src', 'physics/localService.js'))
+  const { partialPressure } = load(join(temp, 'frontend/src', 'physics/atmosphere.js'))
+  const { isCurrentAppearance } = load(join(temp, 'frontend/src', 'physics/appearance.js'))
+  const { RESEARCH_STORIES } = load(join(temp, 'frontend/src', 'data/researchStories.js'))
   const catalog = load(join(frontend, 'src/data/evidence_catalog.json'))
   const python = process.env.FREEFALL_PYTHON || 'python3'
   const pythonExecutable = python.includes('/') ? resolve(python) : python
@@ -41,13 +47,16 @@ try {
     'import json, sys',
     'sys.path.insert(0, "backend")',
     'import main, physics',
-    'print(json.dumps([(physics.predict(**i), main.predict(main.CabinInputs(**i))) for i in json.load(sys.stdin)]))',
+    'print(json.dumps([main.predict(main.CabinInputs(**i)) for i in json.load(sys.stdin)]))',
   ].join('\n')], { cwd: root, input: JSON.stringify(fixtures.map(([i]) => i)), encoding: 'utf8' }))
 
   for (const [index, [input, appearance]] of fixtures.entries()) {
-    const local = predictLocal(input)
     const fallback = predictLocalService(input)
-    const [physical, api] = backend[index]
+    const api = backend[index]
+    assert.deepEqual(fallback.planet_telemetry, api.planet_telemetry)
+    const gravity = api.planet_telemetry?.effective_gravity_g ?? input.gravity_g
+    const local = predictLocal({ ...input, gravity_g: gravity })
+    const physical = api.prediction
     assert.equal(local.visual_regime, appearance)
     assert.equal(api.prediction.visual_regime, appearance)
     assert.equal(isCurrentAppearance(appearance), true)
@@ -59,7 +68,14 @@ try {
     assert.deepEqual(Object.keys(fallback.prediction).sort(), Object.keys(api.prediction).sort())
     assert.deepEqual(Object.keys(fallback.uncertainty).sort(), Object.keys(api.uncertainty).sort())
     assert.deepEqual(fallback.engineering_playbook, api.engineering_playbook)
-    if (input.gravity_g === 0 && input.airflow_cm_s === 0) {
+    assert.equal(api.model, fallback.model)
+    assert.equal(fallback.uncertainty.trust_status, api.uncertainty.trust_status)
+    assert.equal(fallback.uncertainty.trust_score, api.uncertainty.trust_score)
+    assert.equal(api.uncertainty.safety_margin_multiplier, null)
+    for (const key of ['std_length_mm', 'std_width_mm', 'std_spread_rate']) {
+      assert(Math.abs(fallback.uncertainty[key] - api.uncertainty[key]) < 1e-10, key)
+    }
+    if (gravity === 0 && input.airflow_cm_s === 0) {
       for (const result of [fallback, api]) {
         assert.equal(result.prediction.aspect_ratio_LD, 1)
         assert.equal(result.prediction.flame_length_mm, result.prediction.flame_width_mm)

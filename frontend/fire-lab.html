@@ -606,28 +606,16 @@
       </div>
 
       <div class="explain" id="modelTrustBox" style="margin-top:12px;">
-        <span class="evidence" id="trustBadge">Trust —</span>
+        <span class="evidence" id="trustBadge">Exploratory</span>
         <div>
-          <span class="section-label">GP Surrogate Model &amp; Uncertainty</span>
+          <span class="section-label">Model &amp; uncertainty</span>
           <h3 id="trustTitle">Waiting for model prediction…</h3>
           <p id="trustText"></p>
-          <p id="spinoffText" style="margin-top:6px;font-size:12px;color:var(--muted-ink);"></p>
         </div>
       </div>
 
-      <div class="explain" id="psiRankBox" style="margin-top:12px;grid-template-columns:1fr;">
-        <div>
-          <span class="section-label">Ranked PSI Evidence (from model ranker)</span>
-          <div id="psiRankList" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:8px;"></div>
-        </div>
-      </div>
-
-      <div class="explain" id="playbookBox" style="margin-top:12px;grid-template-columns:1fr;">
-        <div>
-          <span class="section-label">Triggered Engineering Playbook</span>
-          <div id="playbookList" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-top:8px;"></div>
-        </div>
-      </div>
+      <div class="explain" data-validation-summary style="margin-top:12px;grid-template-columns:1fr;"></div>
+      <p style="margin-top:12px;"><a id="scenarioEvidence" href="evidence.html#reviewed-evidence">Compare conditions with reviewed NASA evidence</a></p>
     </section>
 
     <aside class="controls" aria-label="Flame sandbox controls">
@@ -660,7 +648,7 @@
 
       <div class="ctrl">
         <div class="ctrl-head"><span class="label-xs">Oxygen</span><output id="o2Out">21%</output></div>
-        <input type="range" id="o2Range" min="12" max="40" step="0.5" value="21" aria-label="Oxygen concentration in percent">
+        <input type="range" id="o2Range" min="15" max="85" step="0.5" value="21" aria-label="Oxygen concentration in percent">
         <p class="hint-txt">Earth air and the ISS cabin are about 21% oxygen.</p>
       </div>
 
@@ -672,15 +660,15 @@
 
       <div class="ctrl">
         <div class="ctrl-head"><span class="label-xs">Cabin pressure</span><output id="pressOut">14.7 psi</output></div>
-        <input type="range" id="pressRange" min="3" max="15" step="0.1" value="14.7" aria-label="Cabin pressure in psi">
-        <p class="hint-txt">ISS is 14.7 psi; exploration habitats drop to 8.2 psi.</p>
+        <input type="range" id="pressRange" min="4.3" max="14.7" step="0.1" value="14.7" aria-label="Cabin pressure in psi">
+        <div class="ctrl-head"><span class="label-xs">Oxygen partial pressure</span><output id="ppo2Out">3.09 psi</output></div>
       </div>
 
       <div class="ctrl">
         <div class="ctrl-head"><span class="label-xs">Diluent gas</span></div>
         <div class="seg" id="dilSeg" style="grid-template-columns:repeat(3,1fr);">
-          <button type="button" data-dil="N2" aria-pressed="true">N₂<small>Air</small></button>
-          <button type="button" data-dil="CO2">CO₂<small>Inert</small></button>
+          <button type="button" data-dil="N2" aria-pressed="true">N₂<small>Nitrogen</small></button>
+          <button type="button" data-dil="CO2">CO₂<small>Carbon dioxide</small></button>
           <button type="button" data-dil="He">He<small>Helium</small></button>
         </div>
       </div>
@@ -705,10 +693,9 @@
       </div>
 
       <p class="disclaimer">
-        <strong>Illustration, not a prediction.</strong>
-        This flame is drawn from general flame behaviour to explain
-        concepts. It is not a combustion model. For what really
-        happened, see the NASA experiments below.
+        <strong>Illustrative flame.</strong>
+        The animation explains the effects of gravity and airflow.
+        The model readouts show exploratory estimates.
       </p>
     </aside>
   </main>
@@ -749,6 +736,7 @@
   </footer>
 
   <script type="module" src="/src/flameatlas/predictBridge.ts"></script>
+  <script type="module" src="/src/flameatlas/validationSummary.ts"></script>
   <script>
     /* =========================================================
        DATA
@@ -992,7 +980,7 @@
         float I = clamp(1.0 - d, 0.0, 1.0);                 // 0 at the edge, 1 in the middle
         float quench = 1.0;
         // Near the cold fuel the flame is quenched, most visibly without buoyancy.
-        if (uFuel < 0.5 || uFuel > 1.5) quench = mix(smoothstep(-0.002, R * 0.4, uv.y), 1.0, buoy * 0.7);
+        if ((uG > 0.0 || uFlow > 0.0) && (uFuel < 0.5 || uFuel > 1.5)) quench = mix(smoothstep(-0.002, R * 0.4, uv.y), 1.0, buoy * 0.7);
         float body = smoothstep(0.0, 0.22, I) * uAlive * quench;
 
         // Soot (yellow light) needs buoyant or forced flow; a still microgravity flame is blue.
@@ -1134,54 +1122,6 @@
        ILLUSTRATIVE FLAME LIFE CYCLE
        Rules of thumb only — each tied to a cited observation where possible.
        ========================================================= */
-    /* =========================================================
-       REAL SPREAD DATA (cited) + grounded estimate
-       Sources: backend/data/mined_evidence.json (LUCI SIBAL, FLEX / PSI-69)
-       and BASS-II Summary Report NASA/TM-20210011385 (PMMA film & rod).
-       Solids report flame spread in mm/s; the droplet reports a d^2 burning
-       rate in mm^2/s. A value is tagged "measured" only when the sandbox sits
-       on a tested point; otherwise it is a clearly-flagged estimate.
-       ========================================================= */
-    const SPREAD = {
-      sheet: { unit: "mm/s", o2min: 16, anchors: [
-        { g: 1,    o2: 21, flow: 0, v: 1.5,  src: "LUCI SIBAL fabric, 1 g (base)" },
-        { g: 0.17, o2: 20, flow: 0, v: 0.92, src: "LUCI SIBAL fabric, lunar g (base)" },
-        { g: 0,    o2: 21, flow: 5, v: 2.2,  src: "BASS-II PMMA film, microgravity" }
-      ] },
-      rod: { unit: "mm/s", o2min: 16.8, anchors: [
-        { g: 0, o2: 19, flow: 1, v: 0.044, src: "BASS-II PMMA rod, microgravity" }
-      ] },
-      droplet: { unit: "mm²/s", o2min: 15, anchors: [
-        { g: 0, o2: 21, flow: 0, v: 0.61, src: "FLEX heptane droplet (PSI-69), d² rate" }
-      ] },
-      candle: { unit: "", o2min: 16, anchors: [] }  // a candle flame is stationary
-    };
-
-    function estimateSpread(fuel, g, o2, flow) {
-      const cfg = SPREAD[fuel];
-      if (!cfg || !cfg.anchors.length)
-        return { text: "—", basis: "na", title: "A candle flame is stationary — it does not spread." };
-      if (o2 < cfg.o2min)
-        return { text: "no spread", basis: "none",
-                 title: `Below about ${cfg.o2min}% O₂ this fuel does not sustain a spreading flame (NASA flammability limit).` };
-      // nearest tested anchor, by gravity first, then oxygen/airflow
-      let a = cfg.anchors[0], best = Infinity;
-      for (const c of cfg.anchors) {
-        const d = Math.abs(c.g - g) * 3 + Math.abs(c.o2 - o2) * 0.1 + Math.abs((c.flow || 0) - flow) * 0.05;
-        if (d < best) { best = d; a = c; }
-      }
-      const measured = Math.abs(a.g - g) < 0.05 && Math.abs(a.o2 - o2) <= 2 && Math.abs((a.flow || 0) - flow) <= 3;
-      if (measured)
-        return { text: `${a.v} ${cfg.unit}`, basis: "measured", title: `Measured value — ${a.src}.` };
-      // gentle, honest scaling away from the anchor (buoyancy with gravity, rate with O₂); kept mild
-      const buoy = x => 0.6 + 0.4 * Math.max(0, Math.min(1, x));
-      const gFac = Math.min(1.7, Math.max(0.5, buoy(g) / buoy(a.g)));
-      const o2Fac = Math.min(1.6, Math.max(0.5, o2 / a.o2));
-      const v = a.v * gFac * o2Fac;
-      return { text: `${v.toFixed(v < 0.1 ? 3 : 2)} ${cfg.unit}`, basis: "estimate",
-               title: `Estimate (not this exact setting). Anchored to ${a.src}, scaled by gravity and oxygen. Approximate — not a tested value.` };
-    }
-
     function sustain(p, dt) {
       p.age += dt;
       const lowG = p.g < 0.03;
@@ -1194,7 +1134,7 @@
         if (shared.fuel === "sheet" || shared.fuel === "rod") {
           // BASS: with the airflow off, the flame went out rapidly.
           p.burnout += dt;
-          if (p.burnout > 4) { alive = false; p.reason = "No airflow and no buoyancy: fresh oxygen can't reach the flame"; }
+          if (p.burnout > 4) { alive = false; p.reason = "End of the illustrative still-air sequence"; }
         } else if (shared.fuel === "droplet") {
           // FLEX droplets burn for seconds, oscillate, then go out.
           p.burnout += dt;
@@ -1246,10 +1186,10 @@
             <div><span>Oxygen</span><b class="r-o2"></b></div>
             <div><span>Airflow</span><b class="r-flow"></b></div>
             <div><span>Fuel</span><b class="r-fuel"></b></div>
-            <div title="Model spread rate prediction (±1σ uncertainty)"><span>Spread rate</span><b class="r-spread"></b></div>
-            <div title="Model flame length × width (±1σ)"><span>Dimensions</span><b class="r-dims">—</b></div>
+            <div title="Illustrative linear rate with heuristic spread. FLEX droplet rates use mm²/s."><span>Illustrative rate</span><b class="r-spread"></b></div>
+            <div title="Model flame length × width and heuristic spread"><span>Dimensions</span><b class="r-dims">—</b><b class="r-size-spread"></b></div>
             <div title="Model radiometric heat flux proxy"><span>Heat flux</span><b class="r-flux">—</b></div>
-            <div title="GP surrogate confidence score"><span>Model trust</span><b class="r-trust">—</b></div>
+            <div title="Exploratory model status"><span>Model trust</span><b class="r-trust">—</b></div>
           </div>
           <div class="status" role="status"></div>
         </div>`;
@@ -1345,22 +1285,20 @@
         pe.el.querySelector(".r-fuel").textContent = FUELS[shared.fuel].name;
         const spB = pe.el.querySelector(".r-spread");
         const dimsB = pe.el.querySelector(".r-dims");
+        const spreadB = pe.el.querySelector(".r-size-spread");
         const fluxB = pe.el.querySelector(".r-flux");
         const trustB = pe.el.querySelector(".r-trust");
         if (p.model) {
           const mp = p.model.prediction;
           const mu = p.model.uncertainty;
-          const srcTag = p.model.source === "backend" ? "GP model" : "local physics";
-          spB.innerHTML = `${mp.spread_rate_mm_s.toFixed(2)} ± ${mu.std_spread_rate.toFixed(2)} mm/s <em class="basis-estimate">${srcTag}</em>`;
+          spB.textContent = `${mp.spread_rate_mm_s.toFixed(2)} ± ${mu.std_spread_rate.toFixed(2)} mm/s`;
           dimsB.textContent = `${mp.flame_length_mm.toFixed(1)} × ${mp.flame_width_mm.toFixed(1)} mm (L/D ${mp.aspect_ratio_LD.toFixed(2)})`;
+          spreadB.textContent = `± ${mu.std_length_mm.toFixed(2)} × ${mu.std_width_mm.toFixed(2)} mm`;
           fluxB.textContent = `${mp.radiometric_flux_kw_m2.toFixed(2)} kW/m²`;
-          trustB.textContent = `${mu.trust_score}% (${mu.safety_margin_multiplier}×)`;
-          trustB.style.color = mu.trust_status === "HIGH_CONFIDENCE" ? "#8fd9a8" : mu.trust_status === "CAUTION_EXTRAPOLATING" ? "#ffc58f" : "#ff8a8a";
+          trustB.textContent = statusLabel(mu.trust_status);
         } else {
-          const sp = estimateSpread(shared.fuel, p.g, shared.o2, shared.flow);
-          const basisLabel = sp.basis === "measured" ? "measured" : sp.basis === "estimate" ? "est." : "";
-          spB.innerHTML = basisLabel ? `${sp.text}<em class="basis-${sp.basis}">${basisLabel}</em>` : `<span class="basis-${sp.basis}">${sp.text}</span>`;
-          spB.closest("div").title = sp.title;
+          spB.textContent = dimsB.textContent = fluxB.textContent = trustB.textContent = "—";
+          spreadB.textContent = "";
         }
         pe.el.querySelector(".gvec i").style.setProperty("--len", `${8 + Math.min(1.6, p.g) * 65}px`);
         pe.el.querySelector(".gvec").style.opacity = p.g < 0.005 ? .25 : 1;
@@ -1394,28 +1332,23 @@
     function explain() {
       const g = panes[0].g;
       const tag = document.getElementById("evidenceTag");
-      let title, html, observed;
+      let title, html;
       if (g >= 0.7) {
         title = "Buoyancy shapes the flame";
-        html = `Hot gas rises and pulls fresh air in from below. That stretches the flame into a flickering teardrop and carries soot to the tip, where it glows yellow. NASA describes exactly this contrast between 1 g and microgravity candle flames. <a href="https://science.nasa.gov/?p=157833" target="_blank" rel="noopener">NASA image ↗</a>`;
-        observed = true;
+        html = `Hot gas rises and pulls fresh air in from below. That stretches the flame into a flickering teardrop and carries soot to the tip, where it glows yellow. NASA recorded this contrast in candle tests at 1 g and in microgravity. <a href="https://science.nasa.gov/?p=157833" target="_blank" rel="noopener">NASA image ↗</a>`;
       } else if (g >= 0.03) {
         title = "Partial gravity: weaker buoyancy";
         html = `With ${gLabel(g)} the rising flow is weaker, so the illustration shows a shorter, wider, calmer flame. Very few fire experiments have been run at partial gravity, so treat this view as an estimate between the 1 g and microgravity cases.`;
-        observed = false;
       } else if (shared.flow >= 1) {
         title = "Microgravity with airflow";
         html = `Without buoyancy, the cabin's airflow is what brings oxygen in, so the flame leans downstream. NASA's BASS experiment recorded flame shape, spread and pulsations as the flow speed changed. <a href="https://ntrs.nasa.gov/citations/20160000593" target="_blank" rel="noopener">BASS-II results ↗</a>`;
-        observed = true;
       } else {
         title = "Still air in microgravity";
         html = `Oxygen can only reach the flame by diffusion, so it becomes a small, dim, round flame. On the Shuttle, candle flames turned from yellow to blue within about 10 seconds; on Mir some burned for over 45 minutes. Solid samples can go out quickly once airflow stops. <a href="https://ntrs.nasa.gov/api/citations/20000005087/downloads/20000005087.pdf" target="_blank" rel="noopener">Candle study ↗</a>`;
-        observed = true;
       }
       document.getElementById("explainTitle").textContent = title;
       document.getElementById("explainText").innerHTML = html;
-      tag.textContent = observed ? "Observed in NASA tests" : "Illustrative estimate";
-      tag.classList.toggle("observed", observed);
+      tag.textContent = "Illustrative";
     }
 
     /* ---- Controls ---- */
@@ -1439,20 +1372,25 @@
       if (predictAbort) predictAbort.abort();
       predictAbort = new AbortController();
       const signal = predictAbort.signal;
+      const inputs = panes.map(p => ({
+        gravity_g: p.g,
+        o2_percent: shared.o2,
+        pressure_psi: shared.pressure,
+        airflow_cm_s: shared.flow,
+        diluent: shared.diluent,
+        fuel: shared.fuel,
+        world: p.world,
+        altitude_km: p.altKm,
+        gravity_mode: p.mode,
+      }));
+      if (shared.fuel === "candle") {
+        panes.forEach(p => { p.model = p.modelSoot = p.modelSize = null; });
+        renderPaneLabels();
+        renderModelPanels(null, inputs[0]);
+        return;
+      }
       try {
-        const results = await Promise.all(panes.map(p =>
-          window.FlameAtlasPredict.predictFlame({
-            gravity_g: p.g,
-            o2_percent: shared.o2,
-            pressure_psi: shared.pressure,
-            airflow_cm_s: shared.flow,
-            diluent: shared.diluent,
-            fuel: shared.fuel,
-            world: p.world,
-            altitude_km: p.altKm,
-            gravity_mode: p.mode,
-          }, signal)
-        ));
+        const results = await Promise.all(inputs.map(input => window.FlameAtlasPredict.predictFlame(input, signal)));
         if (signal.aborted) return;
         results.forEach((res, idx) => {
           const p = panes[idx];
@@ -1463,77 +1401,39 @@
           p.modelSize = Math.max(0.55, Math.min(1.6, diag / 28));
         });
         renderPaneLabels();
-        renderModelPanels(results[0]);
+        renderModelPanels(results[0], inputs[0]);
       } catch (err) {
         if (err && err.name !== "AbortError") console.error(err);
       }
     }
 
-    function renderModelPanels(res) {
-      if (!res) return;
+    function statusLabel(status) {
+      if (status === "CAUTION_EXTRAPOLATING") return "Extrapolating";
+      if (status === "UNVERIFIED_REGIME_DO_NOT_TRUST") return "Unverified regime";
+      return "Exploratory";
+    }
+
+    function renderModelPanels(res, input) {
       const badge = document.getElementById("modelSourceBadge");
-      if (badge) {
-        badge.textContent = res.source === "backend" ? "● GP backend (/api/predict)" : "○ local physics fallback";
-        badge.style.color = res.source === "backend" ? "#8fd9a8" : "#ffc58f";
-        badge.style.borderColor = res.source === "backend" ? "rgba(143,217,168,0.4)" : "rgba(255,197,143,0.4)";
-      }
-      const u = res.uncertainty;
-      const tBadge = document.getElementById("trustBadge");
-      const tTitle = document.getElementById("trustTitle");
-      const tText = document.getElementById("trustText");
-      const sText = document.getElementById("spinoffText");
-      if (tBadge && tTitle && tText) {
-        const statusLabel = u.trust_status === "HIGH_CONFIDENCE" ? "High confidence"
-          : u.trust_status === "CAUTION_EXTRAPOLATING" ? "Caution: extrapolating"
-          : "Unverified regime";
-        tBadge.textContent = `${statusLabel} · ${u.trust_score}/100`;
-        tBadge.className = "evidence" + (u.trust_status === "HIGH_CONFIDENCE" ? " observed" : "");
-        tBadge.style.color = u.trust_status === "HIGH_CONFIDENCE" ? "#8fd9a8" : u.trust_status === "CAUTION_EXTRAPOLATING" ? "#a2541f" : "#a61b1b";
-        tBadge.style.borderColor = u.trust_status === "HIGH_CONFIDENCE" ? "var(--ink)" : u.trust_status === "CAUTION_EXTRAPOLATING" ? "#a2541f" : "#a61b1b";
-        tTitle.textContent = `Safety margin ${u.safety_margin_multiplier}× · Regime: ${res.prediction.visual_regime.replace(/_/g, " ")}`;
-        tText.textContent = u.plain_english_explanation;
-        if (sText) sText.textContent = res.earth_spinoff ? `Earth spinoff: ${res.earth_spinoff}` : "";
-      }
+      badge.textContent = res
+        ? `${res.model} · ${res.source === "backend" ? "API" : "offline"}`
+        : "Candle illustration";
+      document.getElementById("trustBadge").textContent = statusLabel(res?.uncertainty.trust_status);
+      document.getElementById("trustTitle").textContent = res
+        ? window.FlameAtlasPredict.appearanceLabels[res.prediction.visual_regime]
+        : "Candle illustration";
+      document.getElementById("trustText").textContent = res
+        ? res.uncertainty.plain_english_explanation
+        : "The candle view shows a qualitative illustration. Choose a fabric sheet, acrylic rod or droplet for model estimates.";
 
-      const psiList = document.getElementById("psiRankList");
-      if (psiList && Array.isArray(res.ranked_investigations)) {
-        psiList.replaceChildren();
-        res.ranked_investigations.slice(0, 4).forEach(inv => {
-          const card = document.createElement("div");
-          card.style.cssText = "border:1px solid #c3ccd3;border-radius:8px;padding:10px 12px;background:#ffffff;color:var(--ink);";
-          const prov = (inv.provenance || inv.data_source) === "real_psi" ? "NASA PSI condition" : "Seed reference";
-          const title = inv.investigation_name || inv.title || inv.experiment_id;
-          const summary = inv.summary || inv.key_finding || "";
-          const metaParts = [
-            inv.hardware_rack,
-            inv.material_real || inv.material,
-            Array.isArray(inv.parameter_diffs) && inv.parameter_diffs.length ? inv.parameter_diffs.slice(0, 2).join(", ") : null
-          ].filter(Boolean);
-          card.innerHTML = `
-            <div style="display:flex;justify-content:space-between;gap:8px;font-size:11px;color:var(--muted-ink);">
-              <strong style="color:var(--ink);">${inv.experiment_id}</strong>
-              <span>${inv.similarity}% match · ${prov}</span>
-            </div>
-            <div style="font-size:13px;font-weight:600;color:var(--ink);margin-top:4px;">${title}</div>
-            <div style="font-size:12px;color:#2b3f53;margin-top:4px;line-height:1.45;">${summary}</div>
-            ${metaParts.length ? `<div style="font-size:11px;color:#a2541f;font-weight:600;margin-top:6px;">${metaParts.join(" · ")}</div>` : ""}`;
-          psiList.appendChild(card);
-        });
-      }
-
-      const pbList = document.getElementById("playbookList");
-      if (pbList && Array.isArray(res.engineering_playbook)) {
-        pbList.replaceChildren();
-        res.engineering_playbook.forEach(item => {
-          const card = document.createElement("div");
-          card.style.cssText = `border:1px solid ${item.triggered ? "rgba(252,133,89,0.75)" : "#c3ccd3"};border-radius:8px;padding:10px 12px;background:${item.triggered ? "rgba(252,133,89,0.12)" : "#ffffff"};color:var(--ink);`;
-          card.innerHTML = `
-            <div style="font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:${item.triggered ? "#a2541f" : "var(--muted-ink)"};font-weight:700;">${item.category}${item.triggered ? " · Triggered" : ""}</div>
-            <div style="font-size:13px;font-weight:600;color:var(--ink);margin-top:4px;">${item.headline}</div>
-            <div style="font-size:12px;color:#2b3f53;margin-top:4px;line-height:1.45;">${item.detail}</div>`;
-          pbList.appendChild(card);
-        });
-      }
+      const resolved = { ...window.FlameAtlasPredict.normalizeInputs(input),
+        gravity_g: res?.planet_telemetry?.effective_gravity_g ?? input.gravity_g };
+      const { gravity_g, o2_percent, pressure_psi, airflow_cm_s, diluent, fuel_material } = resolved;
+      const query = new URLSearchParams({ gravity_g, o2_percent, pressure_psi, airflow_cm_s, diluent,
+        ...(res ? { fuel_material } : {}) });
+      const evidence = document.getElementById("scenarioEvidence");
+      evidence.href = res ? `evidence.html?${query}#reviewed-evidence` : "evidence.html#reviewed-evidence";
+      evidence.textContent = res ? "Compare conditions with reviewed NASA evidence" : "Browse reviewed NASA evidence";
     }
 
     window.addEventListener("flameatlas:bridge-ready", schedulePrediction);
@@ -1596,6 +1496,7 @@
       document.getElementById("o2Out").textContent = `${shared.o2}%`;
       document.getElementById("flowOut").textContent = `${shared.flow} cm/s`;
       document.getElementById("pressOut").textContent = `${shared.pressure.toFixed(1)} psi`;
+      document.getElementById("ppo2Out").textContent = `${(shared.o2 / 100 * shared.pressure).toFixed(2)} psi`;
       document.querySelectorAll("#gTicks button").forEach(b =>
         b.setAttribute("aria-pressed", String(b.dataset.mode === p0.mode)));
       document.querySelectorAll("#fuelSeg button").forEach(b =>
@@ -1768,9 +1669,8 @@
       load.addEventListener("click", () => {
         applyGravityMode(panes[0], x.preset.g === 0 ? "free_orbit" : "surface");
         Object.assign(shared, { o2: x.preset.o2, flow: x.preset.flow, fuel: x.preset.fuel });
-        assumedNote = x.assumed.length
-          ? `Loaded ${x.title.split(" (")[0]}. Not from the source: ${x.assumed.join("; ")}.`
-          : `Loaded ${x.title.split(" (")[0]} — conditions as reported.`;
+        const assumptions = [...x.assumed, "current pressure and balance gas"];
+        assumedNote = `Illustrative preset for ${x.title.split(" (")[0]}. Scenario assumptions include ${assumptions.join(", ")}.`;
         ignite();
         renderControls();
         document.querySelector(".lab").scrollIntoView({ behavior: "smooth" });

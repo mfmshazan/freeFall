@@ -206,3 +206,21 @@ e.g. 55.02 s ↔ 1465937098442). So frames and sensors share one real clock → 
 ## Saffire-I report results card
 
 `frontend/public/replay/saffire-1/report-results.json` is generated from the catalog and uses the [NASA Saffire-I report, page 21](https://ntrs.nasa.gov/api/citations/20170008805/downloads/20170008805.pdf#page=21): video-derived average spread rates for runs 1-1 and 1-2, nominal duct flow, and the reused-specimen caveat. It is separate from the partial concurrent-run replay and is not cursor telemetry or model training data. The report describes 40.6 × 94 cm fabric and 21.7% starting oxygen (ISS reading); replay metadata describes 300 × 800 mm and a separate calibrated ignition reading of about 22.62% oxygen. These different bases are not reconciled or averaged.
+
+
+## Phase 4 eligibility snapshot
+
+The [case ledger](backend/validation/cases.json) references all 25 reviewed catalog
+entries by ID and adds the frozen dispositions, source hashes and measurement-basis notes.
+It includes the Olson et al. accepted manuscript (Table 1, §3 and Figure 10), the local
+PSI-99 Experimental Table, and the PSI-99 Final v5 image index for samples 5 and 6.
+The accepted manuscript supplies hatch-close pressure and oxygen. The image index supplies
+camera timestamps. The catalog and its two generated evidence assets retain their existing
+records and provenance.
+
+The [frozen summary](backend/validation/results/summary.json) is bundled by the Evidence and
+Flame Lab pages. It reports zero eligible independent runs and null error metrics.
+The [manifest](backend/validation/manifest.json) identifies the resolved revision,
+runtime and frozen source hashes. The [validation report](PHASE_4_VALIDATION_REPORT.md)
+describes the required measurements and separate specimen strata. Raw downloads remain in
+their source locations or temporary review storage and are outside the frontend bundle.

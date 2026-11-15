@@ -1,6 +1,6 @@
 // TypeScript port of skills/01-flame-physics-rules.md.
 // Used to (a) drive the canvas and (b) provide an offline fallback when the
-// FastAPI backend is unavailable. Keep in sync with backend/surrogate.py.
+// FastAPI backend is unavailable. Keep in sync with backend/physics.py.
 
 import type { CabinInputs, Prediction, VisualRegime, FuelMaterial, Diluent } from '../types'
 

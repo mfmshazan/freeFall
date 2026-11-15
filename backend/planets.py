@@ -7,6 +7,8 @@ Used by POST /api/predict and GET /api/planets so the Flame Lab can model:
    via the inverse-square law: g(h) = g_surface * (R / (R + h))^2.
 """
 from __future__ import annotations
+import json
+from pathlib import Path
 from typing import Literal, TypedDict
 
 G0_M_S2 = 9.80665
@@ -25,98 +27,7 @@ class PlanetSpec(TypedDict):
     max_orbit_km: float
 
 
-PLANETS: dict[str, PlanetSpec] = {
-    "mercury": {
-        "id": "mercury",
-        "name": "Mercury",
-        "surface_label": "Surface",
-        "g_surface": 0.38,
-        "g_surface_m_s2": 3.70,
-        "radius_km": 2439.7,
-        "low_orbit_km": 200.0,
-        "max_orbit_km": 112000.0,
-    },
-    "venus": {
-        "id": "venus",
-        "name": "Venus",
-        "surface_label": "Surface",
-        "g_surface": 0.90,
-        "g_surface_m_s2": 8.87,
-        "radius_km": 6051.8,
-        "low_orbit_km": 250.0,
-        "max_orbit_km": 616000.0,
-    },
-    "earth": {
-        "id": "earth",
-        "name": "Earth",
-        "surface_label": "Surface",
-        "g_surface": 1.00,
-        "g_surface_m_s2": 9.81,
-        "radius_km": 6371.0,
-        "low_orbit_km": 400.0,
-        "max_orbit_km": 924000.0,
-    },
-    "moon": {
-        "id": "moon",
-        "name": "Moon",
-        "surface_label": "Surface",
-        "g_surface": 0.17,
-        "g_surface_m_s2": 1.62,
-        "radius_km": 1737.4,
-        "low_orbit_km": 100.0,
-        "max_orbit_km": 66100.0,
-    },
-    "mars": {
-        "id": "mars",
-        "name": "Mars",
-        "surface_label": "Surface",
-        "g_surface": 0.38,
-        "g_surface_m_s2": 3.71,
-        "radius_km": 3389.5,
-        "low_orbit_km": 250.0,
-        "max_orbit_km": 577000.0,
-    },
-    "jupiter": {
-        "id": "jupiter",
-        "name": "Jupiter",
-        "surface_label": "1-bar cloud top",
-        "g_surface": 2.53,
-        "g_surface_m_s2": 24.79,
-        "radius_km": 69911.0,
-        "low_orbit_km": 1000.0,
-        "max_orbit_km": 48200000.0,
-    },
-    "saturn": {
-        "id": "saturn",
-        "name": "Saturn",
-        "surface_label": "1-bar cloud top",
-        "g_surface": 1.07,
-        "g_surface_m_s2": 10.44,
-        "radius_km": 58232.0,
-        "low_orbit_km": 1000.0,
-        "max_orbit_km": 54500000.0,
-    },
-    "uranus": {
-        "id": "uranus",
-        "name": "Uranus",
-        "surface_label": "1-bar cloud top",
-        "g_surface": 0.89,
-        "g_surface_m_s2": 8.69,
-        "radius_km": 25362.0,
-        "low_orbit_km": 1000.0,
-        "max_orbit_km": 51800000.0,
-    },
-    "neptune": {
-        "id": "neptune",
-        "name": "Neptune",
-        "surface_label": "1-bar cloud top",
-        "g_surface": 1.14,
-        "g_surface_m_s2": 11.15,
-        "radius_km": 24622.0,
-        "low_orbit_km": 1000.0,
-        "max_orbit_km": 86600000.0,
-    },
-}
+PLANETS: dict[str, PlanetSpec] = json.loads(Path(__file__).with_name("data").joinpath("planets.json").read_text())
 
 
 def resolve_planet_gravity(

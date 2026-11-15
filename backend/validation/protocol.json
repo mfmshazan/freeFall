@@ -1,0 +1,46 @@
+{
+  "version": "2026-11-15.1",
+  "target": {
+    "label": "Average concurrent flame-front spread in Saffire SIBAL fabric",
+    "metric": "saffire_video_spread",
+    "unit": "mm/s",
+    "material": "sibal",
+    "geometry": "saffire-full-sheet",
+    "apparatus": "saffire-duct",
+    "flow_configuration": "concurrent",
+    "primary_candidate": "saffire-1-1-1",
+    "secondary_stratum": ["saffire-2-2-5", "saffire-2-2-6"]
+  },
+  "eligibility": {
+    "eligible_ids": [],
+    "required_basis": "Measured or measurement-derived linear rate. Exact metric, material, specimen geometry and orientation. All input bases must apply to the spread window.",
+    "scientific_tolerance": "Exact categorical identity. No numerical condition tolerance, range grid or missing-input substitution was justified.",
+    "grouping": "Same specimen stays together even after re-ignition. Related measurements sharing a flight are grouped conservatively. Exact fit windows and group sizes are not inferred from record counts.",
+    "numerical_comparison": "For this audit there are no model numerics to compare. Repeated reports must agree byte for byte."
+  },
+  "known_training_exclusions": {
+    "SAFFIRE-I-S1": "Sourced conditions with estimated targets. Concurrent Saffire-I namesake and same specimen as the opposed pass.",
+    "SAFFIRE-I-S2": "Sourced conditions with estimated targets. Opposed Saffire-I namesake and possible shared specimen.",
+    "Saffire-II-04": "Seed row from the same Saffire-II campaign as the secondary stratum. Exact run relationship is uncertain.",
+    "Saffire-III-02": "Conservative exclusion of a seed row from the related Saffire campaign with no reliable run-level lineage."
+  },
+  "tuning_history": "The source rates were previously visible in the application, catalog and plan. Local Git history shows heuristic coefficients predate catalog ingestion, but does not establish independence from published studies. The old bridge's empirical rate overlay and both Saffire-I training rows are unsuitable for held-out scoring.",
+  "models": {
+    "runtime_default": "Deterministic physics baseline",
+    "experimental_comparator": {
+      "fitted": false,
+      "configuration": "Three scalar GPs. StandardScaler, Constant(1; 0.01–100) × Matérn(ν 2.5; ARD 0.1–100) + White(0.1; 0.001–10). normalize_y=True, alpha=1e-6, two restarts, legacy random_state unset.",
+      "generic_prior_grid": {
+        "gravity_g": [0, 1],
+        "o2_percent": [15, 21, 30, 45, 60, 85],
+        "pressure_psi": [6, 10.2, 14.7],
+        "airflow_cm_s": [0, 10, 25],
+        "diluent": ["N2"],
+        "fuel_material": ["Methane_Gas", "PMMA_Acrylic", "Cotton_Fabric"],
+        "anchor_count": 324
+      }
+    }
+  },
+  "decision_rule": "Zero eligible observations yields insufficient_evidence, zero eligible runs and groups, null metrics, and the deterministic physics baseline as the exploratory default. Any scoring requires a revised protocol before execution.",
+  "report": "PHASE_4_VALIDATION_REPORT.md"
+}

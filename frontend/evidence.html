@@ -254,6 +254,12 @@
         </a>
       </div>
     </section>
+    <section class="panel dark" id="reviewed-evidence">
+      <div class="container">
+        <div data-validation-summary></div>
+        <div id="evidence-root"></div>
+      </div>
+    </section>
   </main>
 
   <footer>
@@ -262,6 +268,8 @@
     <small>FlameAtlas &mdash; prototype for the NASA Space Apps Challenge</small>
   </footer>
 
+  <script type="module" src="/src/evidenceEntry.tsx"></script>
+  <script type="module" src="/src/flameatlas/validationSummary.ts"></script>
   <script>
     const navbar = document.getElementById("navbar");
     function updateNavigation() {

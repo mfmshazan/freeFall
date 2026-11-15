@@ -1,4 +1,4 @@
-import { StrictMode, useState } from 'react'
+import { StrictMode, useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import SaffireReplay from './replay/SaffireReplay'
@@ -14,7 +14,17 @@ function initialTab(): ReplayTab {
 }
 
 function ReplayShell() {
+  const [target, setTarget] = useState(() => window.location.hash)
   const [tab, setTab] = useState<ReplayTab>(initialTab)
+  useEffect(() => {
+    const updateReplay = () => {
+      setTarget(window.location.hash)
+      setTab(initialTab())
+    }
+    window.addEventListener('hashchange', updateReplay)
+    return () => window.removeEventListener('hashchange', updateReplay)
+  }, [])
+  const focusRun = target === '#bass-b1' ? 'b1' : target === '#bass-b3' ? 'b3' : undefined
 
   return (
     <div className="min-h-screen bg-[#071323] text-slate-100">
@@ -60,7 +70,7 @@ function ReplayShell() {
       </div>
 
       <main className="max-w-[1440px] mx-auto p-3">
-        {tab === 'saffire' ? <SaffireReplay /> : <Bass2Experiment />}
+        {tab === 'saffire' ? <SaffireReplay focusResults={target === '#saffire-report-results'} /> : <Bass2Experiment focusRun={focusRun} />}
       </main>
     </div>
   )

@@ -4,7 +4,7 @@ import { rankEvidence } from '../evidence/rankEvidence'
 import type { EvidenceCatalog, EvidenceQuery, EvidenceResponse } from '../evidence/types'
 
 export const evidenceCatalog = bundled as EvidenceCatalog
-const API = 'http://localhost:8000/api/evidence'
+const API = '/api/evidence'
 
 type RemoteState = { result: EvidenceResponse | null; message: string | null }
 

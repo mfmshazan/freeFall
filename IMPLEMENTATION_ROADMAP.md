@@ -56,6 +56,8 @@ See the [Phase 3 implementation plan](PHASE_3_IMPLEMENTATION_PLAN.md) for its sc
 
 ## 4. Validate one measurable prediction independently
 
+Completed through the insufficient-evidence path. The [Phase 4 report](PHASE_4_VALIDATION_REPORT.md) records zero eligible independent runs and the decision to serve the deterministic physics baseline. See the [implementation plan](PHASE_4_IMPLEMENTATION_PLAN.md) for the review gates.
+
 1. Start with one solid-fuel family and geometry, one metric definition, and runs with comparable direction, atmosphere, apparatus, and effective acceleration. Look for a published series with run-level conditions and repeated measurements. The Saffire-I replay is a useful benchmark candidate after reconciling run identity and measurement basis. LUCI remains comparative evidence unless inputs and metric definitions can be matched. CFI-G flame radii and FLEX droplet rates are different targets.
 2. Freeze a baseline and an evaluation protocol before fitting. Group by specimen, run, study, or apparatus as appropriate to prevent related observations from crossing splits. Hold out the associated synthetic or estimated row for any held-out observed run if its presence would leak setup or outcome information. Record expected units, match tolerances, and exclusions before looking at errors.
 3. Compare the current GP with the plain physics baseline on the held-out runs and report signed and absolute errors in the original units, sample count, and assumptions. Report MAE and bias when there are multiple comparable observations. Check interval coverage only when there are enough independent observations to support it. One run is a benchmark, not a calibration study.
@@ -65,8 +67,10 @@ See the [Phase 3 implementation plan](PHASE_3_IMPLEMENTATION_PLAN.md) for its sc
 
 ## 5. Package the submission
 
+See the [Phase 5 implementation plan](PHASE_5_IMPLEMENTATION_PLAN.md) for the release mode, judge walkthrough, verification checklist, and handoff.
+
 - Lead the demo with **Earth orbit at 400 km → Saffire-I flow comparison → LUCI lunar example → one unsupported Mars scenario**. Show a path from a claim to the original report. Distinguish what was recorded, derived, and estimated throughout.
-- Verify mobile and desktop layouts, replay timing and media, and every citation used in the demo. The [prediction hook](frontend/src/hooks/useFlamePrediction.ts) currently points at `localhost:8000`. If shipping a public backend, configure a production API URL and check it from the deployed frontend. If shipping only the static demo, make local physics the explicit mode and verify both replays there. Reconcile outdated acquisition notes against the inventory. Keep large original downloads out of deployable assets.
+- Verify mobile and desktop layouts, replay timing and media, and every citation used in the demo. The [prediction bridge](frontend/src/flameatlas/predictBridge.ts) uses a same-origin `/api` route. If shipping a public backend, verify that route from the deployed frontend. If shipping only the static demo, make local physics the explicit mode and verify both replays there. Reconcile outdated acquisition notes against the inventory. Keep large original downloads out of deployable assets.
 - Update [README](README.md), [demo script](DEMO_SCRIPT.md), and [architecture notes](ARCHITECTURE.md) to match the finished behavior. For a time-limited submission, ship the Phase 1 demo plus the completed evidence cards and explicitly describe which validation work remains.
 
 **Exit gate:** a judge can reproduce the demo from the project link, inspect the supporting NASA evidence, and tell which scenario claims are still untested.

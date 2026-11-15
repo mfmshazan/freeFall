@@ -1,8 +1,8 @@
 import json
 import unittest
-from unittest.mock import patch
 
 import main
+import physics
 
 
 class PredictionRouteTest(unittest.IsolatedAsyncioTestCase):
@@ -41,21 +41,19 @@ class PredictionBoundaryTest(unittest.TestCase):
                 self.assertEqual(prediction["flame_length_mm"], prediction["flame_width_mm"])
                 self.assertEqual(result["engineering_playbook"], [])
 
-    def test_still_air_uses_physical_sphere_but_flow_keeps_gp_geometry(self):
-        mean = {"spread_rate_mm_s": 1, "flame_length_mm": 30, "flame_width_mm": 10}
-        std = {"spread_rate_mm_s": 0.1, "flame_length_mm": 2, "flame_width_mm": 1}
-        phys = {"flame_length_mm": 16, "flame_width_mm": 16,
-                "standoff_distance_mm": 2, "aspect_ratio_LD": 1,
-                "soot_fraction": 0.1, "radiometric_flux_kw_m2": 1,
-                "visual_regime": "SOOT_FREE_BLUE_SPHERE"}
+    def test_api_uses_physics_sphere_and_flow_geometry(self):
         values = dict(gravity_g=0, o2_percent=21, pressure_psi=14.7,
                       airflow_cm_s=0, diluent="N2", fuel_material="Methane_Gas")
-        with patch.object(main.SURROGATE, "predict", return_value=(mean, std, phys, 0.1)):
-            still = main.predict(main.CabinInputs(**values))["prediction"]
-            self.assertEqual((still["flame_length_mm"], still["flame_width_mm"], still["aspect_ratio_LD"]), (16, 16, 1))
-            values["airflow_cm_s"] = 5
-            flowing = main.predict(main.CabinInputs(**values))["prediction"]
-            self.assertEqual((flowing["flame_length_mm"], flowing["flame_width_mm"]), (30, 10))
+        still = main.predict(main.CabinInputs(**values))
+        self.assertEqual(still["prediction"]["aspect_ratio_LD"], 1)
+        self.assertEqual(still["prediction"]["flame_length_mm"], still["prediction"]["flame_width_mm"])
+        self.assertEqual(still["model"], main.health()["model"])
+        self.assertEqual(still["uncertainty"]["trust_status"], "EXPLORATORY")
+        self.assertIsNone(still["uncertainty"]["safety_margin_multiplier"])
+        values["airflow_cm_s"] = 5
+        flowing = main.predict(main.CabinInputs(**values))["prediction"]
+        self.assertEqual(flowing, physics.predict(**values))
+        self.assertGreater(flowing["aspect_ratio_LD"], 1)
 
     def test_planet_orbit_surface_and_altitude_gravity(self):
         # 1. Mercury default free_orbit -> 0g spherical flame

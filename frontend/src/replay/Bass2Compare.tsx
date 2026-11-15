@@ -1,4 +1,5 @@
 import { forwardRef, useEffect, useRef, useState } from 'react'
+import { RecordingAppearance } from './RecordingAppearance'
 import { ViewLabel, CategoryTag } from '../shared/evidence'
 
 // ---------------------------------------------------------------------------
@@ -25,7 +26,7 @@ const STATUS: Record<string, { label: string; cls: string }> = {
   unknown: { label: 'unknown', cls: 'text-violet-300' },
 }
 
-export default function Bass2Compare() {
+export default function Bass2Compare({ focusRun }: { focusRun?: 'b1' | 'b3' }) {
   const [data, setData] = useState<Compare | null>(null)
   const [err, setErr] = useState<string | null>(null)
   const [linked, setLinked] = useState(false)
@@ -38,6 +39,10 @@ export default function Bass2Compare() {
     fetch(`${BASE}/compare.json`).then((r) => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json() })
       .then(setData).catch((e) => setErr(String(e)))
   }, [])
+
+  useEffect(() => {
+    if (data && focusRun) document.getElementById(`bass-${focusRun}`)?.focus()
+  }, [data, focusRun])
 
   // when linked, if either clip ends, stop both (clips have different lengths)
   const onEnded = () => { if (linked) { b1Ref.current?.pause(); b3Ref.current?.pause() } }
@@ -74,6 +79,8 @@ export default function Bass2Compare() {
       <VideoCard ref={b1Ref} run={data.runs.b1} other={b3Ref} linked={linked} accent="sky" onEnded={onEnded} />
       <VideoCard ref={b3Ref} run={data.runs.b3} other={b1Ref} linked={linked} accent="emerald" onEnded={onEnded} />
 
+      <div className="col-span-12"><RecordingAppearance recording="bass" /></div>
+
       {/* What changed? */}
       <div className="col-span-12 lg:col-span-5 rounded-lg border border-sky-500/30 bg-sky-500/5 p-3">
         <div className="flex items-center justify-between mb-2">
@@ -92,7 +99,7 @@ export default function Bass2Compare() {
 
         <div className="flex items-center gap-2 mb-1">
           <span className="text-sm font-semibold text-slate-100">{selected.field}</span>
-          <CategoryTag category={(selected as any).category} />
+          <CategoryTag category={selected.category} />
           <span className={`ml-auto text-[11px] font-semibold ${STATUS[selected.status].cls}`}>{STATUS[selected.status].label}</span>
         </div>
         <p className="text-xs text-slate-300 mb-2">{selected.plain}</p>
@@ -122,7 +129,7 @@ export default function Bass2Compare() {
           <p className="mt-2 text-[11px] text-amber-300/90"><span className="font-semibold">Uncertainty:</span> {selected.uncertainty}</p>
         )}
         {selected.note && <p className="mt-1 text-[10px] text-slate-500">{selected.note}</p>}
-        {(selected as any).category === 'outcome' && (
+        {selected.category === 'outcome' && (
           <p className="mt-2 text-[10px] text-emerald-300/80">This is a measured <strong>outcome</strong>, kept separate from the input conditions — it is not something that was set.</p>
         )}
       </div>
@@ -153,7 +160,7 @@ export default function Bass2Compare() {
       </div>
 
       {/* sources + limitations */}
-      <div className="col-span-12 md:col-span-5 rounded-lg border border-space-600 bg-space-850 p-3">
+      <div className="col-span-12 min-w-0 md:col-span-5 rounded-lg border border-space-600 bg-space-850 p-3">
         <h3 className="text-xs font-semibold tracking-widest text-slate-500 uppercase mb-2">Sources & link</h3>
         <a href={data.investigation_link} target="_blank" rel="noreferrer" className="inline-block text-[11px] text-sky-300 hover:underline mb-2">NASA PSI investigation {data.psi_id} ↗</a>
         <ul className="text-[10px] font-mono text-slate-500 space-y-0.5">
@@ -170,7 +177,7 @@ export default function Bass2Compare() {
           <a href={`${BASE}/${data.runs.b3.proof_sheet}`} target="_blank" rel="noreferrer" className="text-[11px] text-sky-300 hover:underline">B3 proof sheet ↗</a>
         </div>
       </div>
-      <div className="col-span-12 md:col-span-7 rounded-lg border border-amber-500/30 bg-amber-500/5 p-3">
+      <div className="col-span-12 min-w-0 md:col-span-7 rounded-lg border border-amber-500/30 bg-amber-500/5 p-3">
         <h3 className="text-xs font-semibold tracking-widest text-amber-400/90 uppercase mb-2">Comparison limitations</h3>
         <ul className="text-[11px] text-slate-400 list-disc list-inside space-y-1">
           {data.comparison_limitations.map((l, i) => <li key={i}>{l}</li>)}
@@ -232,7 +239,8 @@ const VideoCard = forwardRef<HTMLVideoElement, {
   const chip = accent === 'sky' ? 'bg-sky-500/15 text-sky-300' : 'bg-emerald-500/15 text-emerald-300'
 
   return (
-    <div className={`col-span-12 md:col-span-6 rounded-lg border ${ring} bg-space-850 p-3`}>
+    <div id={`bass-${run.test_no.toLowerCase()}`} tabIndex={-1}
+      className={`col-span-12 min-w-0 md:col-span-6 rounded-lg border ${ring} bg-space-850 p-3`}>
       <div className="flex flex-wrap items-center justify-between gap-1 mb-1">
         <span className={`text-xs font-semibold px-2 py-0.5 rounded ${chip}`}>Test {run.test_no} · Sample {run.sample_no}</span>
         <div className="flex items-center gap-2">
@@ -248,6 +256,7 @@ const VideoCard = forwardRef<HTMLVideoElement, {
         <video ref={ref} src={`${BASE}/${run.video}`} className="w-full rounded bg-black" preload="metadata"
           onLoadedMetadata={(e) => setDur(e.currentTarget.duration)}
           onTimeUpdate={(e) => setT(e.currentTarget.currentTime)}
+          onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)}
           onEnded={() => { setPlaying(false); onEnded() }}
           onError={() => setFailed(true)} playsInline />
       )}
@@ -258,7 +267,7 @@ const VideoCard = forwardRef<HTMLVideoElement, {
           {playing ? '❚❚ Pause' : '▶ Play'}
         </button>
         <input type="range" min={0} max={dur || 1} step={0.05} value={t} disabled={failed}
-          onChange={(e) => seek(parseFloat(e.target.value))} className="flex-1"
+          onChange={(e) => seek(parseFloat(e.target.value))} className="min-w-0 flex-1"
           aria-label={`Seek Test ${run.test_no} video`} />
         <span className="font-mono text-[11px] text-slate-400 w-16 text-right">{fmt(t)}/{fmt(dur)}</span>
       </div>

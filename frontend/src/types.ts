@@ -14,11 +14,10 @@ export type VisualRegime =
   | 'STRETCHED_LAMINAR_TEARDROP'
   | 'SOOTY_YELLOW_CORE'
   | 'BUBBLING_PMMA_STREAKS'
-  | 'INVISIBLE_COOL_FLAME'
   | 'QUENCHED_EXTINGUISHED'
 
 export type TrustStatus =
-  | 'HIGH_CONFIDENCE'
+  | 'EXPLORATORY'
   | 'CAUTION_EXTRAPOLATING'
   | 'UNVERIFIED_REGIME_DO_NOT_TRUST'
 
@@ -65,9 +64,9 @@ export interface Uncertainty {
   std_spread_rate: number
   std_length_mm: number
   std_width_mm: number
-  trust_score: number // 0..100
+  trust_score: number // Legacy scenario-distance score
   trust_status: TrustStatus
-  safety_margin_multiplier: number
+  safety_margin_multiplier: null
   plain_english_explanation: string
 }
 
@@ -98,11 +97,12 @@ export interface PlaybookAction {
 }
 
 export interface PredictResponse {
+  model: string
   prediction: Prediction
   uncertainty: Uncertainty
   ranked_investigations: RankedInvestigation[]
   engineering_playbook: PlaybookAction[]
   earth_spinoff: string
-  planet_telemetry?: PlanetTelemetry | null
+  planet_telemetry: PlanetTelemetry | null
   source: 'backend' | 'local-fallback'
 }

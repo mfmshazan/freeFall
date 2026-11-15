@@ -206,25 +206,13 @@
   <main>
     <section class="panel white" id="top">
       <div class="container reveal">
-        <span class="section-label">03 / Safety Playbook</span>
-        <h1 class="page">Build safer missions.</h1>
+        <span class="section-label">Fire safety research</span>
+        <h1 class="page">Spacecraft fire safety research</h1>
         <p class="description">
           Fire safety beyond Earth rests on three questions: how do we keep a
           fire from starting, how do we notice it early, and how do we put it
-          out. Each answer should trace back to validated engineering data, not
-          assumption.
+          out. These studies describe the materials, combustion conditions and apparatus that were tested.
         </p>
-        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:18px;">
-          <label for="safetyPreset" style="font-size:12px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#10253c;">Scenario:</label>
-          <select id="safetyPreset" style="padding:8px 12px;border:1px solid rgba(16,37,60,0.25);background:#fff;color:#071323;font-size:13px;">
-            <option value="iss">ISS Baseline (0 g · 21% O₂ · 14.7 psi · 15 cm/s)</option>
-            <option value="lunar">Artemis Lunar Habitat (0.17 g · 34% O₂ · 8.2 psi · 10 cm/s)</option>
-            <option value="mars">Mars Habitat (0.38 g · 21% O₂ · 10.2 psi · 12 cm/s)</option>
-            <option value="earth">Earth 1 g Lab (1 g · 21% O₂ · 14.7 psi · 0 cm/s)</option>
-          </select>
-          <span class="stub-note" id="safetySource" style="margin-top:0;">Connecting to model…</span>
-        </div>
-
         <div class="safety-grid" id="safetyCards">
           <article class="safety-card" data-cat="PREVENTION">
             <h3>Prevent</h3>
@@ -239,12 +227,11 @@
           </article>
           <article class="safety-card" data-cat="SUPPRESSION">
             <h3>Respond</h3>
-            <p>Review the research and trade-offs behind different suppression
-               methods &mdash; from cutting ventilation to inert-gas flooding.</p>
+            <p>Review how atmosphere, flow and fuel influenced extinction in the original experiments.</p>
           </article>
         </div>
 
-        <a class="text-link" href="fire-lab.html#experiments">
+        <a class="text-link" href="evidence.html#research-stories">
           See the experiment evidence &rarr;
         </a>
       </div>
@@ -257,36 +244,7 @@
     <small>FlameAtlas &mdash; prototype for the NASA Space Apps Challenge</small>
   </footer>
 
-  <script type="module" src="/src/flameatlas/predictBridge.ts"></script>
   <script>
-    const SCENARIOS = {
-      iss:   { gravity_g: 0,    o2_percent: 21, pressure_psi: 14.7, airflow_cm_s: 15, diluent: "N2", fuel_material: "PMMA_Acrylic" },
-      lunar: { gravity_g: 0.17, o2_percent: 34, pressure_psi: 8.2,  airflow_cm_s: 10, diluent: "N2", fuel_material: "PMMA_Acrylic" },
-      mars:  { gravity_g: 0.38, o2_percent: 21, pressure_psi: 10.2, airflow_cm_s: 12, diluent: "N2", fuel_material: "Cotton_Fabric" },
-      earth: { gravity_g: 1.0,  o2_percent: 21, pressure_psi: 14.7, airflow_cm_s: 0,  diluent: "N2", fuel_material: "PMMA_Acrylic" },
-    };
-    async function loadPlaybook() {
-      if (!window.FlameAtlasPredict) return;
-      const sel = document.getElementById("safetyPreset");
-      const srcEl = document.getElementById("safetySource");
-      const res = await window.FlameAtlasPredict.predictFlame(SCENARIOS[sel.value] || SCENARIOS.iss);
-      if (srcEl) {
-        srcEl.textContent = `${res.source === "backend" ? "GP backend (/api/predict)" : "Local physics fallback"} · Trust ${res.uncertainty.trust_score}% (${res.uncertainty.trust_status.replace(/_/g, " ")})`;
-      }
-      if (Array.isArray(res.engineering_playbook)) {
-        res.engineering_playbook.forEach(item => {
-          const card = document.querySelector(`.safety-card[data-cat="${item.category}"]`);
-          if (!card) return;
-          card.querySelector("h3").textContent = `${item.category[0] + item.category.slice(1).toLowerCase()} — ${item.headline}`;
-          card.querySelector("p").textContent = item.detail;
-          card.style.borderColor = item.triggered ? "#ff6a2b" : "";
-        });
-      }
-    }
-    document.getElementById("safetyPreset")?.addEventListener("change", loadPlaybook);
-    window.addEventListener("flameatlas:bridge-ready", loadPlaybook);
-    loadPlaybook();
-
     const navbar = document.getElementById("navbar");
     function updateNavigation() {
       navbar.classList.toggle("scrolled", window.scrollY > 55);
