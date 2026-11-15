@@ -503,7 +503,7 @@
         <div class="buttons">
           <a class="big-button primary"
              id="launchLink"
-             href="simulator.html?world=moon">
+             href="simulator.html">
             <span>Launch Simulator
               <small>Fly FA-1 to a planet and check the flame</small>
             </span>
@@ -905,7 +905,9 @@
       Object.entries(paths).forEach(([key, p]) =>
         p.classList.toggle("selected", key === id));
 
-      const url = "simulator.html?world=" + encodeURIComponent(id);
+      // Launch always opens the full solar-system overview; the planet is chosen
+      // by clicking it inside the simulator, not pre-selected from here.
+      const url = "simulator.html";
       launch.href = url;
       navLaunch.href = url;
 

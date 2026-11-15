@@ -2758,9 +2758,9 @@
     window.__freefallReady = true;
     document.getElementById("loader").classList.add("done");
 
-    // Deep link: simulator.html?world=mars flies straight to Mars.
-    const startWorld = params.get("world");
-    if (startWorld && byId[startWorld]) setTimeout(() => select(startWorld), 650);
+    // Always open on the full solar-system overview — the user picks a planet
+    // (click its label or search) to fly there. We no longer auto-fly from the
+    // ?world= deep link so every world is visible first.
   </script>
 </body>
 
