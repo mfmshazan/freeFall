@@ -1,19 +1,24 @@
 """Flame in Freefall — FastAPI backend.
 
-POST /api/predict  ->  uncertainty-aware flame prediction + ranked PSI evidence
-                       + engineering playbook, matching the frontend contract.
+POST /api/predict  ->  uncertainty-aware flame prediction + legacy training-row matches
+POST /api/evidence ->  reviewed experiment compatibility, condition differences and outcome coverage.
 """
 from __future__ import annotations
+from functools import lru_cache
+import logging
 import math
 from pathlib import Path
-from fastapi import FastAPI
+from typing import Literal
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
-from typing import Literal
 
 from surrogate import Surrogate
 import ranker
+from evidence import rank_evidence
+from evidence_api import EvidenceQuery, EvidenceResponse
+from export_evidence import load_catalog
 from planets import PLANETS, resolve_planet_gravity
 
 app = FastAPI(title="Flame in Freefall API", version="0.1.0")
@@ -22,6 +27,18 @@ app.add_middleware(
 )
 
 SURROGATE = Surrogate()  # train once at startup
+evidence_catalog = lru_cache(maxsize=1)(load_catalog)
+logger = logging.getLogger(__name__)
+
+
+@app.post("/api/evidence", response_model=EvidenceResponse)
+def evidence(query: EvidenceQuery):
+    try:
+        catalog = evidence_catalog()
+    except (OSError, KeyError, TypeError, ValueError):
+        logger.exception("Unable to load the reviewed evidence catalog")
+        raise HTTPException(status_code=503, detail="Evidence catalog unavailable") from None
+    return rank_evidence(catalog, query.model_dump())
 
 
 class CabinInputs(BaseModel):

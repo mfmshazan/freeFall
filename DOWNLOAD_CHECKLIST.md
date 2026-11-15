@@ -26,7 +26,10 @@ For investigations available in the current PSI portal, use the following export
 
 Keep measured outcomes distinct from nominal conditions, model estimates and missing values.
 For a new study, check what each column actually measures and where its units are defined.
-Record the table, page or run ID for each outcome in [the evidence file](backend/data/mined_evidence.json).
+Record the source ID and exact table, page or row for each reviewed field in the
+[evidence catalog](backend/data/mined_evidence.json). Update the catalog version and run
+`python3 backend/export_evidence.py` to regenerate the two frontend assets. The collector embeds
+the reviewed envelope in its manifest while mapped rows remain in staging.
 Pick one matched run for later validation once the measured quantity and model inputs agree.
 Existing BASS-II replay videos are already in `frontend/public/replay/bass-2/`.
 
@@ -63,5 +66,13 @@ PSI-60, PSI-62, and PSI-117 have no associated Experimental Table on their NASA 
 
 ## Collection status
 
-All listed PSI downloads are now staged and validated. Remaining work is scientific review and
-deciding which evidence-only rows, if any, should inform a future model update.
+The listed files are staged and mapped. The [data inventory](DATA_INVENTORY.md) records source
+access for the initial eight Phase 2 cases. Additional mapped rows require scientific review
+before inclusion.
+
+## Reviewed report PDFs
+
+The report PDFs supplied for the current rate/limit review are copied read-only under
+`data_raw/mining/report_inputs/` (git-ignored). Their extracted outcomes and SHA-256 provenance
+are recorded in `backend/data/mined_evidence.json`; the curated values remain evidence-only.
+See the report table in `DATA_INVENTORY.md` for the files and interpretation limits.

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import Bass2Compare from './Bass2Compare'
+import { RecordingAppearance } from './RecordingAppearance'
 import { ViewLabel, CategoryTag } from '../shared/evidence'
 
 const CAT_ORDER: { id: string; label: string }[] = [
@@ -9,7 +10,7 @@ const CAT_ORDER: { id: string; label: string }[] = [
 ]
 
 // Container: sub-toggle between the single B1 detail page and the B1-vs-B3 comparison.
-export default function Bass2View() {
+export default function Bass2View({ focusRun }: { focusRun?: 'b1' | 'b3' }) {
   const [mode, setMode] = useState<'compare' | 'single'>('compare')
   return (
     <div>
@@ -24,7 +25,7 @@ export default function Bass2View() {
           B1 detail
         </button>
       </div>
-      {mode === 'compare' ? <Bass2Compare /> : <Bass2Single />}
+      {mode === 'compare' ? <Bass2Compare focusRun={focusRun} /> : <Bass2Single />}
     </div>
   )
 }
@@ -95,7 +96,7 @@ export function Bass2Single() {
       </div>
 
       {/* LEFT: actual video */}
-      <div className="col-span-12 md:col-span-7 rounded-lg border border-space-600 bg-space-850 p-3">
+      <div className="col-span-12 min-w-0 md:col-span-7 rounded-lg border border-space-600 bg-space-850 p-3">
         <div className="flex flex-wrap items-center justify-between gap-1 mb-1">
           <span className="text-[11px] text-slate-500">Flight video (side view, on-board data overlay)</span>
           <div className="flex items-center gap-2">
@@ -119,15 +120,16 @@ export function Bass2Single() {
             {playing ? '❚❚ Pause' : '▶ Play'}
           </button>
           <input type="range" min={0} max={dur || cond.video.duration_s} step={0.05} value={t} disabled={failed}
-            onChange={(e) => seek(parseFloat(e.target.value))} className="flex-1" aria-label="Seek video" />
+            onChange={(e) => seek(parseFloat(e.target.value))} className="min-w-0 flex-1" aria-label="Seek video" />
           <span className="font-mono text-[11px] text-slate-400 w-24 text-right">{fmt(t)} / {fmt(dur || cond.video.duration_s)}</span>
         </div>
         <p className="mt-2 text-[10px] text-slate-500">{cond.video.note}</p>
         <p className="text-[10px] text-slate-600">{cond.video.camera_clock_note}</p>
+        <RecordingAppearance recording="bass" />
       </div>
 
       {/* RIGHT: verified conditions, grouped */}
-      <div className="col-span-12 md:col-span-5 rounded-lg border border-space-600 bg-space-850 p-3">
+      <div className="col-span-12 min-w-0 md:col-span-5 rounded-lg border border-space-600 bg-space-850 p-3">
         <div className="flex items-center justify-between mb-2">
           <h3 className="text-xs font-semibold tracking-widest text-slate-500 uppercase">Documented Conditions</h3>
           <ViewLabel kind="recorded" />
@@ -170,7 +172,7 @@ export function Bass2Single() {
       </div>
 
       {/* proof sheet */}
-      <div className="col-span-12 md:col-span-7 rounded-lg border border-space-600 bg-space-850 p-3">
+      <div className="col-span-12 min-w-0 md:col-span-7 rounded-lg border border-space-600 bg-space-850 p-3">
         <div className="flex items-center justify-between mb-2">
           <h3 className="text-xs font-semibold tracking-widest text-slate-500 uppercase">Matching Proof Sheet</h3>
           <a href={`${BASE}/${cond.proof_sheet.file}`} target="_blank" rel="noreferrer" className="text-[11px] text-sky-300 hover:underline">open full PDF ↗</a>
@@ -182,7 +184,7 @@ export function Bass2Single() {
       </div>
 
       {/* sources + limitations */}
-      <div className="col-span-12 md:col-span-5 flex flex-col gap-3">
+      <div className="col-span-12 min-w-0 md:col-span-5 flex flex-col gap-3">
         <div className="rounded-lg border border-space-600 bg-space-850 p-3">
           <h3 className="text-xs font-semibold tracking-widest text-slate-500 uppercase mb-2">Sources & Link</h3>
           <a href={cond.investigation_link} target="_blank" rel="noreferrer"
@@ -204,7 +206,7 @@ export function Bass2Single() {
         <h3 className="text-xs font-semibold tracking-widest text-sky-300 uppercase mb-2">
           Suggested Comparison Run — Test {cond.comparison_second_run.test_no} / Sample {cond.comparison_second_run.sample_no} (different airflow)
         </h3>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid gap-4 break-words md:grid-cols-2">
           <div>
             <p className="text-xs text-slate-300">{cond.comparison_second_run.why}</p>
             <p className="mt-2 text-xs text-slate-200"><span className="text-slate-500">Airflow difference: </span>{cond.comparison_second_run.airflow_difference}</p>

@@ -22,9 +22,9 @@ shared by **three** consumers so they never disagree:
 |---|---|---|---|
 | `gravity_g` | float | 0.0, 0.166, 0.38, 1.0 | ISS=0.0, Lunar=1/6, Mars=0.38, Earth=1.0 |
 | `o2_percent` | float | 15 – 85 | Oxygen mole fraction ×100 |
-| `pressure_psi` | float | 4.3 – 14.7 | 14.7 = sea level; 10.2 = Artemis; 4.3 = EMU suit |
+| `pressure_psi` | float | 4.3 – 14.7 in the UI | Absolute total pressure in psi |
 | `airflow_cm_s` | float | 0 – 30 | Forced convective flow (ventilation) |
-| `diluent` | enum | `N2`, `CO2`, `He` | Inert balance gas |
+| `diluent` | enum | `N2`, `CO2`, `He` | Illustrative balance gas in a binary mixture with oxygen |
 | `fuel_material` | enum | see §1 | Solid / liquid / gaseous fuel |
 
 ### Derived drivers (compute once, reuse everywhere)
@@ -37,9 +37,11 @@ g      = gravity_g                               # 0..1
 U      = airflow_cm_s                            # cm/s
 ```
 
-`OPI` (Oxygen Partial-pressure Index) is the master flammability driver. `OPI = 1.0` is
-normal sea-level air. Artemis cabin (32% O2, 10.2 psi) → `OPI ≈ (0.32*0.694)/0.21 ≈ 1.06`.
-EMU suit (85% O2, 4.3 psi) → `OPI ≈ (0.85*0.293)/0.21 ≈ 1.19`. Higher `OPI` = more dangerous.
+`OPI` is an internal illustrative driver normalized to the oxygen partial pressure at 21% and
+14.7 psi. Display partial pressure as `X × pressure_psi` and round only the result shown to the user.
+The orbital and supported lunar examples yield 3.087 and 3.264 psi, respectively. Similar partial
+pressure does not establish equivalent flame behavior. Oxygen fraction, pressure, balance gas,
+specimen and apparatus remain distinct. The presets illustrate model inputs.
 
 ---
 
@@ -50,11 +52,11 @@ EMU suit (85% O2, 4.3 psi) → `OPI ≈ (0.85*0.293)/0.21 ≈ 1.19`. Higher `OPI
 | `PMMA_Acrylic`  | solid  | 1.10 | 0.72 | 14 | yes | 14 | melts → vapor-bubble streaks (BASS-II) |
 | `Cotton_Fabric` | solid  | 1.60 | 0.45 | 12 | no  | 15 | fast char spread, moderate soot |
 | `Kapton_Wire`   | solid  | 0.55 | 0.55 | 8  | no  | 19 | insulation; slow, hard to ignite |
-| `Heptane_Droplet` | liquid | 0.90 | 0.80 | 10 | n/a | 12 | d²-law regression, sooty yellow (FLEX) |
-| `Methane_Gas`   | gas    | 1.00 | 0.08 | 16 | n/a | 10 | clean blue, soot-free (ACME/BRE) |
+| `Heptane_Droplet` | liquid | 0.90 | 0.80 | 10 | n/a | 12 | illustrative liquid fuel constants |
+| `Methane_Gas`   | gas    | 1.00 | 0.08 | 16 | n/a | 10 | illustrative gas fuel constants |
 
 - `k_spread`  — relative spread/burn-rate multiplier.
-- `soot_base` — intrinsic sooting propensity (0–1) before O2/pressure modulation.
+- `soot_base` — baseline coefficient for the soot proxy (0–1).
 - `L0_mm`     — nominal flame length scale at reference conditions (air, 0g, no flow).
 - `MOC`       — minimum oxygen concentration (%) for sustained burning at 1 atm; raised by §6.
 
@@ -80,8 +82,9 @@ f_flow = 1.0 + 0.6 * exp(-((U - 12) ** 2) / (2 * 7 ** 2))   # Gaussian peak at U
 spread_rate_mm_s = clamp(Vbase * f_grav * f_flow * diluent_rate_factor, 0.0, 12.0)
 ```
 
-For `Heptane_Droplet` interpret `spread_rate_mm_s` as the **d²-law regression rate**
-(droplet diameter shrink rate), not surface spread.
+For `Heptane_Droplet`, the model still returns an illustrative rate in mm/s. FLEX reports the
+slope of droplet diameter squared over time in mm²/s and a droplet extinction diameter in mm.
+An independently validated droplet model and target definition are deferred to Phase 4.
 
 `diluent_rate_factor` — see §4.
 
@@ -122,16 +125,16 @@ standoff_distance_mm = clamp(2.5 * (1.0 / OPI) * (1.0 + 0.4 * (1 - g)), 0.3, 6.0
 
 ## 4. Diluent Effects (N2 / CO2 / He)
 
-Diluent changes heat capacity and transport. Relative to N2 baseline:
+The model applies heuristic factors for a single balance gas.
 
-| diluent | `diluent_rate_factor` | `soot_mult` | thermal note |
-|---|---|---|---|
-| `N2` | 1.00 | 1.00 | baseline |
-| `CO2` | 0.72 | 0.85 | high heat capacity → strong suppressant (FLEX-2) |
-| `He` | 1.15 | 0.80 | high conductivity → hotter small flame, but raises extinction limit |
+| diluent | `diluent_rate_factor` | `soot_mult` |
+|---|---|---|
+| `N2` | 1.00 | 1.00 |
+| `CO2` | 0.72 | 0.85 |
+| `He` | 1.15 | 0.80 |
 
-CO2 is the most effective inert suppressant per mole (chemical + thermal). He conducts heat
-away fast — it both intensifies a healthy flame and quenches a marginal one sooner.
+These factors define model behavior only. Experimental mixtures and pressure outside the
+predictor’s limits remain research evidence.
 
 ---
 
@@ -145,8 +148,7 @@ soot_fraction = clamp(
     0.0, 1.0)
 ```
 
-Note the high-O2 *suppression* term: very high O2 + low pressure (suit/cool-flame regimes)
-burns hot and **clean/blue** — soot drops, flame can become near-invisible.
+The numeric result is an unvalidated proxy. The oxygen term does not diagnose chemistry or visibility.
 
 ### 5.2 Radiometric heat flux (proxy, illustrative only)
 
@@ -159,23 +161,20 @@ This proxy is not a measurement and does not establish visibility, chemistry, or
 ### 5.3 Visual regime decision (evaluate top-to-bottom, first match wins)
 
 ```
-if OPI < (MOC/100)/0.21  OR  spread_rate_mm_s < 0.05:
+if not is_flammable (§6)  OR  spread_rate_mm_s < 0.05:
         -> "QUENCHED_EXTINGUISHED"
 
-elif o2_percent >= 60 and pressure_psi <= 7.0 and soot_fraction < 0.15:
-        -> "INVISIBLE_COOL_FLAME"        # hot, clean, low visible light (CFI-G like)
-
 elif fuel == "PMMA_Acrylic" and o2_percent >= 25:
-        -> "BUBBLING_PMMA_STREAKS"       # melting plastic vapor-bubble ejections
+        -> "BUBBLING_PMMA_STREAKS"       # seeded PMMA streak palette
 
 elif soot_fraction >= 0.45:
-        -> "SOOTY_YELLOW_CORE"           # yellow blackbody soot core inside blue shell
+        -> "SOOTY_YELLOW_CORE"           # yellow-core palette
 
 elif aspect_ratio_LD > 1.25:
         -> "STRETCHED_LAMINAR_TEARDROP"  # elongated by flow/gravity
 
 else:
-        -> "SOOT_FREE_BLUE_SPHERE"       # the canonical 0g still-air blue ball
+        -> "SOOT_FREE_BLUE_SPHERE"       # blue palette (legacy wire name)
 ```
 
 ---
@@ -202,13 +201,10 @@ and geometry collapses to a faint shrinking ember.
 - **NO random Earth-style flicker in 0g.** Buoyant turbulence does not exist in microgravity.
   The envelope must be *eerily smooth and steady*. Any `Math.random()` applied to the flame
   outline, size, or brightness jitter in `gravity_g == 0` is a **bug**.
-- Allowed stochastic effects: only `BUBBLING_PMMA_STREAKS` micro-sparks (deterministic seeded
-  PRNG, not `Math.random()`), and a slow **rhythmic radial pulse** near extinction
-  (`spread_rate` low AND `is_flammable` marginal) — a sine pulse, not noise.
+- Allowed motion: deterministic seeded PMMA streaks and a slow sine pulse for modeled extinction.
 - Color stops by regime:
-  - Blue chemiluminescence shell: `#1E40AF → #60A5FA → transparent`
+  - Illustrative blue shell: `#1E40AF → #60A5FA → transparent`
   - Soot/yellow core: `#F59E0B → #FDE047`, radius ∝ `soot_fraction`
-  - Cool/invisible: violet-blue `#4C1D95 → #6D28D9` at ≤ 0.18 opacity; illustrative only
 - **Uncertainty halo:** amber dashed contour showing model spread, not calibrated coverage.
 
 ---
@@ -217,15 +213,14 @@ and geometry collapses to a faint shrinking ember.
 
 | Scenario | g | O2% | psi | U | fuel | expect |
 |---|---|---|---|---|---|---|
-| ISS candle baseline | 0.0 | 21 | 14.7 | 0 | Methane_Gas | perfect blue **sphere**, aspect=1.00, low soot |
-| ISS acrylic + draft | 0.0 | 21 | 14.7 | 10 | PMMA_Acrylic | teardrop, bubbling streaks, moderate soot |
-| Artemis lunar base | 0.166 | 32 | 10.2 | 5 | Cotton_Fabric | stretched, faster spread, **extrapolating** regime |
-| EMU suit fire | 0.0 | 85 | 4.3 | 0 | PMMA_Acrylic | heuristic faint palette; chemistry unconfirmed |
-| CO2 suppression test | 0.0 | 18 | 14.7 | 0 | Heptane_Droplet | near MOC, slow pulse → **QUENCHED** |
+| Orbital cabin example | 0.0 | 21 | 14.7 | 0 | Methane_Gas | blue sphere, aspect=1.00 |
+| Acrylic with airflow | 0.0 | 25 | 14.7 | 10 | PMMA_Acrylic | stretched flame with seeded streaks |
+| Supported lunar habitat example | 0.166 | 32 | 10.2 | 5 | Cotton_Fabric | stretched palette, extrapolation |
+| High-oxygen / low-pressure example | 0.0 | 85 | 4.3 | 0 | PMMA_Acrylic | streak palette, aspect=1.00 |
+| Modeled extinction example | 0.0 | 15 | 4.3 | 0 | Heptane_Droplet | dim circular ember with a sine pulse |
 
-These are the trend checkpoints — exact numbers come from the GP trained on `psi_master.json`.
-```
+These checkpoints describe the deterministic appearance and physical boundary behavior.
 
-## Phase 1 presentation contract
+## Presentation contract
 
 At zero effective gravity and zero airflow, the API uses the physical model's equal length and width rather than independent GP dimension estimates. The offline path has the same boundary. The visual-regime classifier and soot and heat proxies are heuristic; palette colors do not confirm cool-flame chemistry or instrument requirements. Model spread is not a calibrated interval.
