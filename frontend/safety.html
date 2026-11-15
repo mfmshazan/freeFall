@@ -73,7 +73,9 @@
       background: rgba(7, 19, 35, .97);
       border-bottom: 1px solid #ffffff25;
     }
-    .logo { font-size: 24px; font-weight: 800; letter-spacing: 3px; }
+    /* Safety's hero is a light (cream) panel, so the header text is dark at the
+       top and flips to white once the header gains its dark .scrolled background. */
+    .logo { font-size: 24px; font-weight: 800; letter-spacing: 3px; color: var(--ink); }
     .logo span { color: var(--orange); }
     nav { display: flex; align-items: center; gap: 28px; }
     nav a {
@@ -81,10 +83,16 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 1px;
+      color: var(--ink);
     }
-    nav a:hover { color: #ffb38b; }
+    nav a:hover { color: var(--orange); }
     nav a[aria-current="page"] { color: var(--orange); }
-    .nav-button { border: 1px solid white; padding: 13px 18px; }
+    .nav-button { border: 1px solid var(--ink); padding: 13px 18px; }
+    header.scrolled .logo,
+    header.scrolled nav a { color: #fff; }
+    header.scrolled nav a:hover,
+    header.scrolled nav a[aria-current="page"] { color: var(--orange); }
+    header.scrolled .nav-button { border-color: #fff; }
 
     .panel { padding: 150px 8% 110px; position: relative; }
     .panel.sub { padding-top: 150px; }
