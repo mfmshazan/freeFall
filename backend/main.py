@@ -14,6 +14,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import Field
 
 import physics
+from flame_color import FlameColorModel
 import ranker
 from evidence import rank_evidence
 from evidence_api import CabinInputs as EvidenceCabinInputs, EvidenceQuery, EvidenceResponse
@@ -26,6 +27,7 @@ app.add_middleware(
 )
 
 MODEL = "Deterministic physics baseline"
+FLAME_COLOR = FlameColorModel()  # CFI-G color classifier, trained once at startup
 evidence_catalog = lru_cache(maxsize=1)(load_catalog)
 logger = logging.getLogger(__name__)
 
@@ -65,6 +67,8 @@ def predict(inp: CabinInputs):
     if planet["world"]:
         i["gravity_g"] = planet["effective_gravity_g"]
     prediction = physics.predict(**i)
+    flame_color = FLAME_COLOR.predict(i["o2_percent"], i["fuel_material"])
+
     ranked, nearest = ranker.rank(i)
 
     non_standard_g = 0.02 < i["gravity_g"] < 0.95 or i["gravity_g"] > 1.05
@@ -93,6 +97,7 @@ def predict(inp: CabinInputs):
                 "scenario distance to example inputs. Coverage has not been calibrated."
             ),
         },
+        "flame_color": flame_color,
         "ranked_investigations": ranked,
         "engineering_playbook": [],
         "earth_spinoff": ranked[0]["earth_spinoff_application"],

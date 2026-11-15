@@ -3,6 +3,7 @@ import { predictLocal } from './flameModel'
 import { resolvePlanetGravity } from './planets'
 import type {
   CabinInputs,
+  FlameColor,
   PredictResponse,
   RankedInvestigation,
   TrustStatus,
@@ -125,6 +126,7 @@ export function predictLocalService(inputs: CabinInputs): PredictResponse {
       safety_margin_multiplier: null,
       plain_english_explanation: 'Exploratory prediction. The ± values show heuristic model spread based on scenario distance to example inputs. Coverage has not been calibrated.',
     },
+    flame_color: buildFlameColor(i, prediction.soot_fraction),
     ranked_investigations: ranked,
     engineering_playbook: [],
     earth_spinoff: ranked[0].earth_spinoff_application,
@@ -132,3 +134,35 @@ export function predictLocalService(inputs: CabinInputs): PredictResponse {
     source: 'local-fallback',
   }
 }
+// Offline flame-color estimate. The trained CFI-G classifier runs on the backend;
+// here we derive color from the physics soot fraction so the sandbox still tints
+// correctly when the backend is unreachable (labelled as a local estimate).
+const SOLID_FUELS = new Set(['PMMA_Acrylic', 'Cotton_Fabric', 'Kapton_Wire', 'Heptane_Droplet'])
+
+function lerpHex(a: number[], b: number[], t: number): string {
+  const c = a.map((v, k) => Math.round(v + (b[k] - v) * Math.max(0, Math.min(1, t))))
+  return '#' + c.map((v) => v.toString(16).padStart(2, '0')).join('')
+}
+
+function buildFlameColor(i: CabinInputs, soot: number): FlameColor {
+  const oxygen_fraction = Math.max(0, Math.min(1, i.o2_percent / 100))
+  const label: FlameColor['label'] = soot < 0.3 ? 'blue' : soot > 0.55 ? 'yellow' : 'mixed'
+  const p_yellow = Math.max(0, Math.min(1, (soot - 0.2) / 0.7))
+  const p_blue = Math.max(0, Math.min(1, (0.5 - soot) / 0.5))
+  const p_mixed = Math.max(0, 1 - p_yellow - p_blue)
+  const sum = p_blue + p_yellow + p_mixed || 1
+  return {
+    label,
+    hex: lerpHex([74, 144, 255], [255, 177, 60], soot),
+    soot_equivalent: Number(soot.toFixed(3)),
+    confidence: 0.5,
+    p_blue: Number((p_blue / sum).toFixed(3)),
+    p_yellow: Number((p_yellow / sum).toFixed(3)),
+    p_mixed: Number((p_mixed / sum).toFixed(3)),
+    est_flame_temp_k: Math.round(1900 + 1100 * oxygen_fraction),
+    oxygen_fraction: Number(oxygen_fraction.toFixed(4)),
+    extrapolated: SOLID_FUELS.has(i.fuel_material),
+    basis: 'Local physics estimate (backend offline)',
+  }
+}
+

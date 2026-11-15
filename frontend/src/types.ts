@@ -96,10 +96,25 @@ export interface PlaybookAction {
   triggered: boolean
 }
 
+export interface FlameColor {
+  label: 'blue' | 'yellow' | 'mixed'
+  hex: string
+  soot_equivalent: number
+  confidence: number
+  p_blue: number
+  p_yellow: number
+  p_mixed: number
+  est_flame_temp_k: number
+  oxygen_fraction: number
+  extrapolated: boolean
+  basis: string
+}
+
 export interface PredictResponse {
   model: string
   prediction: Prediction
   uncertainty: Uncertainty
+  flame_color?: FlameColor
   ranked_investigations: RankedInvestigation[]
   engineering_playbook: PlaybookAction[]
   earth_spinoff: string

@@ -38,7 +38,7 @@
   "sha256": {
     "backend/physics.py": "c29926311733fe5857e4161efaf1006020af33c6c3d9b5586abf5af3de2d366a",
     "backend/surrogate.py": "7d82f4eda55a4aae8ad0e09a8aa8cadff53927a8d668f3fe9ea2e7e1d9779b07",
-    "backend/main.py": "acb7220ab874d2350770a84ae26a18c39bd7a5ad3951c4e4901bb81cfdde6adc",
+    "backend/main.py": "5de4cbaade5cc743acdd1443dfe7122c9665a859d159125a3f4e3c3e52e4836b",
     "backend/evidence_api.py": "a86994b23b714c11f394d6e28a0380956fa33275523f4fd903302fa8bd97d956",
     "backend/ranker.py": "232cc9158d31717ab4193dbbc4076f4f9802e902ff1df5ee53b888adbd3d1789",
     "backend/planets.py": "6e4f218b51f2dddacd2b288ec517935a13d2cb09a763191268cf66160072af99",
@@ -48,7 +48,7 @@
     "backend/requirements.txt": "6f3520374a517ac1b22c280418f9378eb61d438d0fe4ca3787196ee56d4c714f",
     "frontend/src/data/psi_master.json": "9eeb96e2e2519572f91e6a337e2ccab2a97867a355917c451dc31c230801e248",
     "frontend/src/physics/flameModel.ts": "bae0124febef51a6b07f7a243cc0815186069e8505d677b4b7cce89a88eff107",
-    "frontend/src/physics/localService.ts": "c8dcb6083ef48a4287a21bcea5ba0dd153a3489723f840b651a8cc234d71b3f7",
+    "frontend/src/physics/localService.ts": "442daa68a78a21c540de2638e9fffd46fb6e794e162ca162879fc18233ee2b4d",
     "frontend/src/physics/planets.ts": "31f95670e3c78a158f6b3d287827f51aec70127888a8de2e60a9c6cfde2d5dd0",
     "frontend/src/flameatlas/predictBridge.ts": "3097feb66f0be987ea65af8df56ff30ba16e061af7c1792893b7e900618fc7de",
     "frontend/public/replay/saffire-1/conditions.json": "f5c280199abf2787c94f610a3edf09987444be112f21564952dda82dd223d718",
