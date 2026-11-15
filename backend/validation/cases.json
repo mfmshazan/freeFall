@@ -1,0 +1,344 @@
+{
+  "version": "2026-11-15.1",
+  "catalog_version": "2026-11-15.5",
+  "additional_sources": {
+    "olson-2023": {
+      "filename": "SIBAL-cotton revised Sept per review track changes accepted.pdf",
+      "version": "Accepted author manuscript, Combustion and Flame 248 (2023), 112559",
+      "url": "https://discovery.ucl.ac.uk/id/eprint/10164340/1/SIBAL-cotton%20revised%20Sept%20per%20review%20track%20changes%20accepted.pdf#page=9",
+      "sha256": "455b945bb5cb50eb5e5e34e0c8e8911a561d6336ffb942f185d28e4f13e9f3cc"
+    },
+    "psi99-matrix": {
+      "filename": "PSI-99_Experimental table_SAFFIRE-2.csv",
+      "version": "Reviewed local export",
+      "url": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-99",
+      "sha256": "3c24390b9ef86f3d1ebaab911a1a3cc95a8759aebf42062371370e6d4b31b8ac"
+    },
+    "psi99-image-index": {
+      "filename": "SAFFIRE-II_MergeResult-jpeg_v5_Final.xlsx",
+      "version": "Final v5",
+      "url": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-99",
+      "sha256": "1889a35b7f6b9a6de3cc15d099929ca747052f2d5e54283a521680d9593f9277"
+    }
+  },
+  "cases": [
+    {
+      "catalog_id": "saffire-1-1-1",
+      "stratum": "saffire-i-full-sheet",
+      "classification": "excluded",
+      "reasons": [
+        "oxygen_window_unresolved",
+        "balance_gas_unspecified",
+        "unvalidated_material_geometry_mapping",
+        "report_replay_basis_unresolved"
+      ],
+      "note": "Table I gives 420 s of burning but no exact slope-fit endpoints. Report SIBAL width × length is 40.6 × 94 cm; the replay lists 30 × 80 cm. Hatch-close O₂ is 21.7 vol%, end estimate 21.5%, and the processed replay gives 22.6242% at ignition. These bases are kept separate.",
+      "candidate_mapping": {
+        "fuel_material": "Cotton_Fabric",
+        "gravity_g": 0,
+        "airflow_cm_s": 20,
+        "basis": "Generic cotton approximation, nominal orbital microgravity and nominal duct flow. No runnable model inputs assigned."
+      },
+      "source_supplement": {
+        "source_id": "olson-2023",
+        "locator": "Table 1, I-1; §3; Figure 10",
+        "pressure_kpa_at_hatch_close": 102,
+        "oxygen_vol_percent_at_hatch_close": 21.7,
+        "original_spread_cm_s": 0.18
+      },
+      "campaign_group": "saffire-i",
+      "measurement_window_s": null,
+      "reported_resolution_mm_s": 0.1,
+      "measurement_uncertainty_mm_s": null
+    },
+    {
+      "catalog_id": "saffire-1-1-2",
+      "stratum": "saffire-i-remnant",
+      "classification": "excluded",
+      "reasons": [
+        "opposed_flow",
+        "reused_specimen",
+        "pressure_window_unresolved"
+      ],
+      "note": "Same physical specimen as 1-1. The remaining roughly 10 cm burned in opposed flow; reported burn duration 70 s. Exact fit endpoints and measurement-window pressure are unavailable.",
+      "campaign_group": "saffire-i",
+      "measurement_window_s": null,
+      "reported_resolution_mm_s": 0.1,
+      "measurement_uncertainty_mm_s": null
+    },
+    {
+      "catalog_id": "saffire-2-2-5",
+      "stratum": "saffire-ii-small-sheet",
+      "classification": "excluded",
+      "reasons": [
+        "oxygen_window_unresolved",
+        "balance_gas_unspecified",
+        "unvalidated_material_geometry_mapping"
+      ],
+      "note": "Table I reports 145 s burn duration but no fit endpoints. The 5 × 29 cm sheet and different flow are retained. PSI-99 Sample5 image index supplies camera timestamps only. The two specimens share one flight and apparatus.",
+      "candidate_mapping": {
+        "fuel_material": "Cotton_Fabric",
+        "gravity_g": 0,
+        "airflow_cm_s": 20,
+        "basis": "Generic cotton approximation, nominal orbital microgravity and reported duct flow. No runnable model inputs assigned."
+      },
+      "source_supplement": {
+        "source_id": "olson-2023",
+        "locator": "Table 1, II-5; §3; Figure 10",
+        "pressure_kpa_at_hatch_close": 103,
+        "oxygen_vol_percent_at_hatch_close": 22.1,
+        "original_spread_cm_s": 0.21
+      },
+      "additional_references": [
+        {
+          "source_id": "psi99-matrix",
+          "locator": "2-5"
+        },
+        {
+          "source_id": "psi99-image-index",
+          "locator": "Sample5 - jpeg"
+        }
+      ],
+      "campaign_group": "saffire-ii",
+      "measurement_window_s": null,
+      "reported_resolution_mm_s": 0.1,
+      "measurement_uncertainty_mm_s": null
+    },
+    {
+      "catalog_id": "saffire-2-2-6",
+      "stratum": "saffire-ii-small-sheet",
+      "classification": "excluded",
+      "reasons": [
+        "oxygen_window_unresolved",
+        "balance_gas_unspecified",
+        "unvalidated_material_geometry_mapping"
+      ],
+      "note": "Table I reports 115 s burn duration but no fit endpoints. The 5 × 29 cm sheet and different flow are retained. PSI-99 Sample6 image index supplies camera timestamps only. The two specimens share one flight and apparatus.",
+      "candidate_mapping": {
+        "fuel_material": "Cotton_Fabric",
+        "gravity_g": 0,
+        "airflow_cm_s": 25,
+        "basis": "Generic cotton approximation, nominal orbital microgravity and reported duct flow. No runnable model inputs assigned."
+      },
+      "source_supplement": {
+        "source_id": "olson-2023",
+        "locator": "Table 1, II-6; §3; Figure 10",
+        "pressure_kpa_at_hatch_close": 103,
+        "oxygen_vol_percent_at_hatch_close": 22.1,
+        "original_spread_cm_s": 0.26
+      },
+      "additional_references": [
+        {
+          "source_id": "psi99-matrix",
+          "locator": "2-6"
+        },
+        {
+          "source_id": "psi99-image-index",
+          "locator": "Sample6 - jpeg"
+        }
+      ],
+      "campaign_group": "saffire-ii",
+      "measurement_window_s": null,
+      "reported_resolution_mm_s": 0.1,
+      "measurement_uncertainty_mm_s": null
+    },
+    {
+      "catalog_id": "LUCI-SIBAL-PARTIAL-G",
+      "stratum": "luci-sibal",
+      "classification": "excluded",
+      "reasons": [
+        "different_apparatus",
+        "different_target_stratum"
+      ],
+      "note": "Keep flame-base and flame-tip fits separate. LUCI acceleration and flow conditions are distinct from Saffire."
+    },
+    {
+      "catalog_id": "LUCI-SIBAL-1G",
+      "stratum": "luci-sibal",
+      "classification": "excluded",
+      "reasons": [
+        "different_apparatus",
+        "different_target_stratum"
+      ],
+      "note": "Keep flame-base and flame-tip fits separate. LUCI acceleration and flow conditions are distinct from Saffire."
+    },
+    {
+      "catalog_id": "PSI-159-21174C3",
+      "stratum": "acme-cfi-g-other-metric",
+      "classification": "excluded",
+      "reasons": [
+        "different_metric"
+      ],
+      "note": "A diagnostic observation, duration or radius in a gas burner gives no solid flame-front speed."
+    },
+    {
+      "catalog_id": "PSI-69-248F001",
+      "stratum": "flex-other-metric",
+      "classification": "excluded",
+      "reasons": [
+        "different_metric"
+      ],
+      "note": "Droplet diameter-squared burning, extinction diameter and duration are separate metrics."
+    },
+    {
+      "catalog_id": "bass-ii-b1-147",
+      "stratum": "bass-ii-pmma-film-replay",
+      "classification": "excluded",
+      "reasons": [
+        "no_run_spread_target",
+        "different_target_stratum"
+      ],
+      "note": "Evidence has conditions and video only. Do not map reported film series extrema, fit rates or quench speeds to this recording."
+    },
+    {
+      "catalog_id": "bass-ii-b3-148",
+      "stratum": "bass-ii-pmma-film-replay",
+      "classification": "excluded",
+      "reasons": [
+        "no_run_spread_target",
+        "different_target_stratum"
+      ],
+      "note": "Evidence has conditions and video only. Do not map reported film series extrema, fit rates or quench speeds to this recording."
+    },
+    {
+      "catalog_id": "bass-ii-m1",
+      "stratum": "bass-ii-pmma-slabs",
+      "classification": "excluded",
+      "reasons": [
+        "different_target_stratum",
+        "stage_atmosphere_unresolved"
+      ],
+      "note": "NASA/TM-20210011385 §5.3 and Table 5.1 verified locally. Report rates use image tracking in opposed flow. Test-level initial/final O₂ do not establish the fit-window O₂ or pressure. Width, thickness and number of burning sides vary."
+    },
+    {
+      "catalog_id": "bass-ii-m5",
+      "stratum": "bass-ii-pmma-slabs",
+      "classification": "excluded",
+      "reasons": [
+        "different_target_stratum",
+        "stage_atmosphere_unresolved"
+      ],
+      "note": "NASA/TM-20210011385 §5.3 and Table 5.1 verified locally. Report rates use image tracking in opposed flow. Test-level initial/final O₂ do not establish the fit-window O₂ or pressure. Width, thickness and number of burning sides vary."
+    },
+    {
+      "catalog_id": "bass-ii-m9",
+      "stratum": "bass-ii-pmma-slabs",
+      "classification": "excluded",
+      "reasons": [
+        "different_target_stratum",
+        "stage_atmosphere_unresolved"
+      ],
+      "note": "NASA/TM-20210011385 §5.3 and Table 5.1 verified locally. Report rates use image tracking in opposed flow. Test-level initial/final O₂ do not establish the fit-window O₂ or pressure. Width, thickness and number of burning sides vary."
+    },
+    {
+      "catalog_id": "bass-ii-m15",
+      "stratum": "bass-ii-pmma-slabs",
+      "classification": "excluded",
+      "reasons": [
+        "different_target_stratum",
+        "stage_atmosphere_unresolved"
+      ],
+      "note": "NASA/TM-20210011385 §5.3 and Table 5.1 verified locally. Report rates use image tracking in opposed flow. Test-level initial/final O₂ do not establish the fit-window O₂ or pressure. Width, thickness and number of burning sides vary."
+    },
+    {
+      "catalog_id": "bass-ii-m20",
+      "stratum": "bass-ii-pmma-slabs",
+      "classification": "excluded",
+      "reasons": [
+        "different_target_stratum",
+        "stage_atmosphere_unresolved"
+      ],
+      "note": "NASA/TM-20210011385 §5.3 and Table 5.1 verified locally. Report rates use image tracking in opposed flow. Test-level initial/final O₂ do not establish the fit-window O₂ or pressure. Width, thickness and number of burning sides vary."
+    },
+    {
+      "catalog_id": "flex-flex-035",
+      "stratum": "flex-other-metric",
+      "classification": "excluded",
+      "reasons": [
+        "different_metric"
+      ],
+      "note": "Droplet diameter-squared burning, extinction diameter and duration are separate metrics."
+    },
+    {
+      "catalog_id": "flex-flex-062",
+      "stratum": "flex-other-metric",
+      "classification": "excluded",
+      "reasons": [
+        "different_metric"
+      ],
+      "note": "Droplet diameter-squared burning, extinction diameter and duration are separate metrics."
+    },
+    {
+      "catalog_id": "flex-flex-211",
+      "stratum": "flex-other-metric",
+      "classification": "excluded",
+      "reasons": [
+        "different_metric"
+      ],
+      "note": "Droplet diameter-squared burning, extinction diameter and duration are separate metrics."
+    },
+    {
+      "catalog_id": "flex-flex-215",
+      "stratum": "flex-other-metric",
+      "classification": "excluded",
+      "reasons": [
+        "different_metric"
+      ],
+      "note": "Droplet diameter-squared burning, extinction diameter and duration are separate metrics."
+    },
+    {
+      "catalog_id": "flex-flex-217",
+      "stratum": "flex-other-metric",
+      "classification": "excluded",
+      "reasons": [
+        "different_metric"
+      ],
+      "note": "Droplet diameter-squared burning, extinction diameter and duration are separate metrics."
+    },
+    {
+      "catalog_id": "cfm-usml1-summary",
+      "stratum": "candle-flames-other-metric",
+      "classification": "excluded",
+      "reasons": [
+        "different_metric"
+      ],
+      "note": "Wick-flame diameter and visible lifetime differ from solid flame-front spread."
+    },
+    {
+      "catalog_id": "bass-ii-thin-pmma-quench-21",
+      "stratum": "bass-ii-other-metric",
+      "classification": "excluded",
+      "reasons": [
+        "different_metric"
+      ],
+      "note": "Critical opposed airflow or a stable-flame observation differs from flame-front speed."
+    },
+    {
+      "catalog_id": "bass-ii-thin-pmma-quench-16",
+      "stratum": "bass-ii-other-metric",
+      "classification": "excluded",
+      "reasons": [
+        "different_metric"
+      ],
+      "note": "Critical opposed airflow or a stable-flame observation differs from flame-front speed."
+    },
+    {
+      "catalog_id": "bass-ii-pmma-rod-stable-136",
+      "stratum": "bass-ii-other-metric",
+      "classification": "excluded",
+      "reasons": [
+        "different_metric"
+      ],
+      "note": "Critical opposed airflow or a stable-flame observation differs from flame-front speed."
+    },
+    {
+      "catalog_id": "saffire-2-pmma-regression",
+      "stratum": "saffire-2-other-metric",
+      "classification": "excluded",
+      "reasons": [
+        "different_metric"
+      ],
+      "note": "Surface recession of the thick slabs differs from flame-front transport."
+    }
+  ]
+}

@@ -1,8 +1,7 @@
 """Python port of skills/01-flame-physics-rules.md.
 
-Used to (a) generate physics-informed synthetic boundary points that anchor the
-Gaussian Process between the sparse real PSI data, and (b) serve as a
-deterministic fallback. Keep in sync with frontend/src/physics/flameModel.ts.
+Serves the deterministic baseline and defines the experimental GP prior grid.
+Keep in sync with frontend/src/physics/flameModel.ts.
 """
 from __future__ import annotations
 import math

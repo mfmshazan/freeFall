@@ -1,8 +1,9 @@
 # 02 — Canvas Animation Spec (FlameCanvas rendering pipeline)
 
-How `frontend/src/components/FlameCanvas.tsx` turns surrogate-model numbers into an illustrative
-microgravity flame. The palette and soot and heat proxies are not calibrated measurements. Pairs with
-`01-flame-physics-rules.md` (the physics) — this file is the *rendering contract*.
+The parametric canvas rules below describe the rendering contract. The active multipage
+Flame Lab uses the WebGL shader in `frontend/fire-lab.html`, with an illustrative flame and
+model values shown in its HUD. The palette and the soot and heat proxies have no measured
+calibration. See `01-flame-physics-rules.md` for the deterministic model.
 
 ## Render loop (decoupled from React)
 - A single `requestAnimationFrame` loop lives in a `useEffect([])` that runs **once**. It never
@@ -31,7 +32,7 @@ metadata separately. Run-specific chemistry claims belong with the report’s di
 
 ## Uncertainty halo (the core twist)
 - Mean flame = crisp filled body. A dashed, slowly moving outer ellipse shows one model spread (`std_*`).
-- The halo uses a neutral amber color; its spread is model-based in the backend and heuristic offline, not calibrated coverage.
+- The halo uses a neutral amber color; the active HUD shows the heuristic spread returned by either model path. Coverage is uncalibrated.
 
 ## HUD telemetry (canvas corners)
 - Top-left: `L`, `W` (mm), `L/D`. Top-right: spread (mm/s), standoff (mm), `±spread` (mm).

@@ -2,13 +2,9 @@
 
 **Project:** Flame in Freefall — NASA Space Apps 2026
 **Purpose:** Single source of truth for mapping cabin/test inputs → microgravity flame
-geometry, spread rate, optical appearance, and extinction. These deterministic formulas are
-shared by **three** consumers so they never disagree:
-
-1. `frontend/src/components/FlameCanvas.tsx` — the parametric animation + offline fallback.
-2. `backend/surrogate.py` — generates physics-informed synthetic boundary points to anchor
-   the Gaussian Process between the real PSI data points.
-3. `backend/ranker.py` — normalizes the same feature space for similarity scoring.
+geometry, spread rate, optical appearance, and extinction. These deterministic correlations live in `backend/physics.py` and
+`frontend/src/physics/flameModel.ts`. The legacy experimental GP also uses them to generate
+synthetic anchors. The app serves the deterministic baseline.
 
 > These are **engineering surrogate correlations** tuned for real-time 2D rendering and for
 > producing physically *plausible, monotonic* trends — **not** validated CFD. The master dataset contains synthetic examples and sourced conditions with estimated outcomes.
@@ -84,7 +80,7 @@ spread_rate_mm_s = clamp(Vbase * f_grav * f_flow * diluent_rate_factor, 0.0, 12.
 
 For `Heptane_Droplet`, the model still returns an illustrative rate in mm/s. FLEX reports the
 slope of droplet diameter squared over time in mm²/s and a droplet extinction diameter in mm.
-An independently validated droplet model and target definition are deferred to Phase 4.
+An independently validated droplet model requires its own target definition and evaluation.
 
 `diluent_rate_factor` — see §4.
 
@@ -223,4 +219,8 @@ These checkpoints describe the deterministic appearance and physical boundary be
 
 ## Presentation contract
 
-At zero effective gravity and zero airflow, the API uses the physical model's equal length and width rather than independent GP dimension estimates. The offline path has the same boundary. The visual-regime classifier and soot and heat proxies are heuristic; palette colors do not confirm cool-flame chemistry or instrument requirements. Model spread is not a calibrated interval.
+At zero effective gravity and zero airflow, the API and offline path return exactly equal
+length and width and L/D of 1. The palette classifier and soot and heat outputs are heuristic.
+The Phase 4 Saffire audit found zero eligible benchmarks. Both paths display exploratory
+status and heuristic spread with uncalibrated coverage. The API preserves legacy field names
+for uncertainty and playbook compatibility.

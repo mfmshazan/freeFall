@@ -1,8 +1,8 @@
-import { predictLocalService } from '../physics/localService'
+import { APPEARANCE_LABELS, isCurrentAppearance } from '../physics/appearance'
+import { MODEL_NAME, predictLocalService } from '../physics/localService'
 import type { CabinInputs, Diluent, FuelMaterial, GravityMode, PredictResponse } from '../types'
 
 const FUEL_MAP: Record<string, FuelMaterial> = {
-  candle: 'Cotton_Fabric',
   sheet: 'Cotton_Fabric',
   droplet: 'Heptane_Droplet',
   rod: 'PMMA_Acrylic',
@@ -11,6 +11,10 @@ const FUEL_MAP: Record<string, FuelMaterial> = {
   Kapton_Wire: 'Kapton_Wire',
   Heptane_Droplet: 'Heptane_Droplet',
   Methane_Gas: 'Methane_Gas',
+}
+
+function bounded(value: number | undefined, fallback: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, value != null && Number.isFinite(value) ? value : fallback))
 }
 
 export function normalizeInputs(raw: {
@@ -25,12 +29,13 @@ export function normalizeInputs(raw: {
   altitude_km?: number
   gravity_mode?: GravityMode
 }): CabinInputs {
-  const g = Math.max(0, Math.min(3, Number(raw.gravity_g ?? 0)))
-  const o2 = Math.max(10, Math.min(100, Number(raw.o2_percent ?? 21)))
-  const p = Math.max(3, Math.min(15, Number(raw.pressure_psi ?? 14.7)))
-  const flow = Math.max(0, Math.min(40, Number(raw.airflow_cm_s ?? 0)))
+  const g = bounded(raw.gravity_g, 0, 0, 3)
+  const o2 = bounded(raw.o2_percent, 21, 10, 100)
+  const p = bounded(raw.pressure_psi, 14.7, 3, 15)
+  const flow = bounded(raw.airflow_cm_s, 0, 0, 40)
   const dil = (['N2', 'CO2', 'He'].includes(raw.diluent || '') ? raw.diluent : 'N2') as Diluent
-  const fuel = FUEL_MAP[raw.fuel_material || raw.fuel || 'rod'] ?? 'PMMA_Acrylic'
+  const key = raw.fuel_material || raw.fuel || 'rod'
+  const fuel = Object.prototype.hasOwnProperty.call(FUEL_MAP, key) ? FUEL_MAP[key] : 'PMMA_Acrylic'
   return {
     gravity_g: g,
     o2_percent: o2,
@@ -39,7 +44,7 @@ export function normalizeInputs(raw: {
     diluent: dil,
     fuel_material: fuel,
     ...(raw.world ? { world: raw.world } : {}),
-    ...(raw.altitude_km != null ? { altitude_km: Math.max(0, Number(raw.altitude_km)) } : {}),
+    ...(raw.altitude_km != null && Number.isFinite(raw.altitude_km) ? { altitude_km: Math.max(0, raw.altitude_km) } : {}),
     ...(raw.gravity_mode ? { gravity_mode: raw.gravity_mode } : {}),
   }
 }
@@ -59,7 +64,11 @@ export async function predictFlame(raw: Parameters<typeof normalizeInputs>[0], s
       signal: controller.signal,
     })
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
-    return (await res.json()) as PredictResponse
+    const result = (await res.json()) as PredictResponse
+    if (result.model !== MODEL_NAME || !isCurrentAppearance(result.prediction?.visual_regime)) {
+      return predictLocalService(inputs)
+    }
+    return result
   } catch {
     return predictLocalService(inputs)
   } finally {
@@ -85,6 +94,7 @@ declare global {
       predictFlame: typeof predictFlame
       checkBackendHealth: typeof checkBackendHealth
       normalizeInputs: typeof normalizeInputs
+      appearanceLabels: typeof APPEARANCE_LABELS
     }
   }
 }
@@ -93,6 +103,7 @@ window.FlameAtlasPredict = {
   predictFlame,
   checkBackendHealth,
   normalizeInputs,
+  appearanceLabels: APPEARANCE_LABELS,
 }
 window.dispatchEvent(new CustomEvent('flameatlas:bridge-ready'))
 

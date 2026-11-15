@@ -3,9 +3,9 @@
 > NASA Space Apps Challenge 2026 · *Flame in Freefall*
 
 Explore how an illustrative flame model responds to gravity, oxygen, pressure, airflow,
-balance gas and material. The cabin builder shows oxygen fraction and its derived partial
-pressure. The canvas uses illustrative palettes and a halo for model spread. Comparable measured
-outcome validation remains open in [Phase 4](IMPLEMENTATION_ROADMAP.md#4-validate-one-measurable-prediction-independently).
+balance gas and material. The Flame Lab shows oxygen fraction and partial pressure, model
+estimates and heuristic spread. The [Phase 4 audit](PHASE_4_VALIDATION_REPORT.md) found zero
+eligible independent Saffire benchmarks. The app uses the deterministic physics baseline.
 
 Watch the recorded Saffire-I and BASS-II experiments, then use the research stories to
 trace findings and limitations to NASA reports. Each story distinguishes the apparatus and
@@ -15,8 +15,8 @@ measurements from the current cabin scenario. See the [demo script](DEMO_SCRIPT.
 
 | Objective (challenge brief) | Implemented in |
 |---|---|
-| **Predict flame behavior in microgravity** | GP surrogate (`backend/surrogate.py`) + parametric `FlameCanvas` |
-| **…and communicate uncertainty** | Evidence status and a model spread halo |
+| **Predict flame behavior in microgravity** | Deterministic physics in the API and browser, with an illustrative Flame Lab animation |
+| **…and communicate uncertainty** | Exploratory status and heuristic spread in the Flame Lab |
 | **Summarize PSI investigations** | Reviewed case catalog with source locators, compatibility filters, and replays |
 | **Explore fire-safety research and Earth applications** | Research stories covering ventilation, habitats, materials, optics, smoke detection and suppression |
 
@@ -48,11 +48,10 @@ npm install
 npm run dev                      # http://localhost:5173
 ```
 
-The frontend works **with or without** the backend: if `localhost:8000` is unreachable it falls
-back to the in-browser physics engine (the header badge shows which mode is live). With the
-backend up the app shows Gaussian Process standard deviation. The fallback uses heuristic
-spread. Both modes show the same research stories and source locators. Original reports require
-internet access.
+The Vite dev server proxies `/api` to port 8000. When the API is unavailable, the Flame Lab
+computes the same exploratory baseline in the browser and marks the source as offline.
+The Evidence page uses the bundled catalog and the shared Phase 4 summary in both modes.
+Original reports require internet access.
 
 ## Project layout
 
@@ -62,8 +61,8 @@ skills/01-flame-physics-rules.md   # canonical physics specification
 skills/02-canvas-animation-spec.md # FlameCanvas rendering contract
 backend/
   data/psi_master.json             # 26 records: 2 real_psi, 24 seed (verify citations before submit)
-  physics.py                       # physics port (synthetic anchors + fallback)
-  surrogate.py                     # multi-output GaussianProcessRegressor
+  physics.py                       # deterministic model and synthetic anchor recipe
+  surrogate.py                     # experimental Gaussian Process comparator
   ranker.py                        # legacy training-row references
   evidence.py                      # catalog compatibility and condition ranking
   export_evidence.py               # validated catalog and report asset export
@@ -71,9 +70,9 @@ backend/
 frontend/
   src/physics/flameModel.ts        # physics port (TS) — offline fallback
   src/physics/localService.ts      # fallback ranker + uncertainty
-  src/components/FlameCanvas.tsx    # the parametric digital-twin animation
-  src/components/*                 # CabinBuilder, TrustGauge, EvidencePanel, ResearchStories
-  src/App.tsx                       # Predictor, research stories and replay views
+  fire-lab.html                    # WebGL flame illustration and model controls
+  evidence.html                    # Validation summary, research stories and reviewed cases
+  replay.html                      # Saffire-I and BASS-II recorded replays
 DEMO_SCRIPT.md                     # 2-minute judge pitch
 ```
 
@@ -102,7 +101,7 @@ python3 backend/export_evidence.py --check
 backend/.venv/bin/python -m unittest discover -s backend -p 'test_*.py'
 ```
 
-From `frontend/`, run `npm run check:evidence` and `npm run build`. The parity check compiles the
+From `frontend/`, run `npm run check:evidence`, `npm run check:appearance` and `npm run build`. The appearance check accepts `FREEFALL_PYTHON`. The parity check compiles the
 TypeScript ranker, runs the shared fixtures through both implementations, and compares distances
 within 10⁻¹². It uses `python3` or the interpreter set by `EVIDENCE_PYTHON`.
 
@@ -113,3 +112,5 @@ For the two real rows, experimental conditions come from Saffire-I; flame output
 `physics_estimate` where they are not direct measurements. The seed rows are synthetic examples.
 The reviewed catalog is a separate evidence collection. The predictor uses no comparable measured
 outcomes. See the [data inventory](DATA_INVENTORY.md) for source access and measurement limits.
+
+Run `python3 backend/validate_model.py --check` to verify the frozen Phase 4 audit and bundled result.

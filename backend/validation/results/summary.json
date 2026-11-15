@@ -1,0 +1,51 @@
+{
+  "protocol_version": "2026-11-15.1",
+  "catalog_version": "2026-11-15.5",
+  "status": "insufficient_evidence",
+  "model": "Deterministic physics baseline",
+  "target": "Average concurrent flame-front spread in Saffire SIBAL fabric",
+  "target_unit": "mm/s",
+  "eligible_observations": 0,
+  "independent_runs": 0,
+  "independent_groups": 0,
+  "reviewed_catalog_cases": 25,
+  "excluded_cases_by_stratum": {
+    "acme-cfi-g-other-metric": 1,
+    "bass-ii-other-metric": 3,
+    "bass-ii-pmma-film-replay": 2,
+    "bass-ii-pmma-slabs": 5,
+    "candle-flames-other-metric": 1,
+    "flex-other-metric": 6,
+    "luci-sibal": 2,
+    "saffire-2-other-metric": 1,
+    "saffire-i-full-sheet": 1,
+    "saffire-i-remnant": 1,
+    "saffire-ii-small-sheet": 2
+  },
+  "shared_catalog_groups": {
+    "saffire-i-fabric": [
+      "saffire-1-1-1",
+      "saffire-1-1-2"
+    ],
+    "flex-heptane": [
+      "flex-flex-035",
+      "flex-flex-062",
+      "flex-flex-211",
+      "flex-flex-215",
+      "flex-flex-217"
+    ],
+    "usml1-candle": [
+      "cfm-usml1-summary"
+    ],
+    "saffire-ii-pmma": [
+      "saffire-2-pmma-regression"
+    ]
+  },
+  "metrics": {
+    "mae_mm_s": null,
+    "signed_bias_mm_s": null,
+    "paired_absolute_error_difference_mm_s": null
+  },
+  "residuals": [],
+  "source_url": "https://ntrs.nasa.gov/api/citations/20170008805/downloads/20170008805.pdf#page=29"
+}

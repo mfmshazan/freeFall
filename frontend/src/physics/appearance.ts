@@ -5,7 +5,6 @@ export const APPEARANCE_LABELS: Record<VisualRegime, string> = {
   STRETCHED_LAMINAR_TEARDROP: 'Stretched blue palette',
   SOOTY_YELLOW_CORE: 'Yellow-core palette',
   BUBBLING_PMMA_STREAKS: 'PMMA streak palette',
-  INVISIBLE_COOL_FLAME: 'Faint violet palette (illustrative)',
   QUENCHED_EXTINGUISHED: 'Modeled extinction',
 }
 

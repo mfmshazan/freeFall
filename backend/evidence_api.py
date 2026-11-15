@@ -5,7 +5,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class CabinInputs(BaseModel):
-    gravity_g: float = Field(ge=0, le=1)
+    gravity_g: float = Field(ge=0, le=3)
     o2_percent: float = Field(ge=10, le=100)
     pressure_psi: float = Field(ge=3, le=15)
     airflow_cm_s: float = Field(ge=0, le=40)

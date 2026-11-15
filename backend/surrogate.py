@@ -1,13 +1,7 @@
-"""Uncertainty-aware surrogate model.
+"""Experimental GP comparator on seed and estimated outcomes plus synthetic anchors.
 
-Trains multi-output Gaussian Process Regressors (Matern + WhiteKernel) on the
-real PSI records in data/psi_master.json, augmented with physics-informed
-synthetic boundary points from physics.py so interpolation across 0g->1g and
-15%->85% O2 stays smooth and physically bounded.
-
-The GP's predictive standard deviation (return_std=True) naturally widens away
-from the real data — that is the epistemic uncertainty that powers the trust
-meter. Regimes NASA never flew in spaceflight (partial gravity) blow the std up.
+The predictive standard deviations describe the fitted GP and have no measured coverage.
+The Phase 4 audit retains this configuration for provenance. The serving API uses physics.py.
 """
 from __future__ import annotations
 import json
@@ -57,7 +51,7 @@ class Surrogate:
 
     def _build_training(self):
         X, Y = [], []
-        # (1) real PSI ground truth
+        # (1) seed outcomes and physics estimates for sourced conditions
         for r in self.records:
             X.append(_features(r["gravity_g"], r["o2_percent"], r["pressure_psi"],
                                r["airflow_cm_s"], r["diluent"], r["fuel_material"]))
@@ -86,7 +80,7 @@ class Surrogate:
         # anchor the non-GP outputs (geometry ratios, regime, soot) to the physics model
         phys = physics.predict(gravity_g, o2, psi_, flow, diluent, fuel)
 
-        # distance to nearest real-or-synthetic training point (normalized)
+        # distance to nearest training example or synthetic anchor (normalized)
         d_nn = self._nearest_distance(xs)
         return mean, std, phys, d_nn
 

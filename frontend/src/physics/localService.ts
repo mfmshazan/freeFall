@@ -1,10 +1,6 @@
-// Offline fallback that mirrors the backend /api/predict contract.
-// Uses the physics port (flameModel) + a physics-distance ranker + a
-// distance-to-nearest-training-row uncertainty heuristic. When the FastAPI backend is
-// online the hook prefers it; this keeps the demo fully working if it isn't.
-
 import psi from '../data/psi_master.json'
 import { predictLocal } from './flameModel'
+import { resolvePlanetGravity } from './planets'
 import type {
   CabinInputs,
   PredictResponse,
@@ -73,10 +69,14 @@ function diffs(i: CabinInputs, r: Record): string[] {
   return out
 }
 
-export function predictLocalService(i: CabinInputs): PredictResponse {
+export const MODEL_NAME = 'Deterministic physics baseline'
+
+export function predictLocalService(inputs: CabinInputs): PredictResponse {
+  const planet = resolvePlanetGravity(inputs)
+  const i = { ...inputs, gravity_g: planet?.effective_gravity_g ?? inputs.gravity_g }
   const prediction = predictLocal(i)
 
-  // Keep legacy prediction references and the training-row distance for uncertainty.
+  // Keep example input matches separate from reviewed experimental evidence.
   const scored = RECORDS.map((r) => ({ r, d: featureDistance(i, r) })).sort((a, b) => a.d - b.d)
   const nearest = scored[0].d
   const ranked: RankedInvestigation[] = scored.slice(0, 4).map(({ r, d }) => ({
@@ -96,12 +96,9 @@ export function predictLocalService(i: CabinInputs): PredictResponse {
     publication_dois: r.publication_dois,
   }))
 
-  // --- uncertainty: grows with distance to nearest training row ---
-  // Heuristic penalty for partial gravity and high oxygen.
-  const partialGravity = i.gravity_g > 0.02 && i.gravity_g < 0.95
+  const nonStandardGravity = (i.gravity_g > 0.02 && i.gravity_g < 0.95) || i.gravity_g > 1.05
   const highO2 = i.o2_percent >= 30
-  const unverified = partialGravity
-  const extrapPenalty = (partialGravity ? 0.6 : 0) + (highO2 ? 0.2 : 0)
+  const extrapPenalty = (nonStandardGravity ? 0.6 : 0) + (highO2 ? 0.2 : 0)
 
   const sigmaBase = 0.08 + 0.9 * nearest + extrapPenalty
   const std_length_mm = prediction.flame_length_mm * Math.min(0.8, sigmaBase)
@@ -112,17 +109,12 @@ export function predictLocalService(i: CabinInputs): PredictResponse {
   trust_score = Math.max(2, Math.min(99, trust_score))
 
   let trust_status: TrustStatus
-  if (unverified && highO2) trust_status = 'UNVERIFIED_REGIME_DO_NOT_TRUST'
-  else if (trust_score < 55 || partialGravity) trust_status = 'CAUTION_EXTRAPOLATING'
-  else trust_status = 'HIGH_CONFIDENCE'
-
-  const safety_margin_multiplier =
-    trust_status === 'HIGH_CONFIDENCE' ? 1.2 : trust_status === 'CAUTION_EXTRAPOLATING' ? 1.8 : 2.6
-
-  const plain_english_explanation = 'No comparable measured outcome used by this model. Its training data includes synthetic examples and estimated outcomes; offline spread is heuristic and not a calibrated interval.'
-  const engineering_playbook: PredictResponse['engineering_playbook'] = []
+  if (nonStandardGravity && highO2) trust_status = 'UNVERIFIED_REGIME_DO_NOT_TRUST'
+  else if (trust_score < 55 || nonStandardGravity) trust_status = 'CAUTION_EXTRAPOLATING'
+  else trust_status = 'EXPLORATORY'
 
   return {
+    model: MODEL_NAME,
     prediction,
     uncertainty: {
       std_spread_rate,
@@ -130,12 +122,13 @@ export function predictLocalService(i: CabinInputs): PredictResponse {
       std_width_mm,
       trust_score,
       trust_status,
-      safety_margin_multiplier,
-      plain_english_explanation,
+      safety_margin_multiplier: null,
+      plain_english_explanation: 'Exploratory prediction. The ± values show heuristic model spread based on scenario distance to example inputs. Coverage has not been calibrated.',
     },
     ranked_investigations: ranked,
-    engineering_playbook,
+    engineering_playbook: [],
     earth_spinoff: ranked[0].earth_spinoff_application,
+    planet_telemetry: planet,
     source: 'local-fallback',
   }
 }
