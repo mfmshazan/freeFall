@@ -57,6 +57,43 @@ class PredictionBoundaryTest(unittest.TestCase):
             flowing = main.predict(main.CabinInputs(**values))["prediction"]
             self.assertEqual((flowing["flame_length_mm"], flowing["flame_width_mm"]), (30, 10))
 
+    def test_planet_orbit_surface_and_altitude_gravity(self):
+        # 1. Mercury default free_orbit -> 0g spherical flame
+        res_orbit = main.predict(main.CabinInputs(
+            gravity_g=0.0, o2_percent=21, pressure_psi=14.7,
+            airflow_cm_s=0, diluent="N2", fuel_material="Cotton_Fabric",
+            world="mercury", gravity_mode="free_orbit"
+        ))
+        self.assertEqual(res_orbit["planet_telemetry"]["effective_gravity_g"], 0.0)
+        self.assertEqual(res_orbit["prediction"]["aspect_ratio_LD"], 1.0)
+
+        # 2. Mercury surface -> 0.38g partial gravity
+        res_surf = main.predict(main.CabinInputs(
+            gravity_g=0.38, o2_percent=21, pressure_psi=14.7,
+            airflow_cm_s=0, diluent="N2", fuel_material="Cotton_Fabric",
+            world="mercury", gravity_mode="surface"
+        ))
+        self.assertEqual(res_surf["planet_telemetry"]["effective_gravity_g"], 0.38)
+        self.assertGreater(res_surf["prediction"]["aspect_ratio_LD"], 1.0)
+        self.assertEqual(res_surf["uncertainty"]["trust_status"], "CAUTION_EXTRAPOLATING")
+
+        # 3. Mercury intermediate altitude (e.g. 1 R = 2439.7 km -> 0.38 / 4 = 0.095 g)
+        res_alt = main.predict(main.CabinInputs(
+            gravity_g=0.0, o2_percent=21, pressure_psi=14.7,
+            airflow_cm_s=0, diluent="N2", fuel_material="Cotton_Fabric",
+            world="mercury", altitude_km=2439.7, gravity_mode="altitude"
+        ))
+        self.assertAlmostEqual(res_alt["planet_telemetry"]["effective_gravity_g"], 0.095, places=3)
+
+        # 4. Mercury max orbit -> 0g
+        res_max = main.predict(main.CabinInputs(
+            gravity_g=0.0, o2_percent=21, pressure_psi=14.7,
+            airflow_cm_s=0, diluent="N2", fuel_material="Cotton_Fabric",
+            world="mercury", gravity_mode="max_orbit"
+        ))
+        self.assertEqual(res_max["planet_telemetry"]["effective_gravity_g"], 0.0)
+        self.assertEqual(res_max["prediction"]["aspect_ratio_LD"], 1.0)
+
 
 if __name__ == "__main__":
     unittest.main()

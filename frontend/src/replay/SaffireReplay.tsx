@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import TimeSeriesChart, { type Series } from './TimeSeriesChart'
+import { ViewLabel } from '../shared/evidence'
 import { RecordingAppearance } from './RecordingAppearance'
 
 // ---------------------------------------------------------------------------
@@ -136,9 +137,7 @@ export default function SaffireReplay({ focusResults = false }: { focusResults?:
           <span className="text-sm font-semibold text-slate-100">{cond.investigation}</span>
           <span className="ml-2 text-[11px] font-mono text-slate-500">{cond.psi_id} · {cond.date_utc} · DOI {cond.doi}</span>
         </div>
-        <span className="text-[10px] font-semibold px-2 py-1 rounded bg-emerald-500/20 text-emerald-300 tracking-wide">
-          Recorded experiment
-        </span>
+        <ViewLabel kind="recorded" />
       </div>
 
       {/* LEFT: real images */}
