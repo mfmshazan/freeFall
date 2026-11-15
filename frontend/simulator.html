@@ -1482,6 +1482,7 @@
       {
         id: "sun", name: "Sun", kind: "G-type main-sequence star", radius: 3.2,
         dot: "radial-gradient(circle at 40% 38%,#fff6c9,#ffd36b 40%,#fc8559)",
+        map: "2k_sun.jpg",
         gravity: "274 m/s² (≈28 g)", day: "≈25 days at the equator", year: "—",
         atmo: "Hydrogen and helium plasma", temp: "≈5,500 °C at the visible surface",
         type: "Not a destination", cabin: "Choose a planet or the Moon to set a scenario",
@@ -1490,21 +1491,22 @@
       {
         id: "mercury", name: "Mercury", kind: "Terrestrial planet", radius: .45, obliquity: .03, rotation: 1407.6,
         dot: "linear-gradient(135deg,#c7b6a1,#72695d)",
-        tex: { style: "rocky", colors: ["#8c8174", "#a99d8f", "#6e655b"] },
+        tex: { style: "rocky", colors: ["#8c8174", "#a99d8f", "#6e655b"] }, map: "2k_mercury.jpg",
         gravity: "3.7 m/s² (0.38 g)", day: "58.6 Earth days", year: "88 days",
         atmo: "Almost none — a thin exosphere", temp: "−180 °C at night to 430 °C by day", ...ORBITAL
       },
       {
         id: "venus", name: "Venus", kind: "Terrestrial planet", radius: .8, obliquity: 177.4, rotation: -5832.5,
         dot: "linear-gradient(135deg,#f5ce91,#a96832)",
-        tex: { style: "bands", colors: ["#e8c48d", "#d9a865", "#f1d9a8", "#c99456"], soft: true },
+        tex: { style: "bands", colors: ["#e8c48d", "#d9a865", "#f1d9a8", "#c99456"], soft: true }, map: "2k_venus_atmosphere.jpg",
         gravity: "8.87 m/s² (0.90 g)", day: "243 Earth days (retrograde)", year: "225 days",
         atmo: "96.5% CO₂, about 92× Earth's surface pressure", temp: "≈465 °C", ...ORBITAL
       },
       {
         id: "earth", name: "Earth", kind: "Terrestrial planet — home", radius: .85, obliquity: 23.44, rotation: 23.93,
         dot: "linear-gradient(135deg,#529ac2,#305e98)",
-        tex: { style: "earth" },
+        tex: { style: "earth" }, map: "2k_earth_daymap.jpg",
+        normalMap: "2k_earth_normal.jpg", specularMap: "2k_earth_specular.jpg", clouds: "2k_earth_clouds.png",
         gravity: "9.81 m/s² (1 g)", day: "23.9 hours", year: "365.25 days",
         atmo: "78% N₂, 21% O₂, 1 bar", temp: "≈15 °C average",
         type: "Surface laboratory", cabin: "Gravity 1 g — the baseline for most fire tests",
@@ -1513,7 +1515,7 @@
       {
         id: "moon", name: "Moon", kind: "Natural satellite of Earth", radius: .3, obliquity: 6.7, rotation: 655.7, parent: "earth",
         dot: "linear-gradient(135deg,#e2e6df,#7e8b8c)",
-        tex: { style: "rocky", colors: ["#a7a9a6", "#c4c6c2", "#7f8382"] },
+        tex: { style: "rocky", colors: ["#a7a9a6", "#c4c6c2", "#7f8382"] }, map: "2k_moon.jpg",
         gravity: "1.62 m/s² (0.17 g)", day: "27.3 days (always the same face to Earth)", year: "27.3 days around Earth",
         atmo: "Essentially none — a very thin exosphere", temp: "≈ −170 °C at night to 120 °C by day",
         type: "Lunar habitat", cabin: "Gravity 0.17 g — partial gravity",
@@ -1522,7 +1524,7 @@
       {
         id: "mars", name: "Mars", kind: "Terrestrial planet", radius: .6, obliquity: 25.19, rotation: 24.62,
         dot: "linear-gradient(135deg,#e7a073,#a44e34)",
-        tex: { style: "rocky", colors: ["#b5603a", "#c97b4f", "#8e4428"], caps: true },
+        tex: { style: "rocky", colors: ["#b5603a", "#c97b4f", "#8e4428"], caps: true }, map: "2k_mars.jpg",
         gravity: "3.71 m/s² (0.38 g)", day: "24.6 hours", year: "687 days",
         atmo: "95% CO₂, under 1% of Earth's surface pressure", temp: "≈ −60 °C average",
         type: "Mars habitat", cabin: "Gravity 0.38 g — partial gravity",
@@ -1531,28 +1533,28 @@
       {
         id: "jupiter", name: "Jupiter", kind: "Gas giant", radius: 2.1, obliquity: 3.13, rotation: 9.93,
         dot: "linear-gradient(135deg,#d9b99a,#a26b51)",
-        tex: { style: "bands", colors: ["#d8c2a4", "#b88a64", "#efe1c9", "#a0704f", "#c9a37e"], spot: true },
+        tex: { style: "bands", colors: ["#d8c2a4", "#b88a64", "#efe1c9", "#a0704f", "#c9a37e"], spot: true }, map: "2k_jupiter.jpg",
         gravity: "24.8 m/s² (2.5 g) at the cloud tops", day: "9.9 hours", year: "11.9 years",
         atmo: "≈90% hydrogen, ≈10% helium", temp: "≈ −110 °C at the 1-bar level", ...ORBITAL
       },
       {
         id: "saturn", name: "Saturn", kind: "Gas giant", radius: 1.8, obliquity: 26.73, rotation: 10.66, rings: true,
         dot: "linear-gradient(135deg,#e4d5a0,#ab956b)",
-        tex: { style: "bands", colors: ["#e3d3a3", "#cdb57d", "#efe4bf", "#b9a06c"], soft: true },
+        tex: { style: "bands", colors: ["#e3d3a3", "#cdb57d", "#efe4bf", "#b9a06c"], soft: true }, map: "2k_saturn.jpg",
         gravity: "10.4 m/s² (1.07 g) at the cloud tops", day: "10.7 hours", year: "29.4 years",
         atmo: "≈96% hydrogen, ≈3% helium", temp: "≈ −140 °C at the 1-bar level", ...ORBITAL
       },
       {
         id: "uranus", name: "Uranus", kind: "Ice giant", radius: 1.25, obliquity: 97.77, rotation: -17.24,
         dot: "linear-gradient(135deg,#bde8eb,#5aafb8)",
-        tex: { style: "bands", colors: ["#a9dfe3", "#9bd3d8", "#b8e8ea"], soft: true },
+        tex: { style: "bands", colors: ["#a9dfe3", "#9bd3d8", "#b8e8ea"], soft: true }, map: "2k_uranus.jpg",
         gravity: "8.87 m/s² (0.90 g) at the cloud tops", day: "17.2 hours (retrograde)", year: "84 years",
         atmo: "Hydrogen, helium and methane", temp: "≈ −195 °C at the 1-bar level", ...ORBITAL
       },
       {
         id: "neptune", name: "Neptune", kind: "Ice giant", radius: 1.2, obliquity: 28.32, rotation: 16.11,
         dot: "linear-gradient(135deg,#5895e6,#243b96)",
-        tex: { style: "bands", colors: ["#3f6fd1", "#3561c0", "#5a88e0", "#2c4fa8"] },
+        tex: { style: "bands", colors: ["#3f6fd1", "#3561c0", "#5a88e0", "#2c4fa8"] }, map: "2k_neptune.jpg",
         gravity: "11.2 m/s² (1.14 g) at the cloud tops", day: "16.1 hours", year: "165 years",
         atmo: "Hydrogen, helium and methane", temp: "≈ −200 °C at the 1-bar level", ...ORBITAL
       }
@@ -1662,6 +1664,56 @@
       return toTexture(c);
     }
 
+    /* ---- Real NASA image maps (Path B) ----------------------
+       Equirectangular (2:1) surface maps dropped in /public/textures/
+       wrap directly onto the sphere. The procedural texture above is
+       drawn first and kept as a fallback, so a missing file just
+       leaves the stylised planet instead of a black sphere.
+       Files (Solar System Scope, CC-BY): 2k_<body>.jpg — see
+       public/textures/README.md for the download list.
+       --------------------------------------------------------- */
+    const TEX_BASE = "textures/";
+    const texLoader = new THREE.TextureLoader();
+
+    function loadSurface(file, onReady, isData) {
+      texLoader.load(
+        TEX_BASE + file,
+        tx => {
+          // Colour maps are sRGB; normal/specular/bump are raw data (linear).
+          tx.colorSpace = isData ? THREE.NoColorSpace : THREE.SRGBColorSpace;
+          tx.anisotropy = 8;
+          onReady(tx);
+        },
+        undefined,
+        () => console.warn(`[textures] ${file} not found — keeping procedural fallback`)
+      );
+    }
+
+    // Phong material that shows the procedural texture immediately, then upgrades
+    // to the real image maps once they load. Rocky worlds get a subtle bump from
+    // their own colour map; Earth additionally gets a normal map and an ocean
+    // specular map for realistic sun glint.
+    function planetMaterial(body, seed) {
+      const rocky = body.tex && body.tex.style === "rocky";
+      const mat = new THREE.MeshPhongMaterial({
+        map: planetTexture(body, seed),
+        shininess: rocky ? 2 : 8,
+        specular: new THREE.Color(rocky ? 0x0a0a0a : 0x15171c)
+      });
+      if (body.map) loadSurface(body.map, tx => {
+        mat.map = tx;
+        if (rocky) { mat.bumpMap = tx; mat.bumpScale = body.bumpScale ?? 0.012; } // craters/ridges catch light
+        mat.needsUpdate = true;
+      });
+      if (body.normalMap) loadSurface(body.normalMap, tx => {
+        mat.normalMap = tx; mat.normalScale = new THREE.Vector2(0.85, 0.85); mat.needsUpdate = true;
+      }, true);
+      if (body.specularMap) loadSurface(body.specularMap, tx => {
+        mat.specularMap = tx; mat.specular = new THREE.Color(0x335a88); mat.shininess = 24; mat.needsUpdate = true;
+      }, true);
+      return mat;
+    }
+
     function sunTexture() {
       const [c, g] = canvas(1024, 512);
       const r = rng(7);
@@ -1727,7 +1779,10 @@
     stageEl.appendChild(labelRenderer.domElement);
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color("#030a15");
+    const spaceColor = new THREE.Color("#030a15");
+    scene.background = spaceColor;
+    scene.backgroundIntensity = 0.45;   // keep the galaxy dim so UI/planets stay readable
+    let spaceBg = spaceColor;           // swapped to the Milky Way once it loads
 
     const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, .05, 3000);
     const HOME = new THREE.Vector3(0, 50, 86);
@@ -1766,6 +1821,14 @@
     }));
     scene.add(stars);
 
+    // Milky Way band as the sky backdrop (equirectangular). Falls back to the flat
+    // navy colour if the file is missing, and follows the "Background stars" toggle.
+    loadSurface("2k_stars_milky_way.jpg", tx => {
+      tx.mapping = THREE.EquirectangularReflectionMapping;
+      spaceBg = tx;
+      if (stars.visible) scene.background = tx;
+    });
+
     /* =========================================================
        5. BODIES, ORBITS, LABELS
        ========================================================= */
@@ -1793,9 +1856,12 @@
       const root = new THREE.Group();
       scene.add(root);
       let spin = null;
+      let cloud = null;
 
       if (body.id === "sun") {
-        const mesh = new THREE.Mesh(sphere, new THREE.MeshBasicMaterial({ map: sunTexture() }));
+        const sunMat = new THREE.MeshBasicMaterial({ map: sunTexture() });
+        if (body.map) loadSurface(body.map, tx => { sunMat.map = tx; sunMat.needsUpdate = true; });
+        const mesh = new THREE.Mesh(sphere, sunMat);
         mesh.scale.setScalar(body.radius);
         root.add(mesh);
         spin = mesh;
@@ -1809,7 +1875,7 @@
         const tilt = new THREE.Group();
         tilt.rotation.z = body.obliquity * DEG;
         root.add(tilt);
-        spin = new THREE.Mesh(sphere, new THREE.MeshLambertMaterial({ map: planetTexture(body, index * 97 + 13) }));
+        spin = new THREE.Mesh(sphere, planetMaterial(body, index * 97 + 13));
         spin.scale.setScalar(body.radius);
         tilt.add(spin);
 
@@ -1822,6 +1888,15 @@
           root.add(atmo);
         }
 
+        // Translucent cloud shell, drifting a touch faster than the surface.
+        if (body.clouds) {
+          const cloudMat = new THREE.MeshPhongMaterial({ transparent: true, depthWrite: false, opacity: .9 });
+          loadSurface(body.clouds, tx => { cloudMat.map = tx; cloudMat.alphaMap = tx; cloudMat.needsUpdate = true; });
+          cloud = new THREE.Mesh(sphere, cloudMat);
+          cloud.scale.setScalar(body.radius * 1.015);
+          tilt.add(cloud);
+        }
+
         if (body.rings) {
           const inner = 1.25, outer = 2.3;
           const geo = new THREE.RingGeometry(inner, outer, 160, 1);
@@ -1830,9 +1905,11 @@
             v.fromBufferAttribute(pos, k);
             uv.setXY(k, (v.length() - inner) / (outer - inner), .5);
           }
-          const ring = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({
+          const ringMat = new THREE.MeshLambertMaterial({
             map: ringTexture(), transparent: true, side: THREE.DoubleSide, depthWrite: false
-          }));
+          });
+          loadSurface("2k_saturn_ring.png", tx => { ringMat.map = tx; ringMat.needsUpdate = true; });
+          const ring = new THREE.Mesh(geo, ringMat);
           ring.rotation.x = -Math.PI / 2;
           ring.scale.setScalar(body.radius);
           tilt.add(ring);
@@ -1841,7 +1918,7 @@
 
       const label = makeLabel(body);
       root.add(label.obj);
-      objects[body.id] = { body, root, spin, label };
+      objects[body.id] = { body, root, spin, cloud, label };
     });
 
     // Planet orbit lines (sampled once per load; elements drift only over centuries).
@@ -2191,7 +2268,10 @@
     document.getElementById("optLabels").addEventListener("change", e => {
       labelRenderer.domElement.style.display = e.target.checked ? "" : "none";
     });
-    document.getElementById("optStars").addEventListener("change", e => { stars.visible = e.target.checked; });
+    document.getElementById("optStars").addEventListener("change", e => {
+      stars.visible = e.target.checked;
+      scene.background = e.target.checked ? spaceBg : spaceColor;
+    });
 
     /* ---- Search ---- */
     const search = document.getElementById("search");
@@ -2641,7 +2721,9 @@
         Object.values(objects).forEach(o => {
           const hours = o.body.rotation || 600;
           const rate = dt * SPEEDS[speedIndex].days * 24 / hours * Math.PI * 2;
-          o.spin.rotation.y += Math.sign(rate) * Math.min(Math.abs(rate), dt * 1.5);
+          const step = Math.sign(rate) * Math.min(Math.abs(rate), dt * 1.5);
+          o.spin.rotation.y += step;
+          if (o.cloud) o.cloud.rotation.y += step * 1.25;
         });
       }
       placeBodies();

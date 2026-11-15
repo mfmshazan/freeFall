@@ -1,55 +1,56 @@
 # Architecture
 
-## Data flow
+## Prediction and evidence data flow
 
-```
-                       ┌─────────────────────────── FRONTEND (Vite + React + TS) ──────────────────────────┐
-  user drags slider ─▶ CabinBuilder ─▶ App state (CabinInputs)
-                                          │
-                                          ▼
-                                 useFlamePrediction(inputs)          debounced 150ms, 1.2s timeout
-                                 ├── predictLocalService() ──────────────┐  (instant, always runs)
-                                 │     • flameModel.ts (physics port)    │
-                                 │     • localService.ts (rank + σ)      │
-                                 └── fetch POST /api/predict ──┐         │
-                                          ▲                    │         │
-                                          │ backend result     │         │ local result
-                                          │ (preferred)        ▼         ▼
-                                          │              setResult(PredictResponse)
-                                          │                    │
-                                          │   ┌────────────────┴───────────────────────────────────┐
-                                          │   ▼            ▼            ▼            ▼              ▼
-                                          │ FlameCanvas  TrustGauge  EvidencePanel PlaybookPanel SpinoffBanner
-                                          │
-  └───────────────────────────────────────┼───────────────────────────────────────────────────────────────┘
-                                          │
-     ┌────────────────────────────────────┴──── BACKEND (FastAPI) ──────────────────────────────┐
-     │  POST /api/predict  (Pydantic CabinInputs)                                                │
-     │    1. Surrogate.predict()  → GP mean/std for spread, length, width (Matérn+White)         │
-     │    2. physics.predict()    → standoff, aspect, soot, flux, regime (deterministic)         │
-     │    3. ranker.rank()        → Top-4 PSI by physics distance + parameter diffs              │
-     │    4. trust logic          → GP σ + out-of-distribution penalty → score/status/margin     │
-     │    5. playbook             → Prevention / Detection / Suppression (regime-triggered)       │
-     └───────────────────────────────────────────────────────────────────────────────────────────┘
-```
+| Input | Backend | Local result | Display |
+|---|---|---|---|
+| `CabinInputs` | `POST /api/predict` with GP and parametric physics | `predictLocalService` with parametric physics | Flame canvas, prediction values and trust gauge |
+| `EvidenceQuery` with cabin conditions and optional evidence context | `POST /api/evidence` with the reviewed catalog | `rankEvidence` with the bundled catalog | Case compatibility, condition differences and outcome coverage |
+
+The prediction API retains legacy training-row references. The backend uses nearest training-point
+distance for its GP trust heuristic, and the fallback uses nearest training-row distance for its
+own uncertainty heuristic. The evidence query uses independent filter state.
+
+The evidence hook returns local rankings immediately and requests server results after 150 ms.
+It discards outdated requests and checks catalog and ranking versions before accepting a response.
+The local catalog stays available when the endpoint fails or returns a different version.
+
+### Case compatibility and numeric ranking
+
+The ranker checks the cabin fuel phase and family, known balance gas constraints, and selected
+material, geometry, flow configuration, apparatus and metric. Conflicts take precedence over
+missing context. A compatible case agrees with the selected evidence context. Independent
+validation of the model requires its own comparable measurements.
+
+Within each group, cases with greater numeric condition coverage rank first. Distance is the
+weighted RMS of the normalized residuals for included dimensions. The stable case ID breaks
+ties. Gravity, oxygen, absolute pressure and ventilation velocity use scales of 1 g, 70
+percentage points, 10.4 psia and 30 cm/s, with respective weights 4, 1, 1 and 1. These are
+sorting heuristics. A reported interval contributes zero residual inside its bounds. Changes
+over time and values with unresolved bases are excluded. With zero eligible dimensions, the
+distance is null.
 
 ## The uncertainty pipeline (plain English)
 
-The surrogate is a **Gaussian Process** (not a neural net) because the PSI dataset is small and
-tabular, and GPs give you uncertainty for free: alongside each prediction they return a
-**predictive standard deviation** that *grows automatically as you move away from the data they
-were trained on.*
+The Gaussian Process returns a standard deviation alongside each modeled quantity. The frontend
+fallback estimates spread using a distance heuristic. Independent experimental validation and
+interval calibration remain Phase 4 work.
 
 1. **Training set** = the 26 rows in `backend/data/psi_master.json` (2 sourced Saffire-I rows and
    24 seed rows) plus physics-informed synthetic anchor points generated by `physics.py`. Anchors
    are only placed at **0g and 1g**, leaving partial gravity without physics anchors. The trust
    logic separately marks partial gravity as extrapolation. Seed rows are not NASA measurements.
 2. **Trust score** blends three signals: the GP's relative predictive σ, the normalized distance to
-   the nearest training point, and an explicit **out-of-distribution penalty** for regimes NASA
-   never flew (partial gravity, extreme O₂).
-3. **Status** maps to three bands — `HIGH_CONFIDENCE`, `CAUTION_EXTRAPOLATING`,
-   `UNVERIFIED_REGIME_DO_NOT_TRUST` — each with a recommended safety-margin multiplier (1.2× / 1.8×
-   / 2.6×). The canvas draws this as a dashed ±95% halo that turns red when trust is low.
+   the nearest training point, and a heuristic penalty for partial gravity and elevated oxygen.
+3. Legacy trust identifiers and margin values remain response fields for compatibility. The UI
+   communicates limited evidence and draws the amber halo using one model standard deviation
+   per axis. The fallback uses its own heuristic spread.
+
+CabinBuilder derives oxygen partial pressure from the independent oxygen and absolute pressure
+inputs. The binary mixture model accepts oxygen plus one balance gas. Research stories use the
+bundled catalog and replay links. Story selection updates display state independently of
+`CabinInputs`. The appearance identifiers select illustrative palettes in both model paths.
+The prediction hook keeps its local result if a backend returns an obsolete appearance identifier.
 
 ## Single-source-of-truth physics
 
@@ -61,18 +62,23 @@ Three files implement the **same** correlations from `skills/01-flame-physics-ru
 | GP anchors + regime/geometry | `backend/physics.py` | synthetic boundary points, non-GP outputs |
 | (spec) | `skills/01-flame-physics-rules.md` | human-readable formulas both ports follow |
 
-If you change a formula, change it in all three. The Step-5 audit prompt checks they still agree.
+If you change a formula, update both ports and the spec.
 
 ## Key invariants (enforced, checked in audit)
 - `gravity_g == 0 && airflow == 0` ⟹ `aspect_ratio_LD == 1.0` (perfect sphere).
 - No `Math.random()` on the flame envelope in 0g (buoyant flicker doesn't exist in space).
-- GP predictive σ must widen in partial gravity — the trust meter depends on it.
+- Partial gravity receives an extrapolation penalty. The GP standard deviation and heuristic spread use different methods.
 - Frontend and backend return the identical `PredictResponse` shape (`frontend/src/types.ts`).
 
 ## Data boundary
 
-The model dataset is separate from the replay assets. `backend/data/psi_master.json` currently has
-2 Saffire-I rows with sourced conditions and estimated outputs, plus 24 seed rows. The UI also has
-BASS-II replay material under `frontend/public/replay/bass-2/`; that replay does not mean BASS-II
-experimental-table rows have been ingested into model training. See `DATA_INVENTORY.md` and
-`DOWNLOAD_CHECKLIST.md` for source files and remaining acquisition work.
+The [canonical catalog](backend/data/mined_evidence.json) includes reviewed cases, source
+references, and the ranking constants shared by both implementations. Run
+`python3 backend/export_evidence.py` from the root to generate the bundled catalog and Saffire-I
+report-results card. The collector keeps its manifest, original files and full mapped tables
+under `data_raw/`. The Saffire-I and BASS-II replay assets carry their own timing and provenance.
+
+The catalog is outside the model dataset, which contains 24 seed rows and two Saffire-I rows
+with sourced conditions and estimated outputs. Outcome coverage counts cases by metric and
+retains shared specimen groups. BASS-II B1 and B3 contribute conditions and imagery. See the
+[data inventory](DATA_INVENTORY.md) for sources and access limits.

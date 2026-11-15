@@ -15,18 +15,19 @@ microgravity flame. The palette and soot and heat proxies are not calibrated mea
 ## Coordinate / scale
 - Flame centered at `(W/2, 0.52H)`. `PX = 0.42H / max(40mm, length+uncertainty)` px per mm, so the
   largest expected flame (incl. the model-spread halo) always fits.
-- A **20 mm scale bar** (BASS acrylic sphere) is drawn bottom-left for pixel→mm calibration, matching
-  the split-screen NASA reference.
+- A **20 mm model scale bar** is drawn bottom-left using the canvas model dimensions.
 
 ## Regime rendering (`prediction.visual_regime`)
 | Regime | Visual |
 |---|---|
-| `SOOT_FREE_BLUE_SPHERE` | smooth radial blue shell `#1E40AF→#60A5FA→transparent`, dark standoff gap, aspect≈1 |
+| `SOOT_FREE_BLUE_SPHERE` | blue palette with radial shell and dark standoff gap |
 | `STRETCHED_LAMINAR_TEARDROP` | same shell, ellipse elongated by `aspect_ratio_LD` along flow/gravity axis |
 | `SOOTY_YELLOW_CORE` | blue shell + inner `#F59E0B→#FDE047` core, radius ∝ `soot_fraction` |
-| `BUBBLING_PMMA_STREAKS` | sooty core + deterministic **seeded** (mulberry32) orange micro-streaks = vapor-bubble ejections |
-| `INVISIBLE_COOL_FLAME` | faint violet illustrative palette; the heuristic does not establish cool-flame chemistry |
-| `QUENCHED_EXTINGUISHED` | dim shrinking ember with a slow sine radial pulse (not noise) |
+| `BUBBLING_PMMA_STREAKS` | blue shell, a yellow core when the soot proxy exceeds 0.12, and deterministic seeded (mulberry32) orange streaks |
+| `QUENCHED_EXTINGUISHED` | modeled extinction palette with a dim ember and a slow sine radial pulse |
+
+The UI displays neutral palette names. Recorded footage keeps its source colors and shows camera
+metadata separately. Run-specific chemistry claims belong with the report’s diagnostic evidence.
 
 ## Uncertainty halo (the core twist)
 - Mean flame = crisp filled body. A dashed, slowly moving outer ellipse shows one model spread (`std_*`).
@@ -34,7 +35,8 @@ microgravity flame. The palette and soot and heat proxies are not calibrated mea
 
 ## HUD telemetry (canvas corners)
 - Top-left: `L`, `W` (mm), `L/D`. Top-right: spread (mm/s), standoff (mm), `±spread` (mm).
-- Bottom-right: regime label + `g` / flow readout.
+- Bottom-right: illustrative appearance label and `g` / flow readout. The adjacent uncertainty panel
+  states the model’s evidence status and explains the halo.
 
 ## Hard rules (audit will flag violations)
 1. **No `Math.random()`** on size, outline, or brightness in 0g. Only the seeded PMMA streaks and

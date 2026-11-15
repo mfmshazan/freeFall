@@ -1,58 +1,48 @@
-# Flame in Freefall — 2-Minute Judge Demo
+# Flame in Freefall — two-minute demo
 
-**One-liner:** *"Most teams show you an accuracy number. We show you when the AI should not be
-trusted — because astronauts' lives depend on knowing the difference."*
+### 0:00 · Orbit and atmosphere
 
----
+Open **Orbital cabin example**. At 400 km the Earth field reads about 0.885 g and
+the effective cabin input is 0 g. Point out the circular still-air model flame
+and the amber model spread halo. Open **Supported lunar habitat example** and
+compare 3.09 psi at 21% and 14.7 psi with 3.26 psi at 32% and 10.2 psi.
+Combustion also depends on the total pressure, gas mixture and experimental setup.
 
-### 0:00 — The problem (talk over the ISS preset on screen)
-> "On Earth, fire rises into a teardrop. In space there's no 'up' — flames become slow, ghostly
-> spheres that behave unpredictably. NASA ran 24 combustion investigations on the ISS and buried
-> **12 terabytes** of fire data in spreadsheets. Future Moon bases will run **elevated oxygen**,
-> which makes everyday materials far more flammable. An engineer designing a cabin can't test a
-> fire in orbit — they need to predict it, and know how much to trust that prediction."
+### 0:25 · Palette and chemistry
 
-**On screen:** ISS Standard preset — clean blue sphere, Trust **93 · HIGH CONFIDENCE**, margin 1.2×.
-> "Here's a baseline ISS ignition. The flame is a perfect blue sphere — our sim refuses to fake
-> Earth-style flicker. Trust is 93: this sits right on top of NASA's ACME burner data."
+Open **High-oxygen / low-pressure example**. Show the illustrative PMMA streak
+palette. Choose **Soot and optical appearance** and open **CFI-G evidence**.
+The final report identified a cool phase with radiometer readings and processed
+intensified-camera images in run 21174C3. Point out the separate burner feed and
+chamber atmosphere.
 
-### 0:30 — The core twist (click **Artemis Lunar Base**)
-**On screen:** flame stretches, uncertainty halo flares **red**, Trust crashes to **~18 · DO NOT
-TRUST — UNVERIFIED**, margin jumps to 2.6×.
-> "Now I switch to an Artemis lunar cabin — one-sixth gravity, 32% oxygen. Watch the trust meter
-> **collapse** and the red uncertainty halo balloon. The model is telling me the truth: NASA has
-> **zero** partial-gravity flame data above 30% oxygen. It has 0g results and ion-wind proxies from
-> E-FIELD, but nothing that validates *this* regime. So it says *do not trust me — run a physical
-> test or carry a 2.6× safety margin.* That honesty is the whole point."
+### 0:50 · Recorded ventilation and supported habitats
 
-### 1:05 — Show the evidence (scroll to Ranked PSI Evidence + split-screen)
-> "Every prediction is backed by real experiments. Here are the Top-4 closest NASA investigations,
-> ranked by physics similarity, with the exact parameter differences — '+11% O₂ vs BASS-II' — and
-> one-click DOI links. The split-screen pins our live sim against the closest real run on a shared
-> 20 mm scale bar. No black box."
+Open **Orbital ventilation** and follow **Open Saffire-I replay**. Scrub the
+recording and show the report's concurrent and opposed rates. The opposed pass
+reused the material, and both rates are run averages. BASS-II shows a separate
+comparison of two specimens with different gas histories and before/after readings.
 
-### 1:30 — The invisible-flame hazard (click **High-O₂ Gas Leak (CFI-G)**)
-**On screen:** flame nearly vanishes to faint violet, purple **"OPTICAL HAZARD — RADIOMETER
-REQUIRED"** badge pulses; Detection card lights up.
-> "This one's subtle but deadly. High-oxygen cool flames burn hot while emitting almost no visible
-> light — your cameras and smoke alarms are blind. Notice trust is actually *high* here (CFI-G flew
-> this at 0g) — but the Detection playbook still fires: *use radiometric sensing.* Trusted
-> prediction, critical hazard. That's the nuance safety engineering needs."
+Return to the predictor, choose **Supported habitats**, and open the LUCI evidence.
+The experiment used rocket rotation to simulate lunar acceleration. Show the
+separate flame-base and flame-tip fits, then select Mars in the gravity controls.
+The collection establishes no compatible observation for the Mars scenario.
 
-### 1:45 — Controls + Earth spinoff
-> "The Fix-It playbook turns physics into action — swap acrylic for Nomex, cut ventilation before
-> flooding CO₂ (FLEX-2), reject lunar-dust false alarms (SAME/DAFT). And every insight maps back to
-> Earth: cleanroom sensors, aircraft cargo suppression, firefighter gear."
+### 1:30 · Detection and suppression research
 
-### 1:55 — Close
-> "Flame in Freefall answers four questions on one screen: *What will happen? How sure are we?
-> Which NASA test proves it? How do we prevent it?* — and it's brave enough to say 'don't trust me
-> yet.'"
+Choose **Smoke detection** and point out how material, transport and aging affected
+SAME particles. Then open **FLEX evidence** from **Suppression research**. Show
+the original mixture and droplet-specific units. The reported rate is in mm²/s and
+the extinction diameter refers to the droplet.
 
----
+### 1:55 · Close
 
-## Demo checklist
-- [ ] Backend running (`uvicorn main:app --port 8000`) — header badge shows **● GP backend**
-- [ ] Frontend running (`npm run dev`)
-- [ ] Preset click order: **ISS → Artemis Lunar → High-O₂ Gas Leak**
-- [ ] Optional: drag the **Gravity** slider from 0 → 0.166 live to show the halo grow in real time
+Point to the source links and the model evidence status. Independent prediction
+validation and interval calibration remain Phase 4 work.
+
+## Before the demo
+
+- Start the frontend with `npm run dev` in `frontend/`. To show the GP mode,
+  start `uvicorn main:app --port 8000` in the backend environment.
+- Check the source badge and both replays. The local physics fallback includes
+  the story summaries and citation metadata. Opening original reports requires internet access.

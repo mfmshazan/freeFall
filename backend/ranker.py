@@ -1,5 +1,4 @@
-"""Physics-distance ranker: finds the NASA PSI experiments closest to the user's
-cabin configuration and explains how they differ (the 'what changed' diff)."""
+"""Legacy model-input ranking for the prediction response and its training-row references."""
 from __future__ import annotations
 import json
 import math

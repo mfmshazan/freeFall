@@ -96,6 +96,16 @@ class MiningTest(unittest.TestCase):
         self.assertEqual(row["droplet_diameter_at_visible_extinction_mm"], "–")
         self.assertEqual(row["burn_time_s"], "~8")
 
+    def test_manifest_embeds_catalog_without_promoting_staged_rows(self):
+        staged = {"study": "bass-ii", "status": "catalogued", "reported_rows": [{"test": "unreviewed"}]}
+        with patch.object(mine_nasa, "WORKSPACE", self.inbox), patch("sys.argv", ["mine_nasa.py"]), \
+             patch.object(mine_nasa, "psi_status", return_value=staged), patch("sys.stdout", new=io.StringIO()):
+            self.assertEqual(mine_nasa.main(), 0)
+        manifest = json.loads((self.inbox / "manifest.json").read_text())
+        self.assertEqual(manifest["reviewed_evidence"], mine_nasa.load_catalog())
+        self.assertIn(staged, manifest["psi"])
+        self.assertNotIn("unreviewed", {record["id"] for record in manifest["reviewed_evidence"]["records"]})
+
     def test_rejects_incomplete_pdf_without_caching(self):
         def fake_curl(args, **_kwargs):
             Path(args[args.index("--output") + 1]).write_bytes(b"%PDF-1.7\ntruncated")
