@@ -4,12 +4,13 @@
 // online the hook prefers it; this keeps the demo fully working if it isn't.
 
 import psi from '../data/psi_master.json'
-import { predictLocal } from './flameModel'
+import { predictLocal, drivers } from './flameModel'
 import type {
   CabinInputs,
   PredictResponse,
   RankedInvestigation,
   TrustStatus,
+  PlaybookAction,
 } from '../types'
 
 interface Record {
@@ -97,11 +98,14 @@ export function predictLocalService(i: CabinInputs): PredictResponse {
   }))
 
   // --- uncertainty: grows with distance to nearest real datapoint ---
-  // Heuristic penalty for partial gravity and high oxygen.
+  const { OPI } = drivers(i)
+  // epistemic penalty for unverified regimes PSI never covered (partial g / hyper g + high O2)
   const partialGravity = i.gravity_g > 0.02 && i.gravity_g < 0.95
+  const hyperGravity = i.gravity_g > 1.05
+  const nonStandardG = partialGravity || hyperGravity
   const highO2 = i.o2_percent >= 30
-  const unverified = partialGravity
-  const extrapPenalty = (partialGravity ? 0.6 : 0) + (highO2 ? 0.2 : 0)
+  const unverified = nonStandardG // NO microgravity-vs-partial/hyper data exists
+  const extrapPenalty = (nonStandardG ? 0.6 : 0) + (highO2 ? 0.2 : 0)
 
   const sigmaBase = 0.08 + 0.9 * nearest + extrapPenalty
   const std_length_mm = prediction.flame_length_mm * Math.min(0.8, sigmaBase)
@@ -113,14 +117,22 @@ export function predictLocalService(i: CabinInputs): PredictResponse {
 
   let trust_status: TrustStatus
   if (unverified && highO2) trust_status = 'UNVERIFIED_REGIME_DO_NOT_TRUST'
-  else if (trust_score < 55 || partialGravity) trust_status = 'CAUTION_EXTRAPOLATING'
+  else if (trust_score < 55 || nonStandardG) trust_status = 'CAUTION_EXTRAPOLATING'
   else trust_status = 'HIGH_CONFIDENCE'
 
   const safety_margin_multiplier =
     trust_status === 'HIGH_CONFIDENCE' ? 1.2 : trust_status === 'CAUTION_EXTRAPOLATING' ? 1.8 : 2.6
 
-  const plain_english_explanation = 'No comparable measured outcome used by this model. Its training data includes synthetic examples and estimated outcomes; offline spread is heuristic and not a calibrated interval.'
-  const engineering_playbook: PredictResponse['engineering_playbook'] = []
+  const plain_english_explanation = buildExplanation(
+    trust_status,
+    ranked[0],
+    partialGravity,
+    hyperGravity,
+    highO2,
+    nearest,
+  )
+
+  const engineering_playbook = buildPlaybook(i, prediction)
 
   return {
     prediction,
@@ -138,4 +150,66 @@ export function predictLocalService(i: CabinInputs): PredictResponse {
     earth_spinoff: ranked[0].earth_spinoff_application,
     source: 'local-fallback',
   }
+}
+
+function buildExplanation(
+  status: TrustStatus,
+  top: RankedInvestigation,
+  partialG: boolean,
+  hyperG: boolean,
+  highO2: boolean,
+  nearest: number,
+): string {
+  if (status === 'UNVERIFIED_REGIME_DO_NOT_TRUST') {
+    const lbl = hyperG ? 'hypergravity (>1g)' : 'partial gravity'
+    return `No spaceflight data exists for ${lbl} above 30% O₂. PSI has 0g results (closest: ${top.experiment_id}, ${top.similarity}% match) and ion-wind partial-gravity proxies from E-FIELD, but nothing validates this exact regime. The model is extrapolating — require a physical test or apply a heavy margin.`
+  }
+  if (status === 'CAUTION_EXTRAPOLATING') {
+    const reason = partialG
+      ? 'you are in partial gravity, which PSI never directly tested (only 0g and 1g exist)'
+      : hyperG
+        ? 'you are in hypergravity (>1g), beyond the 0g–1g NASA PSI dataset'
+        : highO2
+          ? 'elevated oxygen pushes beyond the densest part of the dataset'
+          : `the nearest PSI run is only a ${top.similarity}% match`
+    return `Moderate confidence: ${reason}. Closest evidence is ${top.experiment_id} (${top.similarity}% match). Treat the prediction as a bounded estimate, not ground truth.`
+  }
+  return `High confidence: your cabin settings sit close to real NASA data (${top.experiment_id}, ${top.similarity}% match, distance ${nearest.toFixed(2)}). The prediction is interpolated within tested conditions.`
+}
+
+function buildPlaybook(i: CabinInputs, p: ReturnType<typeof predictLocal>): PlaybookAction[] {
+  const dangerous = p.spread_rate_mm_s > 1.5 || p.visual_regime === 'BUBBLING_PMMA_STREAKS'
+  const invisible = p.visual_regime === 'INVISIBLE_COOL_FLAME'
+  return [
+    {
+      category: 'PREVENTION',
+      headline:
+        i.fuel_material === 'PMMA_Acrylic' || i.o2_percent >= 30
+          ? 'Swap to a flame-resistant material'
+          : 'Material within tested envelope',
+      detail:
+        i.o2_percent >= 30
+          ? `At ${i.o2_percent}% O₂, screen cabin polymers — Saffire-II ranked materials at 34% O₂. Prefer Nomex/PTFE over acrylic and cotton.`
+          : `Current material/atmosphere is near NASA-tested limits. Keep ventilation below the concurrent-flow spread peak (~12 cm/s).`,
+      triggered: dangerous,
+    },
+    {
+      category: 'DETECTION',
+      headline: invisible
+        ? 'Optical detectors will MISS this flame'
+        : 'Tune smoke detector for microgravity particles',
+      detail: invisible
+        ? 'CFI-G showed high-O₂/low-pressure flames emit little visible light. Require radiometric or UV/OH* sensing; standard photoelectric alarms are blind here.'
+        : 'SAME/SAME-R: microgravity smoke coagulates into larger particles; DAFT-2 shows lunar dust can mimic smoke. Use multi-wavelength scattering to reject dust false-alarms.',
+      triggered: invisible || i.gravity_g < 0.95,
+    },
+    {
+      category: 'SUPPRESSION',
+      headline:
+        i.airflow_cm_s > 0 ? 'Cut ventilation before discharging agent' : 'Select the right inert agent',
+      detail:
+        'FLEX-2: CO₂ extinguishes at higher residual O₂ than N₂ (strong per-mole inerting); He requires more O₂ to quench. BASS-II: in microgravity, airflow can feed a dying flame — shut HVAC first, then flood with CO₂.',
+      triggered: p.visual_regime !== 'QUENCHED_EXTINGUISHED',
+    },
+  ]
 }

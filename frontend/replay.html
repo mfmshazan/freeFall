@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recorded NASA Replays | FlameAtlas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #071323;
+      --navy-light: #10253c;
+      --orange: #ff6a2b;
+      --line-dark: rgba(255, 255, 255, 0.14);
+      --muted-dark: rgba(255, 255, 255, 0.72);
+    }
+    body {
+      margin: 0;
+      background: var(--navy);
+      color: white;
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    .fa-header {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 18px 40px;
+      background: rgba(7, 19, 35, 0.94);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line-dark);
+    }
+    .fa-logo {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: white;
+      text-decoration: none;
+    }
+    .fa-logo span { color: var(--orange); }
+    .fa-nav { display: flex; align-items: center; gap: 24px; }
+    .fa-nav a {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted-dark);
+      text-decoration: none;
+    }
+    .fa-nav a:hover { color: #ffb38b; }
+    .fa-nav a[aria-current="page"] { color: var(--orange); }
+    .fa-nav .nav-button {
+      border: 1px solid white;
+      padding: 10px 16px;
+      color: white;
+    }
+    @media (max-width: 780px) {
+      .fa-header { padding: 14px 18px; }
+      .fa-nav { gap: 12px; }
+      .fa-nav .nav-button { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="fa-header">
+    <a href="index.html#home" class="fa-logo">FLAMEATLAS<span>.</span></a>
+    <nav class="fa-nav" aria-label="Main navigation">
+      <a href="index.html#explore">Explore</a>
+      <a href="evidence.html">Evidence</a>
+      <a href="replay.html" aria-current="page">Replays</a>
+      <a href="safety.html">Safety</a>
+      <a href="simulator.html" class="nav-button">Launch Simulator</a>
+    </nav>
+  </header>
+  <div id="replay-root"></div>
+  <script type="module" src="/src/replayEntry.tsx"></script>
+</body>
+</html>
+

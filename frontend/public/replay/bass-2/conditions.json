@@ -17,21 +17,26 @@
   },
 
   "verified_conditions": [
-    { "field": "Material", "value": "Cast PMMA (poly(methyl methacrylate)) thin film", "source": "Test Matrix + TM §2.3.5", "qualifier": "TM §2.3.5 prints the formula 'C2H8O2', which is chemically invalid (a typo); formula omitted" },
-    { "field": "Film thickness", "value": "100 µm", "source": "Test Matrix (Bhattacharjee, B1)" },
-    { "field": "Sample width", "value": "2 cm (20 mm)", "source": "Test Matrix + TM §2.3.5" },
-    { "field": "Sample length", "value": "~95 mm (series nominal in TM §2.3.5; not listed per-test)", "source": "TM §2.3.5", "qualifier": "nominal" },
-    { "field": "Flow configuration", "value": "Opposed-flow flame spread; ignited at downstream end, flame spreads against the flow", "source": "TM §2.3.5" },
-    { "field": "Gravity", "value": "Microgravity (ISS)", "source": "TM Summary" },
-    { "field": "Airflow — air display (duct)", "value": "5 cm/s", "source": "Test Matrix", "qualifier": "video display; ~1 min response lag per FAQ" },
-    { "field": "Airflow — fan display", "value": "62 (= 6.2 V) in matrix; video overlay reads 61", "source": "Test Matrix + video overlay", "qualifier": "overlay is an instantaneous reading; matrix value is 62, overlay shows 61 — a ~1 unit difference, not reconciled in the source" },
-    { "field": "Flow restrictor", "value": "2 (lowest flow / highest restriction)", "source": "Test Matrix + FAQ" },
-    { "field": "Calibrated O2 (initial / final)", "value": "22.2% / 22.2% by vol", "source": "Test Matrix (MCA-corrected)" },
-    { "field": "CO2 (initial / final)", "value": "0.44% / 0.44% by vol", "source": "Test Matrix (CDM sensor)" },
-    { "field": "CO (initial / final)", "value": "0 / 6 ppm", "source": "Test Matrix (CSA-CP sensor)" },
-    { "field": "Total pressure", "value": "99.2–99.5 kPa (series range for these tests)", "source": "TM §2.3.5", "qualifier": "series range; not listed per-test in matrix" },
-    { "field": "Radiometer gain", "value": "50 (uncalibrated; relative intensity only)", "source": "Test Matrix + FAQ" },
-    { "field": "Nikon still frames shot", "value": "57 (stills, 1 frame/sec, top view)", "source": "Test Matrix + TM §2.3.5" }
+    { "category": "start", "field": "Material", "value": "Cast PMMA thin film", "source": "Test Matrix + TM §2.3.5", "qualifier": "TM §2.3.5 prints the formula 'C2H8O2', which is chemically invalid (a typo); formula omitted" },
+    { "category": "start", "field": "Film thickness", "value": "100 µm", "source": "Test Matrix (Bhattacharjee, B1)" },
+    { "category": "start", "field": "Sample width", "value": "2 cm (20 mm)", "source": "Test Matrix + TM §2.3.5" },
+    { "category": "start", "field": "Sample length", "value": "~95 mm (series nominal in TM §2.3.5; not listed per-test)", "source": "TM §2.3.5", "qualifier": "nominal" },
+    { "category": "start", "field": "Flow configuration", "value": "Opposed-flow flame spread; ignited at downstream end, flame spreads against the flow", "source": "TM §2.3.5" },
+    { "category": "start", "field": "Gravity", "value": "Microgravity (ISS)", "source": "TM Summary" },
+    { "category": "start", "field": "Ventilation air speed (air display)", "value": "5 cm/s (matrix) · overlay reads ~5", "source": "Test Matrix + video overlay", "qualifier": "matrix and overlay attributed separately; air display has a ~1 min response lag per FAQ" },
+    { "category": "start", "field": "Fan drive setting (fan display)", "value": "62 (= 6.2 V) in matrix · overlay reads 61", "source": "Test Matrix + video overlay", "qualifier": "matrix 62 vs overlay 61 is an unresolved 1-unit discrepancy, not reconciled in the sources" },
+    { "category": "start", "field": "Flow restrictor", "value": "2 (lowest flow / highest restriction)", "source": "Test Matrix + FAQ" },
+    { "category": "start", "field": "Initial O₂", "value": "22.2% by vol", "source": "Test Matrix (MCA-corrected)" },
+    { "category": "start", "field": "Initial CO₂", "value": "0.44% by vol", "source": "Test Matrix (CDM sensor)" },
+    { "category": "start", "field": "Initial CO", "value": "0 ppm", "source": "Test Matrix (CSA-CP sensor)" },
+    { "category": "start", "field": "Total pressure", "value": "99.2–99.5 kPa (series range for these tests)", "source": "TM §2.3.5", "qualifier": "series range; not listed per-test in matrix" },
+
+    { "category": "outcome", "field": "Final O₂", "value": "22.2% by vol", "source": "Test Matrix (MCA-corrected)", "qualifier": "observed after the burn; equal to initial (no measurable depletion)" },
+    { "category": "outcome", "field": "Final CO₂", "value": "0.44% by vol", "source": "Test Matrix (CDM sensor)" },
+    { "category": "outcome", "field": "Final CO", "value": "6 ppm", "source": "Test Matrix (CSA-CP sensor)" },
+
+    { "category": "meta", "field": "Radiometer gain", "value": "50 (uncalibrated; relative intensity only)", "source": "Test Matrix + FAQ", "qualifier": "instrument setting, not a condition of the fire" },
+    { "category": "meta", "field": "Nikon still frames shot", "value": "57 (1 frame/sec, top view)", "source": "Test Matrix + TM §2.3.5", "qualifier": "a recording choice, NOT a physical condition and NOT a burn duration" }
   ],
 
   "unknown_or_not_documented": [
@@ -56,7 +61,7 @@
   },
 
   "sources": [
-    "BASS-II Test Matrix by PI Final.xlsx → 'Bhattacharjee' sheet, B1 / Sample 147; cross-checked against PSI-25 Experimental Table, CSV line 2",
+    "BASS-II Test Matrix by PI Final.xlsx → 'Bhattacharjee' sheet, row B1 / Sample 147",
     "BASS-II Summary Report.pdf — NASA/TM-20210011385, §2.3.5 (apparatus, flow config, pressure)",
     "BASS-II data FAQ.docx (column definitions: fan display, air display, restrictor, O2 calibration)",
     "GMT2014_050_BASS_S147M_TPB1_ProofSheet.pdf",
@@ -77,9 +82,9 @@
     "why": "Same material and geometry (100 µm cast PMMA film, 2 cm wide), same flow restrictor (2), same initial O2 (22.2%), same radiometer gain (50), SAME test day (GMT 050, 2014-02-19) — the cleanest 'different airflow' comparison.",
     "airflow_difference": "Air display 2 cm/s (fan 47 = 4.7 V) vs B1's 5 cm/s (fan 62 = 6.2 V)",
     "other_differences_that_could_affect_comparison": [
-      "Final O2: B3 depletes to 21.8% vs B1 unchanged at 22.2%",
-      "CO: B3 12→19 ppm vs B1 0→6 ppm",
-      "Nikon frames shot: B3 253 vs B1 57 — this is frames shot, NOT a verified burn duration (no documented per-frame timing for the burn window)",
+      "Final O2 (observed): B1 22.2% (unchanged), B3 21.8% — stated as observations, not attributed to any single cause",
+      "CO (observed): B1 0→6 ppm, B3 12→19 ppm — differing before/after readings, cause not established",
+      "Nikon frames shot: B3 253 vs B1 57 — frames shot (a recording choice), NOT a verified burn duration",
       "Different physical specimen (sample 148 vs 147): normal sample-to-sample variation",
       "Air-display ~1 min response lag means the 2 vs 5 cm/s values carry uncertainty"
     ],

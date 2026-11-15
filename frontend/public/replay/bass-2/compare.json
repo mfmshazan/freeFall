@@ -1,5 +1,5 @@
 {
-  "title": "BASS-II Sample 147 (B1) vs Sample 148 (B3)",
+  "title": "BASS-II  Sample 147 (B1)  vs  Sample 148 (B3)",
   "investigation": "BASS-II (Burning and Suppression of Solids–II)",
   "psi_id": "PSI-25",
   "investigation_link": "https://www.psi.nasa.gov/physci/repo/data/investigations/PSI-25",
@@ -13,35 +13,130 @@
             "video_source": "BASS_GMT50_SAMPLE_148_TEST_B3.mp4", "proof_source": "GMT2014_050_BASS_S148M_TPB3_ProofSheet.pdf" }
   },
 
-  "fields": [
-    { "field": "Material", "b1": "Cast PMMA thin film", "b3": "Cast PMMA thin film", "status": "same", "note": "matrix label text differs ('100 micron pmma film' vs '100 micron film') but material is the same" },
-    { "field": "Film thickness", "b1": "100 µm", "b3": "100 µm", "status": "same" },
-    { "field": "Sample width", "b1": "2 cm", "b3": "2 cm", "status": "same" },
-    { "field": "Sample length", "b1": "~95 mm (nominal)", "b3": "~95 mm (nominal)", "status": "unknown", "note": "series nominal only; exact per-test length not documented for either run" },
-    { "field": "Flow configuration", "b1": "Opposed-flow", "b3": "Opposed-flow", "status": "same" },
-    { "field": "Flow restrictor", "b1": "2", "b3": "2", "status": "same" },
-    { "field": "Radiometer gain", "b1": "50", "b3": "50", "status": "same" },
-    { "field": "Date (actual)", "b1": "2014-02-19", "b3": "2014-02-19", "status": "same", "note": "same GMT day 050; video-display date 02/20 (+1)" },
-    { "field": "Gravity / platform", "b1": "Microgravity, MSG/ISS", "b3": "Microgravity, MSG/ISS", "status": "same" },
-    { "field": "Initial O2", "b1": "22.2 %", "b3": "22.2 %", "status": "same" },
-    { "field": "Total pressure", "b1": "99.2–99.5 kPa (series range)", "b3": "99.2–99.5 kPa (series range)", "status": "unknown", "note": "series range only; exact per-test pressure not documented" },
-
-    { "field": "Air display (duct flow)", "b1": "5 cm/s", "b3": "2 cm/s", "status": "different", "note": "the intended variable; ~1 min response lag per FAQ, so instantaneous values carry uncertainty" },
-    { "field": "Fan display", "b1": "62 (6.2 V); overlay 61", "b3": "47 (4.7 V); overlay 47", "status": "different" },
-    { "field": "Final O2", "b1": "22.2 %", "b3": "21.8 %", "status": "different", "note": "B3 shows O2 depletion; B1 none" },
-    { "field": "Initial CO2", "b1": "0.44 %", "b3": "0.43 %", "status": "different" },
-    { "field": "Final CO2", "b1": "0.44 %", "b3": "0.49 %", "status": "different" },
-    { "field": "Initial CO", "b1": "0 ppm", "b3": "12 ppm", "status": "different" },
-    { "field": "Final CO", "b1": "6 ppm", "b3": "19 ppm", "status": "different" },
-    { "field": "Nikon frames shot", "b1": "57", "b3": "253", "status": "different", "note": "frames SHOT, not a verified burn duration — no documented per-frame timing for the burn" },
-    { "field": "Sample specimen no.", "b1": "147", "b3": "148", "status": "different", "note": "different physical specimen; normal sample-to-sample variation" }
+  "groups": [
+    {
+      "category": "start",
+      "label": "Starting conditions — set before / at ignition",
+      "fields": [
+        { "key": "material", "field": "Material", "status": "same",
+          "b1": [{ "value": "Cast PMMA thin film", "source": "Test Matrix + TM §2.3.5" }],
+          "b3": [{ "value": "Cast PMMA thin film", "source": "Test Matrix + TM §2.3.5" }],
+          "plain": "The fuel: a thin cast-PMMA (acrylic) film.",
+          "note": "Matrix label text differs ('100 micron pmma film' vs '100 micron film') but the material is the same. TM prints the formula 'C2H8O2', which is chemically invalid (a typo), so no formula is stated." },
+        { "key": "thickness", "field": "Film thickness", "status": "same",
+          "b1": [{ "value": "100 µm", "source": "Test Matrix" }],
+          "b3": [{ "value": "100 µm", "source": "Test Matrix" }],
+          "plain": "How thick the fuel film is. Thinner films burn differently from thick slabs." },
+        { "key": "width", "field": "Sample width", "status": "same",
+          "b1": [{ "value": "2 cm", "source": "Test Matrix" }],
+          "b3": [{ "value": "2 cm", "source": "Test Matrix" }],
+          "plain": "Width of the fuel sample across the duct." },
+        { "key": "flow_config", "field": "Flow configuration", "status": "same",
+          "b1": [{ "value": "Opposed-flow", "source": "TM §2.3.5" }],
+          "b3": [{ "value": "Opposed-flow", "source": "TM §2.3.5" }],
+          "plain": "The ventilation air flows against the direction the flame spreads (ignited at the downstream end)." },
+        { "key": "restrictor", "field": "Flow restrictor", "status": "same",
+          "b1": [{ "value": "2", "source": "Test Matrix + FAQ" }],
+          "b3": [{ "value": "2", "source": "Test Matrix + FAQ" }],
+          "plain": "A perforated inlet plate that limits the flow range. 2 = most restriction / lowest flow range." },
+        { "key": "air", "field": "Ventilation air speed", "status": "different", "unit": "cm/s",
+          "b1": [{ "value": "5", "source": "Test Matrix (air display)" }, { "value": "5", "source": "Video overlay (instantaneous)" }],
+          "b3": [{ "value": "2", "source": "Test Matrix (air display)" }, { "value": "1", "source": "Video overlay (instantaneous)" }],
+          "plain": "Forced-air (fan) flow speed measured in the duct. This is the condition that was varied between the two runs.",
+          "uncertainty": "The air display has a slow (~1 min) response, so instantaneous values carry uncertainty; matrix and overlay are kept separate." },
+        { "key": "fan", "field": "Fan drive setting", "status": "different",
+          "b1": [{ "value": "62 (6.2 V)", "source": "Test Matrix (fan display)" }, { "value": "61", "source": "Video overlay (instantaneous)" }],
+          "b3": [{ "value": "47 (4.7 V)", "source": "Test Matrix (fan display)" }, { "value": "47", "source": "Video overlay (instantaneous)" }],
+          "plain": "Fan voltage setting (displayed as volts ×10) that drives the ventilation flow.",
+          "uncertainty": "For B1 the matrix value (62) and the overlay reading (61) differ by 1 unit — an unresolved discrepancy not explained in the sources. For B3 they agree (47)." },
+        { "key": "o2_initial", "field": "Initial O₂", "status": "same", "unit": "% by vol",
+          "b1": [{ "value": "22.2", "source": "Test Matrix (MCA-corrected)" }],
+          "b3": [{ "value": "22.2", "source": "Test Matrix (MCA-corrected)" }],
+          "plain": "Oxygen fraction of the atmosphere at the start of the test." },
+        { "key": "co2_initial", "field": "Initial CO₂", "status": "different", "unit": "% by vol",
+          "b1": [{ "value": "0.44", "source": "Test Matrix (CDM sensor)" }],
+          "b3": [{ "value": "0.43", "source": "Test Matrix (CDM sensor)" }],
+          "plain": "Ambient CO₂ in the glovebox before the burn." },
+        { "key": "co_initial", "field": "Initial CO", "status": "different", "unit": "ppm",
+          "b1": [{ "value": "0", "source": "Test Matrix (CSA-CP sensor)" }],
+          "b3": [{ "value": "12", "source": "Test Matrix (CSA-CP sensor)" }],
+          "plain": "Ambient CO in the glovebox before the burn." },
+        { "key": "pressure", "field": "Total pressure", "status": "same",
+          "b1": [{ "value": "99.2–99.5 kPa (series range)", "source": "TM §2.3.5" }],
+          "b3": [{ "value": "99.2–99.5 kPa (series range)", "source": "TM §2.3.5" }],
+          "plain": "Cabin/glovebox total pressure.",
+          "uncertainty": "Only a series range is documented; the exact per-test value is not recorded (see Unknowns)." },
+        { "key": "gravity", "field": "Gravity / platform", "status": "same",
+          "b1": [{ "value": "Microgravity, MSG / ISS", "source": "TM Summary" }],
+          "b3": [{ "value": "Microgravity, MSG / ISS", "source": "TM Summary" }],
+          "plain": "Both tests ran in the Microgravity Science Glovebox aboard the ISS." }
+      ]
+    },
+    {
+      "category": "outcome",
+      "label": "Observations & outcomes — recorded during / after the burn",
+      "fields": [
+        { "key": "o2_final", "field": "Final O₂", "status": "different", "unit": "% by vol",
+          "b1": [{ "value": "22.2", "source": "Test Matrix (MCA-corrected)" }],
+          "b3": [{ "value": "21.8", "source": "Test Matrix (MCA-corrected)" }],
+          "plain": "Oxygen fraction measured after the burn. A drop from the initial value indicates oxygen was consumed; this is an observed outcome, not a setting." },
+        { "key": "co2_final", "field": "Final CO₂", "status": "different", "unit": "% by vol",
+          "b1": [{ "value": "0.44", "source": "Test Matrix (CDM sensor)" }],
+          "b3": [{ "value": "0.49", "source": "Test Matrix (CDM sensor)" }],
+          "plain": "CO₂ measured after the burn (combustion product)." },
+        { "key": "co_final", "field": "Final CO", "status": "different", "unit": "ppm",
+          "b1": [{ "value": "6", "source": "Test Matrix (CSA-CP sensor)" }],
+          "b3": [{ "value": "19", "source": "Test Matrix (CSA-CP sensor)" }],
+          "plain": "CO measured after the burn (combustion product)." }
+      ]
+    },
+    {
+      "category": "meta",
+      "label": "Recording metadata — not physical experimental conditions",
+      "fields": [
+        { "key": "rad_gain", "field": "Radiometer gain", "status": "same",
+          "b1": [{ "value": "50", "source": "Test Matrix + FAQ" }],
+          "b3": [{ "value": "50", "source": "Test Matrix + FAQ" }],
+          "plain": "Uncalibrated radiometer amplifier setting. Affects the displayed intensity scale only — it is an instrument setting, not a condition of the fire." },
+        { "key": "frames", "field": "Nikon still frames shot", "status": "different",
+          "b1": [{ "value": "57", "source": "Test Matrix" }],
+          "b3": [{ "value": "253", "source": "Test Matrix" }],
+          "plain": "How many still photographs were captured. This is a recording choice — NOT a physical experimental condition, and NOT a verified burn duration (no per-frame burn timing is documented)." },
+        { "key": "date", "field": "Date (actual)", "status": "same",
+          "b1": [{ "value": "2014-02-19", "source": "Test Matrix" }],
+          "b3": [{ "value": "2014-02-19", "source": "Test Matrix" }],
+          "plain": "Actual test date (same GMT day 050). The video overlay shows 02/20 because the on-board clock is +1 day." },
+        { "key": "vid_dur", "field": "Downloaded video length", "status": "different", "unit": "s",
+          "b1": [{ "value": "44.8", "source": "Video file" }],
+          "b3": [{ "value": "58.3", "source": "Video file" }],
+          "plain": "Length of the downloaded video clip. This is a recording length, not the physical burn duration." }
+      ]
+    },
+    {
+      "category": "unknown",
+      "label": "Not documented for either run",
+      "fields": [
+        { "key": "u_length", "field": "Exact sample length", "status": "unknown",
+          "b1": [{ "value": "unknown (series nominal ~95 mm)", "source": "TM §2.3.5" }],
+          "b3": [{ "value": "unknown (series nominal ~95 mm)", "source": "TM §2.3.5" }],
+          "plain": "Only a nominal series length (~95 mm) is given; the exact per-test length is not recorded." },
+        { "key": "u_pressure", "field": "Exact per-test pressure", "status": "unknown",
+          "b1": [{ "value": "unknown (99.2–99.5 kPa range)", "source": "TM §2.3.5" }],
+          "b3": [{ "value": "unknown (99.2–99.5 kPa range)", "source": "TM §2.3.5" }],
+          "plain": "Only a series range is documented, not the value for each specific run." },
+        { "key": "u_duration", "field": "Burn duration (seconds)", "status": "unknown",
+          "b1": [{ "value": "unknown", "source": "—" }],
+          "b3": [{ "value": "unknown", "source": "—" }],
+          "plain": "No documented per-frame burn timing or burn-duration value exists for either run." }
+      ]
+    }
   ],
 
   "comparison_limitations": [
-    "This is a two-run comparison, not a controlled single-variable experiment: airflow differs AND so do final O2, CO2, CO, specimen, and frames shot. Observed differences cannot be attributed to airflow alone.",
-    "No continuous sensor time-series exists for either run — only before/after O2/CO2/CO values. Burn durations are not documented.",
-    "Video playback time is NOT sensor time for either run; the two videos are independent recordings with no documented cross-synchronization. The 'link playback' control aligns playback position only.",
+    "This is a two-run comparison, not a controlled single-variable experiment. The ventilation flow differs AND so do several starting readings (initial CO₂/CO) and the specimen (147 vs 148). Any difference in the observed outcomes therefore cannot be attributed to the flow change alone — the data here does not establish cause and effect.",
+    "No continuous sensor time-series exists for either run — only single before/after O₂/CO₂/CO readings. Burn durations are not documented.",
+    "Video playback time is NOT sensor time. The two clips are independent recordings with no documented cross-synchronization; the optional link control aligns playback position only.",
     "Temperature is not measured and must not be inferred from flame colour in either video.",
-    "Air-display flow has a slow (~1 min) response, so the 5 vs 2 cm/s values carry uncertainty."
+    "The air display has a slow (~1 min) response, so the 5 vs 2 cm/s values carry uncertainty."
   ]
 }
